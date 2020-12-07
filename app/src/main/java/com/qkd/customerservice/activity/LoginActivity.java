@@ -1,0 +1,82 @@
+package com.qkd.customerservice.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.qkd.customerservice.MainActivity;
+import com.qkd.customerservice.R;
+import com.tencent.imsdk.v2.V2TIMCallback;
+import com.tencent.imsdk.v2.V2TIMGroupMemberInfo;
+import com.tencent.imsdk.v2.V2TIMManager;
+import com.tencent.imsdk.v2.V2TIMSimpleMsgListener;
+import com.tencent.imsdk.v2.V2TIMUserInfo;
+
+/**
+ * Created on 12/2/20 09:10
+ * 登录.
+ *
+ * @author yj
+ */
+public class LoginActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        setTitle("登录");
+        findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userId = "test_yang";
+                String userSig = "eJw1jtEKgjAYRt9lt4b9bnPloCsvuikrFCIIYrQ-W5oNXWFF755oXX7n48B5k2yR*thaUyORLAiZAIBRTx9YE0moD2TYjS6UtUYTGXAAHgrK2fAYjZUzJ9MLDht3eKoq-2sm7yi-LF8Jnuk6Pirrab0Tq7YsynQ7vyncj7N7UkQJZVzF3mb2M525dlGBADGJGGXTzxdmszNJ";
+                V2TIMManager.getInstance().login(userId, userSig, new V2TIMCallback() {
+                    @Override
+                    public void onError(int code, String desc) {
+                        Log.i("12345678", "登录出错: " + code + "  " + desc);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        Log.i("12345678", "登录成功");
+                        Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, IndexActivity.class));
+                    }
+                });
+                V2TIMManager.getInstance().addSimpleMsgListener(new V2TIMSimpleMsgListener() {
+                    @Override
+                    public void onRecvC2CTextMessage(String msgID, V2TIMUserInfo sender, String text) {
+                        super.onRecvC2CTextMessage(msgID, sender, text);
+                        Log.i("12345678", "msgID: " + msgID + "   text:" + text);
+                    }
+
+                    @Override
+                    public void onRecvC2CCustomMessage(String msgID, V2TIMUserInfo sender, byte[] customData) {
+                        super.onRecvC2CCustomMessage(msgID, sender, customData);
+                    }
+
+                    @Override
+                    public void onRecvGroupTextMessage(String msgID, String groupID, V2TIMGroupMemberInfo sender, String text) {
+                        super.onRecvGroupTextMessage(msgID, groupID, sender, text);
+                    }
+
+                    @Override
+                    public void onRecvGroupCustomMessage(String msgID, String groupID, V2TIMGroupMemberInfo sender, byte[] customData) {
+                        super.onRecvGroupCustomMessage(msgID, groupID, sender, customData);
+                    }
+                });
+            }
+        });
+        findViewById(R.id.history_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }
+        });
+    }
+}
