@@ -24,9 +24,6 @@ import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.VoiceMsg;
-import com.tencent.imsdk.v2.V2TIMManager;
-import com.tencent.imsdk.v2.V2TIMMessage;
-import com.tencent.imsdk.v2.V2TIMSendCallback;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -533,7 +530,7 @@ public class AudioRecordManager implements Handler.Callback {
 //                }
 //            }
             File savePath = mContext.getCacheDir();
-            mAudioPath = Uri.fromFile(new File(savePath, System.currentTimeMillis() + "temp.voice"));
+            mAudioPath = Uri.fromFile(new File(savePath, System.currentTimeMillis() + "temp.mp3"));
             mMediaRecorder.setOutputFile(mAudioPath.getPath());
             mMediaRecorder.prepare();
             mMediaRecorder.start();
@@ -594,26 +591,6 @@ public class AudioRecordManager implements Handler.Callback {
             msgBean.setType(1);
             msgBean.setAudioPath(mAudioPath);
             EventBus.getDefault().post(msgBean);
-
-            // 腾讯云发送语音
-            V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(mAudioPath.getPath(), duration);
-            V2TIMManager.getMessageManager().sendMessage(soundMessage, "test_guan"
-                    , null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                        @Override
-                        public void onProgress(int progress) {
-                            Log.i("12345678", "onProgress: " + progress);
-                        }
-
-                        @Override
-                        public void onError(int code, String desc) {
-                            Log.i("12345678", "发送出错: " + code + "  " + desc);
-                        }
-
-                        @Override
-                        public void onSuccess(V2TIMMessage v2TIMMessage) {
-                            Log.i("12345678", "onSuccess: " + v2TIMMessage.getCustomElem());
-                        }
-                    });
         }
     }
 

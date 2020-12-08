@@ -11,8 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.ChatActivity;
+import com.tencent.imsdk.v2.V2TIMConversation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on 12/2/20 13:50
@@ -24,9 +29,11 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
 
     private Context context;
     private LayoutInflater inflater;
+    private List<V2TIMConversation> conversationList;
 
     public CustomerAdapter(Context context) {
         this.context = context;
+        conversationList = new ArrayList<>();
         inflater = LayoutInflater.from(context);
     }
 
@@ -39,18 +46,30 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
 
     @Override
     public void onBindViewHolder(@NonNull CustomerViewHolder holder, int position) {
-        holder.mNameV.setText("第" + (position + 1) + "条");
+        final V2TIMConversation conversation = conversationList.get(position);
+        holder.mNameV.setText(conversation.getShowName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, ChatActivity.class));
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("UserID", conversation.getUserID());
+                intent.putExtra("showName",conversation.getShowName());
+                context.startActivity(intent);
             }
         });
+        Glide.with(context)
+                .load(conversation.getFaceUrl())
+                .into(holder.mHeadV);
     }
 
     @Override
     public int getItemCount() {
-        return 20;
+        return conversationList.size();
+    }
+
+    public void addAll(List<V2TIMConversation> conversationList) {
+        this.conversationList.addAll(conversationList);
+        notifyDataSetChanged();
     }
 
     static class CustomerViewHolder extends RecyclerView.ViewHolder {

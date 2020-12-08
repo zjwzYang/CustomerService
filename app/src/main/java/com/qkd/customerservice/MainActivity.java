@@ -6,10 +6,14 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.activity.ChatActivity;
+import com.qkd.customerservice.adapter.MainImgAdapter;
 import com.tencent.imsdk.v2.V2TIMCallback;
 import com.tencent.imsdk.v2.V2TIMGroupMemberInfo;
+import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMMessage;
 import com.tencent.imsdk.v2.V2TIMSimpleMsgListener;
@@ -24,10 +28,17 @@ import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
 
 public class MainActivity extends AppCompatActivity {
 
+    private RecyclerView mRecyclerView;
+    private MainImgAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mRecyclerView = findViewById(R.id.recy_img);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mAdapter = new MainImgAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     public void onLogin(View view) {
@@ -83,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onHistoryMsg(View view) {
-        V2TIMManager.getMessageManager().getC2CHistoryMessageList("test_guan", 10, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
+        V2TIMManager.getMessageManager().getC2CHistoryMessageList("oMRUWsz5RBAxLanlU1ITgWBEGd6I", 10, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
             @Override
             public void onError(int code, String desc) {
                 Log.i("12345678", "发送出错: " + code + "  " + desc);
@@ -98,7 +109,18 @@ public class MainActivity extends AppCompatActivity {
                     if (type == V2TIM_ELEM_TYPE_TEXT) {
                         Log.i("12345678", "HistoryMessage: " + message.getTextElem().toString());
                     } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
-                        Log.i("12345678", "HistoryMessage: " + message.getImageElem().toString());
+                        V2TIMImageElem imageElem = message.getImageElem();
+                        Log.i("12345678", "HistoryMessage图片: " + imageElem.toString());
+                        List<V2TIMImageElem.V2TIMImage> imageList = imageElem.getImageList();
+                        for (V2TIMImageElem.V2TIMImage v2TIMImage : imageList) {
+                            String uuid = v2TIMImage.getUUID(); // 图片 ID
+                            int imageType = v2TIMImage.getType(); // 图片类型
+                            int size = v2TIMImage.getSize(); // 图片大小（字节）
+                            int width = v2TIMImage.getWidth(); // 图片宽度
+                            int height = v2TIMImage.getHeight(); // 图片高度
+                            String url = v2TIMImage.getUrl();
+                            mAdapter.add(url);
+                        }
                     } else if (type == V2TIM_ELEM_TYPE_SOUND) {
                         Log.i("12345678", "HistoryMessage: " + message.getSoundElem().toString());
                     }
