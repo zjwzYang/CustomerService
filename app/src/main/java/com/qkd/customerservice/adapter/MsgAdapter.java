@@ -2,7 +2,9 @@ package com.qkd.customerservice.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +14,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
@@ -48,13 +55,15 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private List<MsgBean> msgList;
+    private String faceUrl;
 
     private RequestOptions options;
     private OnClickImageListener onClickImageListener;
 
-    public MsgAdapter(Context context, List<MsgBean> msgList) {
+    public MsgAdapter(Context context, List<MsgBean> msgList, String faceUrl) {
         this.context = context;
         this.msgList = msgList;
+        this.faceUrl = faceUrl;
         RoundedCorners roundedCorners = new RoundedCorners(6);
         options = new RequestOptions()
                 .transform(new CenterCrop(), roundedCorners)
@@ -127,6 +136,9 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             LeftMsgViewHolder holder = (LeftMsgViewHolder) viewHolder;
             holder.leftName.setText(textMsg.getNickName());
             holder.leftContent.setText(textMsg.getContent());
+            Glide.with(context)
+                    .load(faceUrl)
+                    .into(holder.leftHead);
         } else if (viewType == TEXT_RIGHT) {
             TextMsg textMsg = (TextMsg) msgBean;
             RightMsgViewHolder holder = (RightMsgViewHolder) viewHolder;
@@ -134,6 +146,9 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == VOICE_LEFT) {
             final VoiceMsg voiceMsg = (VoiceMsg) msgBean;
             LeftVoiceMsgViewHolder holder = (LeftVoiceMsgViewHolder) viewHolder;
+            Glide.with(context)
+                    .load(faceUrl)
+                    .into(holder.mHeadV);
             holder.mDuringV.setText(String.format("%s\"", voiceMsg.getDuration()));
 
             int minWidth = 70, maxWidth = 204;
@@ -143,16 +158,16 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             int duration = AudioRecordManager.getInstance().getMaxVoiceDuration();
             holder.mVoiceV.getLayoutParams().width = minWidth + (maxWidth - minWidth) / duration * voiceMsg.getDuration();
 
-            holder.mVoiceV.setScaleType(ImageView.ScaleType.FIT_END);
+//            holder.mVoiceV.setScaleType(ImageView.ScaleType.FIT_END);
             holder.mVoiceV.setBackgroundResource(R.drawable.bg_chat_receiver);
 
-            AnimationDrawable animationDrawable = (AnimationDrawable) context.getResources().getDrawable(R.drawable.rc_an_voice_sent);
+            AnimationDrawable animationDrawable = (AnimationDrawable) context.getResources().getDrawable(R.drawable.rc_an_voice_receive);
             if (voiceMsg.isPlaying()) {
                 holder.mVoiceV.setImageDrawable(animationDrawable);
                 if (animationDrawable != null)
                     animationDrawable.start();
             } else {
-                holder.mVoiceV.setImageDrawable(holder.mVoiceV.getResources().getDrawable(R.drawable.rc_ic_voice_sent));
+                holder.mVoiceV.setImageDrawable(holder.mVoiceV.getResources().getDrawable(R.drawable.rc_ic_voice_receive));
                 if (animationDrawable != null)
                     animationDrawable.stop();
             }
@@ -160,6 +175,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     Uri audioPath = voiceMsg.getAudioPath();
+                    Log.i("获取语音", "onClick: " + audioPath.toString());
                     if (AudioPlayManager.getInstance().isPlaying()) {
                         if (AudioPlayManager.getInstance().getPlayingUri().equals(audioPath)) {
                             AudioPlayManager.getInstance().stopPlay();
@@ -255,19 +271,44 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         } else if (viewType == IMAGE_LEFT) {
             ImageMsg imageMsg = (ImageMsg) msgBean;
-            LeftImageViewHolder holder = (LeftImageViewHolder) viewHolder;
+            final LeftImageViewHolder holder = (LeftImageViewHolder) viewHolder;
             holder.mNameV.setText(imageMsg.getNickName());
-
+            Glide.with(context)
+                    .load(faceUrl)
+                    .into(holder.mHeadV);
             Glide.with(context)
                     .load(imageMsg.getImgPath())
                     .apply(options)
                     .into(holder.mImgV);
+            holder.mappingViews.put(0, holder.mImgV);
+            final List<String> photoUrlList = new ArrayList<>();
+            photoUrlList.add(imageMsg.getImgPath());
+            holder.mImgV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onClickImageListener != null) {
+                        onClickImageListener.onClickImage(holder.mImgV, holder.mappingViews, photoUrlList);
+                    }
+                }
+            });
 
         } else if (viewType == IMAGE_RIGHT) {
             ImageMsg imageMsg = (ImageMsg) msgBean;
             final RightImageViewHolder holder = (RightImageViewHolder) viewHolder;
             Glide.with(context)
                     .load(imageMsg.getImgPath())
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            Log.i("12345678", "onLoadFailed: " + e.getMessage());
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
                     .apply(options)
                     .into(holder.mImgV);
             holder.mappingViews.put(0, holder.mImgV);
@@ -292,6 +333,11 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void addMsg(MsgBean msgBean) {
         this.msgList.add(msgBean);
+        notifyDataSetChanged();
+    }
+
+    public void addMsgTop(MsgBean msgBean) {
+        this.msgList.add(0, msgBean);
         notifyDataSetChanged();
     }
 
@@ -359,12 +405,14 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView mHeadV;
         private TextView mNameV;
         private ImageView mImgV;
+        private SparseArray<ImageView> mappingViews;
 
         public LeftImageViewHolder(@NonNull View itemView) {
             super(itemView);
             mHeadV = itemView.findViewById(R.id.iv_head_left);
             mNameV = itemView.findViewById(R.id.tv_nickname_left);
             mImgV = itemView.findViewById(R.id.tv_image_left);
+            mappingViews = new SparseArray<>();
         }
     }
 

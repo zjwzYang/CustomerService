@@ -9,5 +9,5 @@ package com.qkd.customerservice;
  */
 public class Constant {
 
-    public static final String SEND_VOICE_MSG = "send_voice_msg";
+    public static final String CLEAR_UNREAD_BY_USERID = "clear_unread_by_userid";
 }

@@ -102,6 +102,16 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.qkd.customerservice.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rc_file_path" />
+        </provider>
+
     </application>
 
 </manifest>

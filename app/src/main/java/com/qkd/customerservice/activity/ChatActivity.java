@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
@@ -24,6 +25,7 @@ import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MsgAdapter;
+import com.qkd.customerservice.bean.ClearByUserId;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
@@ -34,6 +36,7 @@ import com.qkd.customerservice.widget.CExpressionPanel;
 import com.qkd.customerservice.widget.CInputPanel;
 import com.qkd.customerservice.widget.CMorePanel;
 import com.qkd.customerservice.widget.GlideSimpleLoader;
+import com.qkd.customerservice.widget.PaddingDecoration;
 import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMMessage;
@@ -79,6 +82,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private String UserID;
     private String showName;
+    private String faceUrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,33 +115,40 @@ public class ChatActivity extends AppCompatActivity {
             public void onSuccess(List<V2TIMMessage> v2TIMMessages) {
                 for (int i = 0; i < v2TIMMessages.size(); i++) {
                     V2TIMMessage message = v2TIMMessages.get(i);
+                    String sender = message.getSender();
+                    final int sendType;
+                    if (UserID.equals(sender)) {
+                        sendType = 0;
+                    } else {
+                        sendType = 1;
+                    }
                     int type = message.getElemType();
                     if (type == V2TIM_ELEM_TYPE_TEXT) {
-                        Log.i("12345678", "HistoryMessage: " + message.getTextElem().toString());
-                        TextMsg textMsg = new TextMsg();
-                        textMsg.setMsgType(MsgBean.MsgType.TEXT);
-                        textMsg.setType(0);
-                        textMsg.setContent(message.getTextElem().getText());
-                        textMsg.setNickName(showName);
-                        adapter.addMsg(textMsg);
+                        String content = message.getTextElem().getText().trim();
+                        if (!TextUtils.isEmpty(content)) {
+                            Log.i("12345678", "HistoryMessage: " + message.getTextElem().toString());
+                            TextMsg textMsg = new TextMsg();
+                            textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                            textMsg.setType(sendType);
+                            textMsg.setContent(content);
+                            textMsg.setNickName(showName);
+                            adapter.addMsg(textMsg);
+                        }
 
                     } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
                         V2TIMImageElem imageElem = message.getImageElem();
-                        Log.i("12345678", "HistoryMessage图片: " + imageElem.toString());
                         List<V2TIMImageElem.V2TIMImage> imageList = imageElem.getImageList();
                         for (V2TIMImageElem.V2TIMImage v2TIMImage : imageList) {
-                            String uuid = v2TIMImage.getUUID(); // 图片 ID
-                            int imageType = v2TIMImage.getType(); // 图片类型
-                            int size = v2TIMImage.getSize(); // 图片大小（字节）
-                            int width = v2TIMImage.getWidth(); // 图片宽度
-                            int height = v2TIMImage.getHeight(); // 图片高度
                             String url = v2TIMImage.getUrl();
-                            ImageMsg imageMsg = new ImageMsg();
-                            imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
-                            imageMsg.setType(0);
-                            imageMsg.setImgPath(url);
-                            imageMsg.setNickName(showName);
-                            adapter.addMsg(imageMsg);
+                            if (!TextUtils.isEmpty(url)) {
+                                Log.i("12345678", "HistoryMessage图片: " + url);
+                                ImageMsg imageMsg = new ImageMsg();
+                                imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
+                                imageMsg.setType(sendType);
+                                imageMsg.setImgPath(url);
+                                imageMsg.setNickName(showName);
+                                adapter.addMsg(imageMsg);
+                            }
                         }
                     } else if (type == V2TIM_ELEM_TYPE_SOUND) {
                         final V2TIMSoundElem soundElem = message.getSoundElem();
@@ -149,16 +160,18 @@ public class ChatActivity extends AppCompatActivity {
 
                             @Override
                             public void onSuccess(String s) {
-                                Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
-                                int duration = soundElem.getDuration();
-                                VoiceMsg voiceMsg = new VoiceMsg();
-                                voiceMsg.setNickName(showName);
-                                voiceMsg.setPlaying(false);
-                                voiceMsg.setDuration(duration);
-                                voiceMsg.setAudioPath(Uri.parse(s));
-                                voiceMsg.setType(0);
-                                voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
-                                adapter.addMsg(voiceMsg);
+                                if (!TextUtils.isEmpty(s)) {
+                                    Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
+                                    int duration = soundElem.getDuration();
+                                    VoiceMsg voiceMsg = new VoiceMsg();
+                                    voiceMsg.setNickName(showName);
+                                    voiceMsg.setPlaying(false);
+                                    voiceMsg.setDuration(duration);
+                                    voiceMsg.setAudioPath(Uri.parse(s));
+                                    voiceMsg.setType(sendType);
+                                    voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
+                                    adapter.addMsg(voiceMsg);
+                                }
                             }
                         });
                     }
@@ -198,7 +211,8 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         recycler_view.setHasFixedSize(true);
-        adapter = new MsgAdapter(this, msgList);
+        faceUrl = getIntent().getStringExtra("faceUrl");
+        adapter = new MsgAdapter(this, msgList, faceUrl);
         adapter.setOnClickImageListener(new MsgAdapter.OnClickImageListener() {
             @Override
             public void onClickImage(ImageView imageView, SparseArray<ImageView> mappingViews, List<String> urlList) {
@@ -208,9 +222,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 //        recycler_view.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        recycler_view.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layout = new LinearLayoutManager(this);
+        layout.setOrientation(LinearLayoutManager.VERTICAL);
+        layout.setReverseLayout(true);
+        recycler_view.setLayoutManager(layout);
         recycler_view.setAdapter(adapter);
-        recycler_view.smoothScrollToPosition(adapter.getItemCount());
+        recycler_view.addItemDecoration(new PaddingDecoration());
         ((SimpleItemAnimator) recycler_view.getItemAnimator()).setSupportsChangeAnimations(false);
         recycler_view.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -244,34 +261,65 @@ public class ChatActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
-        adapter.addMsg(voiceMsg);
-        recycler_view.smoothScrollToPosition(adapter.getItemCount());
+        if (!TextUtils.isEmpty(voiceMsg.getSenderId())) {
+            if (UserID.equals(voiceMsg.getSenderId())) {
+                adapter.addMsgTop(voiceMsg);
+            }
+        } else {
+            adapter.addMsgTop(voiceMsg);
 
-        // 腾讯云发送语音
-        V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(voiceMsg.getAudioPath().getPath(), voiceMsg.getDuration());
-        V2TIMManager.getMessageManager().sendMessage(soundMessage, UserID
-                , null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                    @Override
-                    public void onProgress(int progress) {
-                        Log.i("12345678", "onProgress: " + progress);
-                    }
+            // 腾讯云发送语音
+            V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(voiceMsg.getAudioPath().getPath(), voiceMsg.getDuration());
+            V2TIMManager.getMessageManager().sendMessage(soundMessage, UserID
+                    , null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                        @Override
+                        public void onProgress(int progress) {
+                            Log.i("12345678", "onProgress: " + progress);
+                        }
 
-                    @Override
-                    public void onError(int code, String desc) {
-                        Log.i("12345678", "发送出错: " + code + "  " + desc);
-                    }
+                        @Override
+                        public void onError(int code, String desc) {
+                            Log.i("12345678", "发送出错: " + code + "  " + desc);
+                        }
 
-                    @Override
-                    public void onSuccess(V2TIMMessage v2TIMMessage) {
-                        Log.i("12345678", "onSuccess: " + v2TIMMessage.getSoundElem().toString());
-                    }
-                });
+                        @Override
+                        public void onSuccess(V2TIMMessage v2TIMMessage) {
+                            Log.i("12345678", "onSuccess: " + v2TIMMessage.getSoundElem().toString());
+                        }
+                    });
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetImageMsg(ImageMsg imageMsg) {
+        if (!TextUtils.isEmpty(imageMsg.getSenderId())) {
+            if (UserID.equals(imageMsg.getSenderId())) {
+                adapter.addMsgTop(imageMsg);
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
-        adapter.addMsg(textMsg);
-        recycler_view.smoothScrollToPosition(adapter.getItemCount());
+        if (!TextUtils.isEmpty(textMsg.getSenderId())) {
+            if (UserID.equals(textMsg.getSenderId())) {
+                adapter.addMsgTop(textMsg);
+            }
+        } else {
+            adapter.addMsgTop(textMsg);
+            // 腾讯云发送文字
+            V2TIMManager.getInstance().sendC2CTextMessage(textMsg.getContent(), UserID, new V2TIMValueCallback<V2TIMMessage>() {
+                @Override
+                public void onError(int code, String desc) {
+                    Log.i("12345678", "发送出错: " + code + "  " + desc);
+                }
+
+                @Override
+                public void onSuccess(V2TIMMessage v2TIMMessage) {
+                    Log.i("12345678", "发送成功");
+                }
+            });
+        }
     }
 
     @Override
@@ -285,32 +333,37 @@ public class ChatActivity extends AppCompatActivity {
                 imageMsg.setType(1);
                 imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                 imageMsg.setImgPath(path);
-                adapter.addMsg(imageMsg);
-                recycler_view.smoothScrollToPosition(adapter.getItemCount());
+                adapter.addMsgTop(imageMsg);
 
                 Log.i("12345678", "onActivityResult: " + path);
-                // 创建图片消息
-                V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
-                // 发送图片消息
-                V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, "test_guan",
-                        null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                            @Override
-                            public void onProgress(int progress) {
-                                Log.i("12345678", "onProgress: " + progress);
-                            }
-
-                            @Override
-                            public void onError(int code, String desc) {
-                                Log.i("12345678", "发送出错: " + code + "  " + desc);
-                            }
-
-                            @Override
-                            public void onSuccess(V2TIMMessage v2TIMMessage) {
-                                Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
-                            }
-                        });
+//                // 创建图片消息
+//                V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
+//                // 发送图片消息
+//                V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
+//                        null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+//                            @Override
+//                            public void onProgress(int progress) {
+//                                Log.i("12345678", "onProgress: " + progress);
+//                            }
+//
+//                            @Override
+//                            public void onError(int code, String desc) {
+//                                Log.i("12345678", "发送出错: " + code + "  " + desc);
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(V2TIMMessage v2TIMMessage) {
+//                                Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+//                            }
+//                        });
             }
         }
+    }
+
+    @Override
+    public void finish() {
+        EventBus.getDefault().post(new ClearByUserId(UserID));
+        super.finish();
     }
 
     @Override

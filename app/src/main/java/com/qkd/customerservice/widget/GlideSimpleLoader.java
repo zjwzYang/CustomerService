@@ -23,7 +23,7 @@ import com.qkd.customerservice.R;
 public class GlideSimpleLoader implements ImageWatcher.Loader {
     @Override
     public void load(Context context, Uri uri, final ImageWatcher.LoadCallback lc) {
-        Glide.with(context).load(uri).error(R.drawable.bg_defaule_img).into(new CustomTarget<Drawable>() {
+        Glide.with(context).load(uri).error(R.drawable.ic_image_error).into(new CustomTarget<Drawable>() {
 
             @Override
             public void onLoadStarted(Drawable placeholder) {

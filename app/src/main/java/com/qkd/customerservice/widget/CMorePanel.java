@@ -63,12 +63,21 @@ public class CMorePanel extends FrameLayout implements IPanel {
 
     private void init() {
         List<MoreAction> mActionList = new ArrayList<>();
-        for (int i = 0; i < 13; i++) {
-            MoreAction action = new MoreAction();
-            action.setActionReId(R.mipmap.ic_launcher);
-            action.setActionName("第" + (i + 1) + "条");
-            mActionList.add(action);
-        }
+//        for (int i = 0; i < 13; i++) {
+//            MoreAction action = new MoreAction();
+//            action.setActionReId(R.mipmap.ic_launcher);
+//            action.setActionName("第" + (i + 1) + "条");
+//            mActionList.add(action);
+//        }
+        MoreAction action1 = new MoreAction();
+        action1.setActionReId(R.drawable.ic_more_picture);
+        action1.setActionName("照片");
+        mActionList.add(action1);
+
+        MoreAction action2 = new MoreAction();
+        action2.setActionReId(R.drawable.ic_more_camera);
+        action2.setActionName("拍摄");
+        mActionList.add(action2);
         MorePagerAdapter adapter = new MorePagerAdapter((FragmentActivity) getContext(), mActionList);
         mViewPager2.setAdapter(adapter);
 //        mViewPager2.setUserInputEnabled(true);
