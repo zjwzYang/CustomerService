@@ -2,7 +2,6 @@ package com.qkd.customerservice.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,12 +34,10 @@ public class LoginActivity extends AppCompatActivity {
                 V2TIMManager.getInstance().login(userId, userSig, new V2TIMCallback() {
                     @Override
                     public void onError(int code, String desc) {
-                        Log.i("12345678", "登录出错: " + code + "  " + desc);
                     }
 
                     @Override
                     public void onSuccess() {
-                        Log.i("12345678", "登录成功");
                         Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, IndexActivity.class));
                         finish();

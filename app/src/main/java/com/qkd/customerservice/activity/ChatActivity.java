@@ -2,18 +2,22 @@ package com.qkd.customerservice.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +26,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.github.ielse.imagewatcher.ImageWatcherHelper;
 import com.qkd.customerservice.AppUtil;
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
@@ -98,16 +103,32 @@ public class ChatActivity extends AppCompatActivity {
         expression_panel = findViewById(R.id.expression_panel);
         more_panel = findViewById(R.id.more_panel);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         init();
 
         initConversation();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initConversation() {
         Intent intent = getIntent();
         UserID = intent.getStringExtra("UserID");
         showName = intent.getStringExtra("showName");
-        Log.i("12345678", "当前会话: " + UserID);
+        setTitle(showName);
         V2TIMManager.getMessageManager().getC2CHistoryMessageList(UserID, 50, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
             @Override
             public void onError(int code, String desc) {
@@ -141,10 +162,12 @@ public class ChatActivity extends AppCompatActivity {
                     } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
                         V2TIMImageElem imageElem = message.getImageElem();
                         List<V2TIMImageElem.V2TIMImage> imageList = imageElem.getImageList();
+                        boolean hasJoin = false;
                         for (V2TIMImageElem.V2TIMImage v2TIMImage : imageList) {
                             String url = v2TIMImage.getUrl();
-                            if (!TextUtils.isEmpty(url)) {
-                                Log.i("12345678", "HistoryMessage图片: " + url);
+                            if (!TextUtils.isEmpty(url) && !hasJoin) {
+                                hasJoin = true;
+                                Log.i("12345678", "V2TIMImageElem: " + url);
                                 ImageMsg imageMsg = new ImageMsg();
                                 imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                                 imageMsg.setType(sendType);
@@ -207,6 +230,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onOpened(int keyboardHeight) {
                 MyApp.keyboardHeight = keyboardHeight;
+                SharedPreferences sp = getSharedPreferences(Constant.APP_DATA, Context.MODE_PRIVATE);
+                sp.edit().putInt(Constant.KEYBOARDHEIGHT, keyboardHeight).apply();
             }
 
             @Override
@@ -344,7 +369,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK) {
             List<String> imgStrs = Matisse.obtainPathResult(data);
-            for (String path : imgStrs) {
+            for (final String path : imgStrs) {
                 ImageMsg imageMsg = new ImageMsg();
                 imageMsg.setNickName("我");
                 imageMsg.setType(1);
@@ -353,26 +378,37 @@ public class ChatActivity extends AppCompatActivity {
                 adapter.addMsgTop(imageMsg);
 
                 Log.i("12345678", "onActivityResult: " + path);
-//                // 创建图片消息
-//                V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
-//                // 发送图片消息
-//                V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
-//                        null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-//                            @Override
-//                            public void onProgress(int progress) {
-//                                Log.i("12345678", "onProgress: " + progress);
-//                            }
-//
-//                            @Override
-//                            public void onError(int code, String desc) {
-//                                Log.i("12345678", "发送出错: " + code + "  " + desc);
-//                            }
-//
-//                            @Override
-//                            public void onSuccess(V2TIMMessage v2TIMMessage) {
-//                                Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
-//                            }
-//                        });
+
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("msgType", String.valueOf(6));
+                map.put("openId", UserID);
+                NetUtil.upLoadFile(map, new File(path));
+
+                // 创建图片消息
+                V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
+                // 发送图片消息
+                V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
+                        null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                            @Override
+                            public void onProgress(int progress) {
+                                Log.i("12345678", "onProgress: " + progress);
+                            }
+
+                            @Override
+                            public void onError(int code, String desc) {
+                                Log.i("12345678", "发送出错: " + code + "  " + desc);
+                            }
+
+                            @Override
+                            public void onSuccess(V2TIMMessage v2TIMMessage) {
+                                List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
+                                for (V2TIMImageElem.V2TIMImage image : imageList) {
+                                    String url = image.getUrl();
+                                    adapter.notifyImageItem(path, url);
+                                }
+                                Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                            }
+                        });
             }
         }
     }

@@ -8,6 +8,6 @@ package com.qkd.customerservice;
  * @org 浙江房超信息科技有限公司
  */
 public class Constant {
-
-    public static final String CLEAR_UNREAD_BY_USERID = "clear_unread_by_userid";
+    public static final String APP_DATA = "app_data";
+    public static final String KEYBOARDHEIGHT = "keyboardHeight";
 }

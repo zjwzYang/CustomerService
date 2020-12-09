@@ -23,6 +23,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
 import com.qkd.customerservice.audio.ConversationType;
+import com.qkd.customerservice.bean.EmojiBean;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.key_library.IInputPanel;
@@ -34,6 +35,8 @@ import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.key_library.util.UIUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import static com.qkd.customerservice.key_library.PanelType.INPUT_MOTHOD;
 import static com.qkd.customerservice.key_library.PanelType.NONE;
@@ -92,6 +95,7 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
 //    };
 
     private void init(final Context context) {
+        EventBus.getDefault().register(this);
         mOffsetLimit = 70 * context.getResources().getDisplayMetrics().density;
         setOrientation(HORIZONTAL);
         setPadding(DensityUtil.dp2px(context, 10.0f),
@@ -169,6 +173,11 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
                 return false;
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetEmoji(EmojiBean emojiBean) {
+        mCEditText.append(String.valueOf(Character.toChars(Integer.parseInt(emojiBean.getEmojiUnique(), 16))));
     }
 
     private void setListeners(final Context context) {
@@ -434,6 +443,7 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
     }
 
     public void onActivityDestory() {
+        EventBus.getDefault().unregister(this);
         AudioRecordManager.getInstance().destroyRecord();
     }
 }

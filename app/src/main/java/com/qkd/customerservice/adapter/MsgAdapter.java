@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -293,7 +294,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
 
         } else if (viewType == IMAGE_RIGHT) {
-            ImageMsg imageMsg = (ImageMsg) msgBean;
+            final ImageMsg imageMsg = (ImageMsg) msgBean;
             final RightImageViewHolder holder = (RightImageViewHolder) viewHolder;
             Glide.with(context)
                     .load(imageMsg.getImgPath())
@@ -312,11 +313,16 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .apply(options)
                     .into(holder.mImgV);
             holder.mappingViews.put(0, holder.mImgV);
-            final List<String> photoUrlList = new ArrayList<>();
-            photoUrlList.add(imageMsg.getImgPath());
             holder.mImgV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    List<String> photoUrlList = new ArrayList<>();
+                    String imgUrl = imageMsg.getImgUrl();
+                    if (TextUtils.isEmpty(imgUrl)) {
+                        photoUrlList.add(imageMsg.getImgPath());
+                    } else {
+                        photoUrlList.add(imgUrl);
+                    }
                     if (onClickImageListener != null) {
                         onClickImageListener.onClickImage(holder.mImgV, holder.mappingViews, photoUrlList);
                     }
@@ -339,6 +345,19 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void addMsgTop(MsgBean msgBean) {
         this.msgList.add(0, msgBean);
         notifyDataSetChanged();
+    }
+
+    public void notifyImageItem(String path, String url) {
+        for (int i = 0; i < msgList.size(); i++) {
+            MsgBean msgBean = msgList.get(i);
+            if (msgBean instanceof ImageMsg) {
+                ImageMsg imageMsg = (ImageMsg) msgBean;
+                if (path.equals(imageMsg.getImgPath())) {
+                    imageMsg.setImgUrl(url);
+                    break;
+                }
+            }
+        }
     }
 
     public void setOnClickImageListener(OnClickImageListener onClickImageListener) {

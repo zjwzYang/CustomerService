@@ -3,6 +3,7 @@ package com.qkd.customerservice;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.multidex.MultiDex;
@@ -46,6 +47,9 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         MultiDex.install(this);
+        SharedPreferences sp = getSharedPreferences(Constant.APP_DATA, Context.MODE_PRIVATE);
+        keyboardHeight = sp.getInt(Constant.KEYBOARDHEIGHT, 0);
+
         instance = this;
         //初始化push推送服务
         if (shouldInit()) {

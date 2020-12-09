@@ -25,187 +25,187 @@ public class ExpressionManager {
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_1,
-                        "e#1^"
+                        "1F601"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_2,
-                        "e#2^"
+                        "1F604"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_3,
-                        "e#3^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_3,
+//                        "1F603"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_4,
-                        "e#4^"
+                        "1F603"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_5,
-                        "e#5^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_5,
+//                        "e#5^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_6,
-                        "e#6^"
+                        "1F60A"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_7,
-                        "e#7^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_7,
+//                        "e#7^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_8,
-                        "e#8^"
+                        "1F606"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_9,
-                        "e#9^"
+                        "1F605"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_10,
-                        "e#10^"
+                        "1F620"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_11,
-                        "e#11^"
+                        "1F60F"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_12,
-                        "e#12^"
+                        "1F60E"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_13,
-                        "e#13^"
+                        "1F609"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_14,
-                        "e#14^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_14,
+//                        "e#14^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_15,
-                        "e#15^"
+                        "1F622"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_16,
-                        "e#16^"
+                        "1F625"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_17,
-                        "e#17^"
+                        "1F61E"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_18,
-                        "e#18^"
+                        "1F60B"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_19,
-                        "e#19^"
+                        "1F633"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_20,
-                        "e#20^"
-                )
-        );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_21,
-                        "e#21^"
-                )
-        );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_22,
-                        "e#22^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_20,
+//                        "e#20^"
+//                )
+//        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_21,
+//                        "e#21^"
+//                )
+//        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_22,
+//                        "e#22^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_23,
-                        "e#23^"
+                        "1F61C"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_24,
-                        "e#24^"
+                        "1F602"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_25,
-                        "e#25^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_25,
+//                        "e#25^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_26,
-                        "e#26^"
+                        "1F60F"
                 )
         );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_27,
-                        "e#27^"
+                        "1F62D"
                 )
         );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_28,
-                        "e#28^"
-                )
-        );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_29,
-                        "e#29^"
-                )
-        );
-        normalExpressionList.add(
-                new Expression(
-                        R.drawable.img_expression_30,
-                        "e#30^"
-                )
-        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_28,
+//                        "e#28^"
+//                )
+//        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_29,
+//                        "e#29^"
+//                )
+//        );
+//        normalExpressionList.add(
+//                new Expression(
+//                        R.drawable.img_expression_30,
+//                        "e#30^"
+//                )
+//        );
         normalExpressionList.add(
                 new Expression(
                         R.drawable.img_expression_31,
-                        "e#31^"
+                        "1F60D"
                 )
         );
         normalExpressionList.add(

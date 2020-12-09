@@ -10,7 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.EmojiBean;
 import com.qkd.customerservice.bean.Expression;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -39,7 +42,14 @@ public class ExpressionListAdapter extends RecyclerView.Adapter<ExpressionListAd
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-        holder.expressionImageView.setImageResource(expressionList.get(position).getResId());
+        final Expression expression = expressionList.get(position);
+        holder.expressionImageView.setImageResource(expression.getResId());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EventBus.getDefault().post(new EmojiBean(expression.getUnique()));
+            }
+        });
     }
 
     @Override

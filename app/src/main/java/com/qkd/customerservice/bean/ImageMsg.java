@@ -9,6 +9,15 @@ package com.qkd.customerservice.bean;
  */
 public class ImageMsg extends MsgBean {
     private String mImgPath;
+    private String imgUrl;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public String getImgPath() {
         return mImgPath;
