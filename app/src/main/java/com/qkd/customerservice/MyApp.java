@@ -5,9 +5,12 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.multidex.MultiDex;
+
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMSDKConfig;
 import com.tencent.imsdk.v2.V2TIMSDKListener;
+import com.tencent.imsdk.v2.V2TIMUserFullInfo;
 import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.config.CustomFaceConfig;
 import com.tencent.qcloud.tim.uikit.config.GeneralConfig;
@@ -42,6 +45,7 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        MultiDex.install(this);
         instance = this;
         //初始化push推送服务
         if (shouldInit()) {
@@ -88,7 +92,8 @@ public class MyApp extends Application {
     private void initTencenIm() {
         V2TIMSDKConfig config = new V2TIMSDKConfig();
         config.setLogLevel(V2TIMSDKConfig.V2TIM_LOG_DEBUG);
-        V2TIMManager.getInstance().initSDK(this, TEN_SDKAPPID, config, new V2TIMSDKListener() {
+        Log.i("12345678", "开始连接: ");
+        boolean initSDK = V2TIMManager.getInstance().initSDK(this, TEN_SDKAPPID, config, new V2TIMSDKListener() {
             // 5. 监听 V2TIMSDKListener 回调
             @Override
             public void onConnecting() {
@@ -107,7 +112,26 @@ public class MyApp extends Application {
                 // 连接腾讯云服务器失败
                 Log.i("12345678", "连接失败: " + code + "  " + error);
             }
+
+            @Override
+            public void onKickedOffline() {
+                super.onKickedOffline();
+                Log.i("12345678", "当前用户被踢下线");
+            }
+
+            @Override
+            public void onUserSigExpired() {
+                super.onUserSigExpired();
+                Log.i("12345678", "登录票据已经过期");
+            }
+
+            @Override
+            public void onSelfInfoUpdated(V2TIMUserFullInfo info) {
+                super.onSelfInfoUpdated(info);
+                Log.i("12345678", "当前用户的资料发生了更新");
+            }
         });
+        Log.i("12345678", "登录initSDK：" + initSDK);
 
         // 配置 Config，请按需配置
         TUIKitConfigs configs = TUIKit.getConfigs();

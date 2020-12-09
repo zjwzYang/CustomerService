@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.github.ielse.imagewatcher.ImageWatcherHelper;
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.MyApp;
+import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MsgAdapter;
 import com.qkd.customerservice.bean.ClearByUserId;
@@ -51,7 +52,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
@@ -105,7 +108,7 @@ public class ChatActivity extends AppCompatActivity {
         UserID = intent.getStringExtra("UserID");
         showName = intent.getStringExtra("showName");
         Log.i("12345678", "当前会话: " + UserID);
-        V2TIMManager.getMessageManager().getC2CHistoryMessageList(UserID, 20, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
+        V2TIMManager.getMessageManager().getC2CHistoryMessageList(UserID, 50, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
             @Override
             public void onError(int code, String desc) {
                 Log.i("12345678", "拉取历史会话: " + code + "  " + desc);
@@ -161,16 +164,18 @@ public class ChatActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String s) {
                                 if (!TextUtils.isEmpty(s)) {
-                                    Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
-                                    int duration = soundElem.getDuration();
-                                    VoiceMsg voiceMsg = new VoiceMsg();
-                                    voiceMsg.setNickName(showName);
-                                    voiceMsg.setPlaying(false);
-                                    voiceMsg.setDuration(duration);
-                                    voiceMsg.setAudioPath(Uri.parse(s));
-                                    voiceMsg.setType(sendType);
-                                    voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
-                                    adapter.addMsg(voiceMsg);
+                                    if (s.startsWith("http:") || s.startsWith("https:")) {
+                                        Log.i("TIMSoundElem", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
+                                        int duration = soundElem.getDuration();
+                                        VoiceMsg voiceMsg = new VoiceMsg();
+                                        voiceMsg.setNickName(showName);
+                                        voiceMsg.setPlaying(false);
+                                        voiceMsg.setDuration(duration);
+                                        voiceMsg.setAudioPath(Uri.parse(s));
+                                        voiceMsg.setType(sendType);
+                                        voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
+                                        adapter.addMsg(voiceMsg);
+                                    }
                                 }
                             }
                         });
@@ -268,6 +273,11 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             adapter.addMsgTop(voiceMsg);
 
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("msgType", String.valueOf(5));
+            map.put("openId", UserID);
+            NetUtil.upLoadFile(map, new File(voiceMsg.getAudioPath().getPath()));
+
             // 腾讯云发送语音
             V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(voiceMsg.getAudioPath().getPath(), voiceMsg.getDuration());
             V2TIMManager.getMessageManager().sendMessage(soundMessage, UserID
@@ -307,6 +317,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         } else {
             adapter.addMsgTop(textMsg);
+
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("message", textMsg.getContent());
+            map.put("msgType", String.valueOf(1));
+            map.put("openId", UserID);
+            NetUtil.upLoadFile(map, null);
+
             // 腾讯云发送文字
             V2TIMManager.getInstance().sendC2CTextMessage(textMsg.getContent(), UserID, new V2TIMValueCallback<V2TIMMessage>() {
                 @Override

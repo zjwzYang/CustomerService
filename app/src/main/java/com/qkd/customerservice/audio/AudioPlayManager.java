@@ -252,8 +252,13 @@ public class AudioPlayManager implements SensorEventListener {
                     return true;
                 }
             });
-            FileInputStream fis = new FileInputStream(audioUri.getPath());
-            mMediaPlayer.setDataSource(fis.getFD());
+            String url = audioUri.toString();
+            if (url.startsWith("https:") || url.startsWith("http:")) {
+                mMediaPlayer.setDataSource(url);
+            } else {
+                FileInputStream fis = new FileInputStream(audioUri.getPath());
+                mMediaPlayer.setDataSource(fis.getFD());
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AudioAttributes attributes = new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)

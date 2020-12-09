@@ -171,7 +171,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (animationDrawable != null)
                     animationDrawable.stop();
             }
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            holder.mVoiceV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri audioPath = voiceMsg.getAudioPath();
@@ -233,7 +233,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (animationDrawable != null)
                     animationDrawable.stop();
             }
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            holder.mVoiceV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri audioPath = voiceMsg.getAudioPath();
