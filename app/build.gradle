@@ -59,7 +59,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation files('libs/MiPush_SDK_Client_3_8_5.jar')
+//    implementation files('libs/MiPush_SDK_Client_3_8_5.jar')
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha06'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -74,4 +74,5 @@ dependencies {
     implementation 'com.github.iielse:ImageWatcher:1.1.5'
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.tencent.tpns:xiaomi:1.2.1.2-release'
 }

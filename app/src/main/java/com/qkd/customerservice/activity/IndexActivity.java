@@ -1,5 +1,10 @@
 package com.qkd.customerservice.activity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,10 +15,13 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
@@ -112,6 +120,13 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         V2TIMManager.getMessageManager().addAdvancedMsgListener(new V2TIMAdvancedMsgListener() {
             @Override
             public void onRecvNewMessage(final V2TIMMessage message) {
+                Log.i("12345678", "onRecvNewMessage: 新消息");
+
+                if (AppUtil.isBackground(IndexActivity.this)) {
+                    // 在后台
+                    sendNotifi();
+                }
+
                 super.onRecvNewMessage(message);
                 int type = message.getElemType();
                 if (type == V2TIM_ELEM_TYPE_TEXT) {
@@ -180,6 +195,37 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 super.onRecvMessageRevoked(msgID);
             }
         });
+    }
+
+    private void sendNotifi() {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("my_channel_ID", "my_channel_NAME", NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+            Intent intent = new Intent(this, IndexActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "my_channel_ID")
+                    .setContentTitle("通知")
+                    .setContentText("收到一条新消息，请及时查看！")
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.chat_icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(100, notification.build());
+
+        } else {
+            Intent intent = new Intent(this, IndexActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setContentTitle("这是标题")
+                    .setContentText("我是内容，我是demo")
+                    .setWhen(System.currentTimeMillis())
+                    .setSmallIcon(R.drawable.chat_icon)
+                    .setContentIntent(pi);
+            manager.notify(1, builder.build());
+        }
     }
 
     private void selectImg(int index) {

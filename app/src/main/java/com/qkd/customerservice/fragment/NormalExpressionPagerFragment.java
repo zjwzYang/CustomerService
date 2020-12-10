@@ -11,12 +11,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.ExpressionListAdapter;
 import com.qkd.customerservice.bean.Expression;
 import com.qkd.customerservice.bean.ExpressionManager;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.widget.TopPaddingDecoration;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,7 +31,7 @@ import java.util.List;
  * @author yj
  * @org 趣看点
  */
-public class NormalExpressionPagerFragment extends Fragment {
+public class NormalExpressionPagerFragment extends Fragment implements View.OnClickListener {
     private static String KEY_EXPRESSION_LIST = "key_expression_list";
     private GridLayoutManager layoutManager;
     private List<Expression> expressionList;
@@ -48,6 +51,9 @@ public class NormalExpressionPagerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_normal_expression_pager, container, true);
         mRecyclerView = view.findViewById(R.id.recycler_view);
+
+        view.findViewById(R.id.btn_send).setOnClickListener(this);
+        view.findViewById(R.id.btn_delete).setOnClickListener(this);
         return view;
     }
 
@@ -105,5 +111,17 @@ public class NormalExpressionPagerFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_send:
+                EventBus.getDefault().post(Constant.SEND_FLAG);
+                break;
+            case R.id.btn_delete:
+                EventBus.getDefault().post(Constant.DELETE_FLAG);
+                break;
+        }
     }
 }

@@ -68,7 +68,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:src="@drawable/rc_voice_unread" />
+                android:src="@drawable/rc_voice_unread"
+                android:visibility="gone" />
 
         </LinearLayout>
 

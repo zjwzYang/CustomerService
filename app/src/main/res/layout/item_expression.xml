@@ -4,10 +4,12 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
-    <ImageView
+    <TextView
         android:id="@+id/iv_expression"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_gravity="center_horizontal"
-        android:scaleType="centerCrop" />
+        android:gravity="center"
+        android:scaleType="centerCrop"
+        android:textSize="20sp" />
 </FrameLayout>

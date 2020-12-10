@@ -59,6 +59,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -137,8 +138,14 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(List<V2TIMMessage> v2TIMMessages) {
+                V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
                 for (int i = 0; i < v2TIMMessages.size(); i++) {
                     V2TIMMessage message = v2TIMMessages.get(i);
+
+                    Date date = new Date(message.getTimestamp() * 1000);
+                    String short2 = AppUtil.getTimeStringAutoShort2(date, true);
+                    String timeString = AppUtil.getTimeString(message.getTimestamp() * 1000);
+                    Log.i("12345678", "时间: " + "  " + short2 + "  " + timeString);
                     String sender = message.getSender();
                     final int sendType;
                     if (UserID.equals(sender)) {
@@ -150,7 +157,6 @@ public class ChatActivity extends AppCompatActivity {
                     if (type == V2TIM_ELEM_TYPE_TEXT) {
                         String content = message.getTextElem().getText().trim();
                         if (!TextUtils.isEmpty(content)) {
-                            Log.i("12345678", "HistoryMessage: " + message.getTextElem().toString());
                             TextMsg textMsg = new TextMsg();
                             textMsg.setMsgType(MsgBean.MsgType.TEXT);
                             textMsg.setType(sendType);
@@ -167,7 +173,6 @@ public class ChatActivity extends AppCompatActivity {
                             String url = v2TIMImage.getUrl();
                             if (!TextUtils.isEmpty(url) && !hasJoin) {
                                 hasJoin = true;
-                                Log.i("12345678", "V2TIMImageElem: " + url);
                                 ImageMsg imageMsg = new ImageMsg();
                                 imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                                 imageMsg.setType(sendType);
@@ -181,14 +186,12 @@ public class ChatActivity extends AppCompatActivity {
                         soundElem.getUrl(new V2TIMValueCallback<String>() {
                             @Override
                             public void onError(int code, String desc) {
-                                Log.i("12345678", "获取语音出错: " + code + "  " + desc);
                             }
 
                             @Override
                             public void onSuccess(String s) {
                                 if (!TextUtils.isEmpty(s)) {
                                     if (s.startsWith("http:") || s.startsWith("https:")) {
-                                        Log.i("TIMSoundElem", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
                                         int duration = soundElem.getDuration();
                                         VoiceMsg voiceMsg = new VoiceMsg();
                                         voiceMsg.setNickName(showName);

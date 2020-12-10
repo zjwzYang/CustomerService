@@ -10,4 +10,9 @@ package com.qkd.customerservice;
 public class Constant {
     public static final String APP_DATA = "app_data";
     public static final String KEYBOARDHEIGHT = "keyboardHeight";
+    public static final String MI_PUSH_REGID = "mi_push_regid";
+
+    public static final String DELETE_FLAG = "delete_flag";
+    public static final String SEND_FLAG = "send_flag";
+
 }

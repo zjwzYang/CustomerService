@@ -1,10 +1,11 @@
 package com.qkd.customerservice.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,13 +44,18 @@ public class ExpressionListAdapter extends RecyclerView.Adapter<ExpressionListAd
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         final Expression expression = expressionList.get(position);
-        holder.expressionImageView.setImageResource(expression.getResId());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EventBus.getDefault().post(new EmojiBean(expression.getUnique()));
-            }
-        });
+        if (!TextUtils.isEmpty(expression.getUnique())) {
+            holder.expressionImageView.setText(String.valueOf(Character.toChars(Integer.parseInt(expression.getUnique(), 16))));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EventBus.getDefault().post(new EmojiBean(expression.getUnique()));
+                }
+            });
+        } else {
+            holder.expressionImageView.setText("");
+            holder.itemView.setOnClickListener(null);
+        }
     }
 
     @Override
@@ -62,7 +68,7 @@ public class ExpressionListAdapter extends RecyclerView.Adapter<ExpressionListAd
     }
 
     static class ListViewHolder extends RecyclerView.ViewHolder {
-        private ImageView expressionImageView;
+        private TextView expressionImageView;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);

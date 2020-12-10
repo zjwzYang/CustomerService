@@ -3,7 +3,9 @@ package com.qkd.customerservice.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
@@ -180,6 +183,30 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
         mCEditText.append(String.valueOf(Character.toChars(Integer.parseInt(emojiBean.getEmojiUnique(), 16))));
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetAction(String action) {
+        Editable text = mCEditText.getText();
+        if (TextUtils.isEmpty(text)) {
+            return;
+        }
+        if (Constant.DELETE_FLAG.equals(action)) {
+            int index = mCEditText.getSelectionStart();
+            Editable editable = text;
+//            boolean emojiCharacter = AppUtil.isEmojiCharacter(editable.charAt(index - 1));
+//            Log.i("12345678", "onGetAction: " + emojiCharacter + "  " + editable.length() + "  " + editable.toString());
+            editable.delete(index - 1, index);
+        } else if (Constant.SEND_FLAG.equals(action)) {
+            TextMsg msgBean = new TextMsg();
+            msgBean.setMsgType(MsgBean.MsgType.TEXT);
+            msgBean.setType(1);
+            msgBean.setContent(text.toString());
+            msgBean.setNickName("我");
+            EventBus.getDefault().post(msgBean);
+            mCEditText.setText("");
+            Log.i("12345678", "onEditorAction: 发送文本：" + text);
+        }
+    }
+
     private void setListeners(final Context context) {
         voiceBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -263,14 +290,17 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    TextMsg msgBean = new TextMsg();
-                    msgBean.setMsgType(MsgBean.MsgType.TEXT);
-                    msgBean.setType(1);
-                    msgBean.setContent(textView.getText().toString());
-                    msgBean.setNickName("我");
-                    EventBus.getDefault().post(msgBean);
-                    textView.setText("");
-                    Log.i("12345678", "onEditorAction: 发送文本：" + textView.getText());
+                    CharSequence text = textView.getText();
+                    if (!TextUtils.isEmpty(text)) {
+                        TextMsg msgBean = new TextMsg();
+                        msgBean.setMsgType(MsgBean.MsgType.TEXT);
+                        msgBean.setType(1);
+                        msgBean.setContent(text.toString());
+                        msgBean.setNickName("我");
+                        EventBus.getDefault().post(msgBean);
+                        textView.setText("");
+                        Log.i("12345678", "onEditorAction: 发送文本：" + text);
+                    }
                     return true;
                 }
                 return false;

@@ -10,26 +10,36 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
 
-    <com.qkd.customerservice.widget.CImageButton
-        android:id="@+id/btn_send"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="18dp"
         android:layout_marginRight="18dp"
         android:layout_marginBottom="14dp"
-        app:cib_normal_image_res_id="@drawable/ic_expression_send_normal"
-        app:cib_pressed_image_res_id="@drawable/ic_expression_send_pressed"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent">
 
-    <com.qkd.customerservice.widget.CImageButton
-        android:id="@+id/btn_delete"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginRight="18dp"
-        app:cib_normal_image_res_id="@drawable/ic_expression_delete_normal"
-        app:cib_pressed_image_res_id="@drawable/ic_expression_delete_pressed"
-        app:layout_constraintRight_toLeftOf="@id/btn_send"
-        app:layout_constraintTop_toTopOf="@id/btn_send" />
+        <ImageView
+            android:id="@+id/btn_delete"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/delete_send_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_msg_back" />
+
+        <TextView
+            android:id="@+id/btn_send"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/delete_send_bg"
+            android:gravity="center"
+            android:text="发送"
+            android:textColor="#333"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

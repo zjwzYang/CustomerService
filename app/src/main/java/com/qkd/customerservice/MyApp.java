@@ -1,6 +1,5 @@
 package com.qkd.customerservice;
 
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,11 +15,7 @@ import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.config.CustomFaceConfig;
 import com.tencent.qcloud.tim.uikit.config.GeneralConfig;
 import com.tencent.qcloud.tim.uikit.config.TUIKitConfigs;
-import com.xiaomi.channel.commonutils.logger.LoggerInterface;
-import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
-
-import java.util.List;
 
 /**
  * Created on 11/30/20 13:23
@@ -30,9 +25,9 @@ import java.util.List;
  */
 public class MyApp extends Application {
 
-    public static final String APP_ID = "your appid";
-    public static final String APP_KEY = "your appkey";
-    public static final String TAG = "your packagename";
+    public static final String APP_ID = "2882303761518852952";
+    public static final String APP_KEY = "5231885256952";
+    public static final String TAG = "xiaomipush";
 
     public static final int TEN_SDKAPPID = 1400456243;
 
@@ -52,45 +47,26 @@ public class MyApp extends Application {
 
         instance = this;
         //初始化push推送服务
-        if (shouldInit()) {
-            MiPushClient.registerPush(this, APP_ID, APP_KEY);
-        }
-        //打开Log
-        LoggerInterface newLogger = new LoggerInterface() {
-
-            @Override
-            public void setTag(String tag) {
-                // ignore
-            }
-
-            @Override
-            public void log(String content, Throwable t) {
-                Log.d(TAG, content, t);
-            }
-
-            @Override
-            public void log(String content) {
-                Log.d(TAG, content);
-            }
-        };
-        Logger.setLogger(this, newLogger);
+//        if (shouldInit()) {
+        MiPushClient.registerPush(this, APP_ID, APP_KEY);
+//        }
 
         initTencenIm();
     }
 
-    private boolean shouldInit() {
-        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
-        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-        String mainProcessName = getApplicationInfo().processName;
-//        int myPid = Process.myPid();
-        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-            Log.i("12345678", "shouldInit: " + info.pid + "   " + info.processName);
-            if (mainProcessName.equals(info.processName)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean shouldInit() {
+//        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+//        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+//        String mainProcessName = getApplicationInfo().processName;
+////        int myPid = Process.myPid();
+//        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+//            Log.i("12345678", "shouldInit: " + info.pid + "   " + info.processName);
+//            if (mainProcessName.equals(info.processName)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
 
     private void initTencenIm() {
