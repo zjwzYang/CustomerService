@@ -46,9 +46,7 @@
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".activity.IndexActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
+            android:screenOrientation="portrait" />
 
         <!--小米推送-->
         <service

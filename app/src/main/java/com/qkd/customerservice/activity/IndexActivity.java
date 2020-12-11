@@ -9,10 +9,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -41,6 +44,7 @@ import com.tencent.imsdk.v2.V2TIMValueCallback;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
@@ -85,6 +89,8 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         selectImg(0);
 
         initListener();
+
+        setTitle("在线");
     }
 
     private void initListener() {
@@ -286,7 +292,54 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        if (currFragment instanceof MsgFragment) {
+            menu.add(Menu.NONE, 1, 0, "在线").setIcon(R.drawable.ic_online);
+            menu.add(Menu.NONE, 2, 0, "忙碌").setIcon(R.drawable.ic_busy);
+            menu.add(Menu.NONE, 3, 0, "离线").setIcon(R.drawable.ic_ounline);
+            return true;
+        } else {
+            menu.clear();
+            return super.onCreateOptionsMenu(menu);
+        }
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
+                try {
+                    Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    method.setAccessible(true);
+                    method.invoke(menu, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case 1:
+                setTitle("在线");
+                break;
+            case 2:
+                setTitle("忙碌");
+                break;
+            case 3:
+                setTitle("离线");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View view) {
+        invalidateOptionsMenu();
         switch (view.getId()) {
             case R.id.msg_linear:
                 selectImg(0);

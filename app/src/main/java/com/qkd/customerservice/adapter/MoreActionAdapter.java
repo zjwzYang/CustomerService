@@ -79,7 +79,7 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
                     @Override
                     public void onAction(List<String> data) {
                         Matisse.from((Activity) context)
-                                .choose(MimeType.ofAll())
+                                .choose(MimeType.ofImage())
                                 .showSingleMediaType(true)
                                 .countable(true)
                                 .maxSelectable(9)
