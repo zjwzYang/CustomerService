@@ -13,6 +13,7 @@ public class MsgBean {
     private int type;
     private String nickName;
     private String senderId;
+    private String sendTime;
 
     public String getSenderId() {
         return senderId;
@@ -44,6 +45,14 @@ public class MsgBean {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
     }
 
     public enum MsgType {

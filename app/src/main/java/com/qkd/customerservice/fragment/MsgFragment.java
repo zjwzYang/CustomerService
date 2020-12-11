@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CustomerAdapter;
-import com.qkd.customerservice.bean.ClearByUserId;
 import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
@@ -95,41 +94,44 @@ public class MsgFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
         String senderId = voiceMsg.getSenderId();
-        checkUnread(senderId);
+        //checkUnread(senderId);
+        getConversation();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetImageMsg(ImageMsg imageMsg) {
         String senderId = imageMsg.getSenderId();
-        checkUnread(senderId);
+//        checkUnread(senderId);
+        getConversation();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
-        checkUnread(textMsg.getSenderId());
+//        checkUnread(textMsg.getSenderId());
+        getConversation();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void clearUnreadBuUserId(ClearByUserId bean) {
-        List<ConversationBean> conversationList = mAdapter.getConversationList();
-        for (int i = 0; i < conversationList.size(); i++) {
-            ConversationBean conversationBean = conversationList.get(i);
-            if (bean.getUserId().equals(conversationBean.getUserId())) {
-                conversationBean.setHasUnread(false);
-                mAdapter.notifyItemChanged(i);
-            }
-        }
-    }
-
-    private void checkUnread(String senderId) {
-        List<ConversationBean> conversationList = mAdapter.getConversationList();
-        for (int i = 0; i < conversationList.size(); i++) {
-            ConversationBean bean = conversationList.get(i);
-            if (bean.getUserId().equals(senderId)) {
-                bean.setHasUnread(true);
-                mAdapter.notifyItemChanged(i);
-                break;
-            }
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void clearUnreadBuUserId(ClearByUserId bean) {
+//        List<ConversationBean> conversationList = mAdapter.getConversationList();
+//        for (int i = 0; i < conversationList.size(); i++) {
+//            ConversationBean conversationBean = conversationList.get(i);
+//            if (bean.getUserId().equals(conversationBean.getUserId())) {
+//                conversationBean.setHasUnread(false);
+//                mAdapter.notifyItemChanged(i);
+//            }
+//        }
+//    }
+//
+//    private void checkUnread(String senderId) {
+//        List<ConversationBean> conversationList = mAdapter.getConversationList();
+//        for (int i = 0; i < conversationList.size(); i++) {
+//            ConversationBean bean = conversationList.get(i);
+//            if (bean.getUserId().equals(senderId)) {
+//                bean.setHasUnread(true);
+//                mAdapter.notifyItemChanged(i);
+//                break;
+//            }
+//        }
+//    }
 }

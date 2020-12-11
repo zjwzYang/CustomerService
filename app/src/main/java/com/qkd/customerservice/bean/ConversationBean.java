@@ -1,6 +1,7 @@
 package com.qkd.customerservice.bean;
 
 import com.tencent.imsdk.v2.V2TIMConversation;
+import com.tencent.imsdk.v2.V2TIMMessage;
 
 /**
  * Created on 12/9/20 12:39
@@ -13,12 +14,23 @@ public class ConversationBean {
     private String showName;
     private String userId;
     private String faceUrl;
-    private boolean hasUnread;
+    private int unreadCount;
+    private V2TIMMessage lastMessage;
 
     public ConversationBean(V2TIMConversation conversation) {
         this.showName = conversation.getShowName();
         this.userId = conversation.getUserID();
         this.faceUrl = conversation.getFaceUrl();
+        this.unreadCount = conversation.getUnreadCount();
+        this.lastMessage = conversation.getLastMessage();
+    }
+
+    public V2TIMMessage getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(V2TIMMessage lastMessage) {
+        this.lastMessage = lastMessage;
     }
 
     public String getShowName() {
@@ -33,11 +45,11 @@ public class ConversationBean {
         return faceUrl;
     }
 
-    public boolean isHasUnread() {
-        return hasUnread;
+    public int getUnreadCount() {
+        return unreadCount;
     }
 
-    public void setHasUnread(boolean hasUnread) {
-        this.hasUnread = hasUnread;
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }

@@ -15,12 +15,19 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.ChatActivity;
 import com.qkd.customerservice.bean.ConversationBean;
+import com.tencent.imsdk.v2.V2TIMMessage;
+import com.tencent.imsdk.v2.V2TIMTextElem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_SOUND;
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
 
 /**
  * Created on 12/2/20 13:50
@@ -42,8 +49,8 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         RoundedCorners roundedCorners = new RoundedCorners(4);
         options = new RequestOptions()
                 .transform(new CenterCrop(), roundedCorners)
-                .error(R.drawable.ic_image_error)
-                .placeholder(R.mipmap.ic_launcher);
+                .error(R.drawable.ic_head_place)
+                .placeholder(R.drawable.ic_head_place);
     }
 
     @NonNull
@@ -65,7 +72,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 intent.putExtra("showName", conversation.getShowName());
                 intent.putExtra("faceUrl", conversation.getFaceUrl());
                 context.startActivity(intent);
-                conversation.setHasUnread(false);
+//                conversation.setHasUnread(false);
                 notifyItemChanged(position);
             }
         });
@@ -74,10 +81,35 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 .load(conversation.getFaceUrl())
                 .apply(options)
                 .into(holder.mHeadV);
-        if (conversation.isHasUnread()) {
-            holder.readV.setVisibility(View.VISIBLE);
-        } else {
+        if (conversation.getUnreadCount() == 0) {
             holder.readV.setVisibility(View.GONE);
+        } else {
+            holder.readV.setVisibility(View.VISIBLE);
+            holder.readV.setText(String.valueOf(conversation.getUnreadCount()));
+        }
+
+        V2TIMMessage lastMessage = conversation.getLastMessage();
+        if (lastMessage == null) {
+            holder.lastTime.setVisibility(View.GONE);
+            holder.lastMsg.setVisibility(View.GONE);
+        } else {
+            holder.lastMsg.setVisibility(View.VISIBLE);
+            holder.lastTime.setVisibility(View.VISIBLE);
+            int type = lastMessage.getElemType();
+            long timestamp = lastMessage.getTimestamp();
+            String timeString = AppUtil.getTimeString(timestamp * 1000L);
+            holder.lastTime.setText(timeString);
+            if (type == V2TIM_ELEM_TYPE_TEXT) {
+                V2TIMTextElem textElem = lastMessage.getTextElem();
+                holder.lastMsg.setText(textElem.getText());
+            } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
+                holder.lastMsg.setText("[图片]");
+            } else if (type == V2TIM_ELEM_TYPE_SOUND) {
+                holder.lastMsg.setText("[语音]");
+            } else {
+                holder.lastTime.setVisibility(View.GONE);
+                holder.lastMsg.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -99,13 +131,17 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     static class CustomerViewHolder extends RecyclerView.ViewHolder {
         private ImageView mHeadV;
         private TextView mNameV;
-        private ImageView readV;
+        private TextView readV;
+        private TextView lastMsg;
+        private TextView lastTime;
 
         public CustomerViewHolder(@NonNull View itemView) {
             super(itemView);
             mHeadV = itemView.findViewById(R.id.customer_head);
             mNameV = itemView.findViewById(R.id.customer_name);
             readV = itemView.findViewById(R.id.customer_read);
+            lastMsg = itemView.findViewById(R.id.customer_last_msg);
+            lastTime = itemView.findViewById(R.id.customer_last_time);
         }
     }
 }

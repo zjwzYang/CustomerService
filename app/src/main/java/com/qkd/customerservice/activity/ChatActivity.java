@@ -59,7 +59,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -142,10 +141,8 @@ public class ChatActivity extends AppCompatActivity {
                 for (int i = 0; i < v2TIMMessages.size(); i++) {
                     V2TIMMessage message = v2TIMMessages.get(i);
 
-                    Date date = new Date(message.getTimestamp() * 1000);
-                    String short2 = AppUtil.getTimeStringAutoShort2(date, true);
-                    String timeString = AppUtil.getTimeString(message.getTimestamp() * 1000);
-                    Log.i("12345678", "时间: " + "  " + short2 + "  " + timeString);
+                    final String timeString = AppUtil.getTimeString(message.getTimestamp() * 1000);
+
                     String sender = message.getSender();
                     final int sendType;
                     if (UserID.equals(sender)) {
@@ -162,6 +159,7 @@ public class ChatActivity extends AppCompatActivity {
                             textMsg.setType(sendType);
                             textMsg.setContent(content);
                             textMsg.setNickName(showName);
+                            textMsg.setSendTime(timeString);
                             adapter.addMsg(textMsg);
                         }
 
@@ -178,6 +176,7 @@ public class ChatActivity extends AppCompatActivity {
                                 imageMsg.setType(sendType);
                                 imageMsg.setImgPath(url);
                                 imageMsg.setNickName(showName);
+                                imageMsg.setSendTime(timeString);
                                 adapter.addMsg(imageMsg);
                             }
                         }
@@ -200,6 +199,7 @@ public class ChatActivity extends AppCompatActivity {
                                         voiceMsg.setAudioPath(Uri.parse(s));
                                         voiceMsg.setType(sendType);
                                         voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
+                                        voiceMsg.setSendTime(timeString);
                                         adapter.addMsg(voiceMsg);
                                     }
                                 }

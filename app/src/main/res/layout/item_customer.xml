@@ -14,22 +14,55 @@
         android:layout_marginBottom="7dp"
         android:src="@mipmap/ic_launcher" />
 
-    <ImageView
+    <TextView
         android:id="@+id/customer_read"
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:layout_alignRight="@id/customer_head"
         android:layout_marginRight="-7dp"
-        android:src="@drawable/rc_voice_unread" />
+        android:background="@drawable/unread_count_bg"
+        android:gravity="center"
+        android:text="11"
+        android:textColor="@color/white"
+        android:textSize="8sp" />
 
-    <TextView
-        android:id="@+id/customer_name"
+    <LinearLayout
+        android:id="@+id/msg_linear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/customer_head"
-        android:text="姓名"
-        android:textColor="@color/text_black" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/customer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="姓名"
+            android:textColor="@color/text_black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/customer_last_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="最新的消息"
+            android:textColor="@color/c_666666"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/customer_last_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/msg_linear"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp"
+        android:text="时间"
+        android:textColor="@color/c_666666"
+        android:textSize="12sp" />
 
 </RelativeLayout>

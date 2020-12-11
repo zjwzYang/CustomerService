@@ -137,6 +137,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             LeftMsgViewHolder holder = (LeftMsgViewHolder) viewHolder;
             holder.leftName.setText(textMsg.getNickName());
             holder.leftContent.setText(textMsg.getContent());
+            holder.leftTime.setText(textMsg.getSendTime());
             Glide.with(context)
                     .load(faceUrl)
                     .into(holder.leftHead);
@@ -144,6 +145,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             TextMsg textMsg = (TextMsg) msgBean;
             RightMsgViewHolder holder = (RightMsgViewHolder) viewHolder;
             holder.rightContent.setText(textMsg.getContent());
+            holder.rightTime.setText(textMsg.getSendTime());
         } else if (viewType == VOICE_LEFT) {
             final VoiceMsg voiceMsg = (VoiceMsg) msgBean;
             LeftVoiceMsgViewHolder holder = (LeftVoiceMsgViewHolder) viewHolder;
@@ -151,6 +153,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(faceUrl)
                     .into(holder.mHeadV);
             holder.mDuringV.setText(String.format("%s\"", voiceMsg.getDuration()));
+            holder.leftTime.setText(voiceMsg.getSendTime());
 
             int minWidth = 70, maxWidth = 204;
             float scale = context.getResources().getDisplayMetrics().density;
@@ -214,6 +217,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final VoiceMsg voiceMsg = (VoiceMsg) msgBean;
             RightVoiceMsgViewHolder holder = (RightVoiceMsgViewHolder) viewHolder;
             holder.mDuringV.setText(String.format("%s\"", voiceMsg.getDuration()));
+            holder.rightTime.setText(voiceMsg.getSendTime());
 
             int minWidth = 70, maxWidth = 204;
             float scale = context.getResources().getDisplayMetrics().density;
@@ -274,6 +278,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ImageMsg imageMsg = (ImageMsg) msgBean;
             final LeftImageViewHolder holder = (LeftImageViewHolder) viewHolder;
             holder.mNameV.setText(imageMsg.getNickName());
+            holder.leftTime.setText(imageMsg.getSendTime());
             Glide.with(context)
                     .load(faceUrl)
                     .into(holder.mHeadV);
@@ -296,6 +301,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == IMAGE_RIGHT) {
             final ImageMsg imageMsg = (ImageMsg) msgBean;
             final RightImageViewHolder holder = (RightImageViewHolder) viewHolder;
+            holder.rightTime.setText(imageMsg.getSendTime());
             Glide.with(context)
                     .load(imageMsg.getImgPath())
                     .listener(new RequestListener<Drawable>() {
@@ -372,9 +378,11 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView leftHead;
         private TextView leftName;
         private TextView leftContent;
+        private TextView leftTime;
 
         public LeftMsgViewHolder(@NonNull View itemView) {
             super(itemView);
+            leftTime = itemView.findViewById(R.id.text_left_time);
             leftHead = itemView.findViewById(R.id.iv_head_left);
             leftName = itemView.findViewById(R.id.tv_nickname_left);
             leftContent = itemView.findViewById(R.id.tv_content_left);
@@ -385,11 +393,13 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private ImageView rightHead;
         private TextView rightContent;
+        private TextView rightTime;
 
         public RightMsgViewHolder(@NonNull View itemView) {
             super(itemView);
             rightHead = itemView.findViewById(R.id.iv_head_right);
             rightContent = itemView.findViewById(R.id.tv_content_right);
+            rightTime = itemView.findViewById(R.id.text_right_time);
         }
     }
 
@@ -397,13 +407,14 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView mHeadV;
         private ImageView mVoiceV;
         private TextView mDuringV;
+        private TextView leftTime;
 
         public LeftVoiceMsgViewHolder(@NonNull View itemView) {
             super(itemView);
             mHeadV = itemView.findViewById(R.id.iv_head_left);
             mVoiceV = itemView.findViewById(R.id.rc_img_left);
             mDuringV = itemView.findViewById(R.id.rc_during_left);
-
+            leftTime = itemView.findViewById(R.id.voice_left_time);
         }
     }
 
@@ -411,12 +422,14 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView mHeadV;
         private ImageView mVoiceV;
         private TextView mDuringV;
+        private TextView rightTime;
 
         public RightVoiceMsgViewHolder(@NonNull View itemView) {
             super(itemView);
             mHeadV = itemView.findViewById(R.id.iv_head_right);
             mVoiceV = itemView.findViewById(R.id.rc_img_right);
             mDuringV = itemView.findViewById(R.id.rc_during_right);
+            rightTime = itemView.findViewById(R.id.voice_right_time);
         }
     }
 
@@ -425,6 +438,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView mNameV;
         private ImageView mImgV;
         private SparseArray<ImageView> mappingViews;
+        private TextView leftTime;
 
         public LeftImageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -432,6 +446,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mNameV = itemView.findViewById(R.id.tv_nickname_left);
             mImgV = itemView.findViewById(R.id.tv_image_left);
             mappingViews = new SparseArray<>();
+            leftTime = itemView.findViewById(R.id.img_left_time);
         }
     }
 
@@ -439,12 +454,14 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView mHeadV;
         private ImageView mImgV;
         private SparseArray<ImageView> mappingViews;
+        private TextView rightTime;
 
         public RightImageViewHolder(@NonNull View itemView) {
             super(itemView);
             mHeadV = itemView.findViewById(R.id.iv_head_right);
             mImgV = itemView.findViewById(R.id.tv_image_right);
             mappingViews = new SparseArray<>();
+            rightTime = itemView.findViewById(R.id.img_right_time);
         }
     }
 }
