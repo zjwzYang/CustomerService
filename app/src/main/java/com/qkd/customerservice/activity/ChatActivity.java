@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -92,6 +93,9 @@ public class ChatActivity extends AppCompatActivity {
     private String showName;
     private String faceUrl;
 
+    private boolean getMsgFlag = false;
+    private V2TIMMessage lastMsg = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +113,11 @@ public class ChatActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        Intent intent = getIntent();
+        UserID = intent.getStringExtra("UserID");
+        showName = intent.getStringExtra("showName");
+        setTitle(showName);
+
         init();
 
         initConversation();
@@ -125,11 +134,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void initConversation() {
-        Intent intent = getIntent();
-        UserID = intent.getStringExtra("UserID");
-        showName = intent.getStringExtra("showName");
-        setTitle(showName);
-        V2TIMManager.getMessageManager().getC2CHistoryMessageList(UserID, 50, null, new V2TIMValueCallback<List<V2TIMMessage>>() {
+        V2TIMManager.getMessageManager().getC2CHistoryMessageList(UserID, 30, lastMsg, new V2TIMValueCallback<List<V2TIMMessage>>() {
             @Override
             public void onError(int code, String desc) {
                 Log.i("12345678", "拉取历史会话: " + code + "  " + desc);
@@ -139,6 +144,10 @@ public class ChatActivity extends AppCompatActivity {
             public void onSuccess(List<V2TIMMessage> v2TIMMessages) {
                 V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
                 for (int i = 0; i < v2TIMMessages.size(); i++) {
+                    if (i == v2TIMMessages.size() - 1) {
+                        lastMsg = v2TIMMessages.get(i);
+                        getMsgFlag = false;
+                    }
                     V2TIMMessage message = v2TIMMessages.get(i);
 
                     final String timeString = AppUtil.getTimeString(message.getTimestamp() * 1000);
@@ -269,6 +278,22 @@ public class ChatActivity extends AppCompatActivity {
                     keyboardHelper.reset();
                 }
                 return false;
+            }
+        });
+
+        recycler_view.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+                View lastChildView = layoutManager.getChildAt(layoutManager.getChildCount() - 1);
+                int lastChildTop = lastChildView.getTop();
+                //通过这个lastChildView得到这个view当前的position值
+                int lastPosition = layoutManager.getPosition(lastChildView);
+                if (lastPosition == adapter.getItemCount() - 1 && lastChildTop == 30 && !getMsgFlag) {
+                    getMsgFlag = true;
+                    initConversation();
+                }
             }
         });
 
