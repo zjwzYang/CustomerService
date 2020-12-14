@@ -25,6 +25,7 @@ public class ExpressionTypeListAdapter extends RecyclerView.Adapter<ExpressionTy
 
     private Context context;
     private List<ExpressionType> expressionTypeList;
+    private OnClickExpressionItemListener onClickExpressionItemListener;
 
     public ExpressionTypeListAdapter(Context context, List<ExpressionType> expressionTypeList) {
         this.context = context;
@@ -38,8 +39,16 @@ public class ExpressionTypeListAdapter extends RecyclerView.Adapter<ExpressionTy
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ExViewHolder holder, final int position) {
         holder.expressionIconImageView.setImageResource(expressionTypeList.get(position).getResId());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickExpressionItemListener != null) {
+                    onClickExpressionItemListener.onClickItem(position);
+                }
+            }
+        });
     }
 
     @Override
@@ -58,5 +67,13 @@ public class ExpressionTypeListAdapter extends RecyclerView.Adapter<ExpressionTy
             super(itemView);
             expressionIconImageView = itemView.findViewById(R.id.iv_expression_icon);
         }
+    }
+
+    public void setOnClickExpressionItemListener(OnClickExpressionItemListener onClickExpressionItemListener) {
+        this.onClickExpressionItemListener = onClickExpressionItemListener;
+    }
+
+    public interface OnClickExpressionItemListener {
+        void onClickItem(int position);
     }
 }

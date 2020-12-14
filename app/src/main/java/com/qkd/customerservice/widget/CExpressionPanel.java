@@ -18,7 +18,6 @@ import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.ExpressionPagerListAdapter;
 import com.qkd.customerservice.adapter.ExpressionTypeListAdapter;
-import com.qkd.customerservice.bean.ExpressionManager;
 import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.key_library.IPanel;
 import com.qkd.customerservice.key_library.util.DensityUtil;
@@ -72,12 +71,18 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
     }
 
     private void initData() {
-        expressionTypeList.add(new ExpressionType(R.drawable.ic_expression_panel_tab_normal,
-                ExpressionManager.instance.getNormalExpressionList()));
+        expressionTypeList.add(new ExpressionType(R.drawable.ic_expression_panel_tab_normal));
+        expressionTypeList.add(new ExpressionType(R.drawable.ic_chang_text));
     }
 
     private void initRecyclerView() {
         ExpressionTypeListAdapter adapter = new ExpressionTypeListAdapter(getContext(), expressionTypeList);
+        adapter.setOnClickExpressionItemListener(new ExpressionTypeListAdapter.OnClickExpressionItemListener() {
+            @Override
+            public void onClickItem(int position) {
+                mViewPager2.setCurrentItem(position);
+            }
+        });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(adapter);
     }
