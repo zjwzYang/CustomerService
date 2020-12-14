@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
@@ -40,6 +41,8 @@ import com.qkd.customerservice.key_library.util.UIUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Date;
 
 import static com.qkd.customerservice.key_library.PanelType.INPUT_MOTHOD;
 import static com.qkd.customerservice.key_library.PanelType.NONE;
@@ -199,6 +202,7 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
             TextMsg msgBean = new TextMsg();
             msgBean.setMsgType(MsgBean.MsgType.TEXT);
             msgBean.setType(1);
+            msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
             msgBean.setContent(text.toString());
             msgBean.setNickName("我");
             EventBus.getDefault().post(msgBean);
@@ -296,6 +300,7 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
                         msgBean.setMsgType(MsgBean.MsgType.TEXT);
                         msgBean.setType(1);
                         msgBean.setContent(text.toString());
+                        msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
                         msgBean.setNickName("我");
                         EventBus.getDefault().post(msgBean);
                         textView.setText("");

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.MsgBean;
@@ -28,6 +29,7 @@ import com.qkd.customerservice.bean.VoiceMsg;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.util.Date;
 
 
 public class AudioRecordManager implements Handler.Callback {
@@ -587,6 +589,7 @@ public class AudioRecordManager implements Handler.Callback {
             VoiceMsg msgBean = new VoiceMsg();
             msgBean.setNickName("我");
             msgBean.setDuration(duration);
+            msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
             msgBean.setMsgType(MsgBean.MsgType.VOICE);
             msgBean.setType(1);
             msgBean.setAudioPath(mAudioPath);

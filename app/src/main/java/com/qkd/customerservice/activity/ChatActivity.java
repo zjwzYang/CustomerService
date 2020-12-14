@@ -60,6 +60,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -403,6 +404,7 @@ public class ChatActivity extends AppCompatActivity {
                 imageMsg.setType(1);
                 imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                 imageMsg.setImgPath(path);
+                imageMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
                 adapter.addMsgTop(imageMsg);
 
                 Log.i("12345678", "onActivityResult: " + path);

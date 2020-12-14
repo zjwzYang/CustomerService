@@ -45,6 +45,7 @@ import com.tencent.imsdk.v2.V2TIMValueCallback;
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
@@ -135,6 +136,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
                 super.onRecvNewMessage(message);
                 int type = message.getElemType();
+                final String timeString = AppUtil.getTimeString(new Date().getTime());
                 if (type == V2TIM_ELEM_TYPE_TEXT) {
                     TextMsg textMsg = new TextMsg();
                     V2TIMTextElem textElem = message.getTextElem();
@@ -142,6 +144,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                     textMsg.setMsgType(MsgBean.MsgType.TEXT);
                     textMsg.setSenderId(message.getSender());
                     textMsg.setNickName(message.getNickName());
+                    textMsg.setSendTime(timeString);
                     textMsg.setType(0);
                     EventBus.getDefault().post(textMsg);
                 } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
@@ -156,6 +159,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                             imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                             imageMsg.setType(0);
                             imageMsg.setImgPath(url);
+                            imageMsg.setSendTime(timeString);
                             imageMsg.setNickName(message.getNickName());
                             imageMsg.setSenderId(message.getSender());
                             EventBus.getDefault().post(imageMsg);
@@ -182,6 +186,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                                 voiceMsg.setDuration(duration);
                                 voiceMsg.setAudioPath(Uri.parse(s));
                                 voiceMsg.setType(0);
+                                voiceMsg.setSendTime(timeString);
                                 voiceMsg.setMsgType(MsgBean.MsgType.VOICE);
                                 voiceMsg.setSenderId(message.getSender());
                                 EventBus.getDefault().post(voiceMsg);
