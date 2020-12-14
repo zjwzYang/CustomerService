@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.qkd.customerservice.AppUtil;
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
@@ -140,12 +141,19 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 if (type == V2TIM_ELEM_TYPE_TEXT) {
                     TextMsg textMsg = new TextMsg();
                     V2TIMTextElem textElem = message.getTextElem();
-                    textMsg.setContent(textElem.getText());
+                    String text = textElem.getText();
+                    textMsg.setContent(text);
                     textMsg.setMsgType(MsgBean.MsgType.TEXT);
                     textMsg.setSenderId(message.getSender());
                     textMsg.setNickName(message.getNickName());
                     textMsg.setSendTime(timeString);
-                    textMsg.setType(0);
+                    int sendType;
+                    if (text.endsWith(Constant.TEXT_END_FLAG)) {
+                        sendType = 2;
+                    } else {
+                        sendType = 0;
+                    }
+                    textMsg.setType(sendType);
                     EventBus.getDefault().post(textMsg);
                 } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
                     V2TIMImageElem imageElem = message.getImageElem();

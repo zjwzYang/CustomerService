@@ -165,8 +165,12 @@ public class ChatActivity extends AppCompatActivity {
                         String content = message.getTextElem().getText().trim();
                         if (!TextUtils.isEmpty(content)) {
                             TextMsg textMsg = new TextMsg();
+                            int temType = sendType;
+                            if (content.endsWith(Constant.TEXT_END_FLAG)) {
+                                temType = 2;
+                            }
                             textMsg.setMsgType(MsgBean.MsgType.TEXT);
-                            textMsg.setType(sendType);
+                            textMsg.setType(temType);
                             textMsg.setContent(content);
                             textMsg.setNickName(showName);
                             textMsg.setSendTime(timeString);

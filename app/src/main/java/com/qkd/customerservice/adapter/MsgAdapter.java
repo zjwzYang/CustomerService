@@ -26,6 +26,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
@@ -53,6 +54,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VOICE_RIGHT = 3;
     private static final int IMAGE_LEFT = 4;
     private static final int IMAGE_RIGHT = 5;
+    private static final int TEXT_CENTER = 6;
 
     private Context context;
     private List<MsgBean> msgList;
@@ -79,8 +81,10 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (msgType == MsgBean.MsgType.TEXT) {
             if (type == 0) {
                 return TEXT_LEFT;
-            } else {
+            } else if (type == 1) {
                 return TEXT_RIGHT;
+            } else {
+                return TEXT_CENTER;
             }
         } else if (msgType == MsgBean.MsgType.VOICE) {
             if (type == 0) {
@@ -110,6 +114,9 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == TEXT_RIGHT) {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_text_right, parent, false);
             return new RightMsgViewHolder(view);
+        } else if (viewType == TEXT_CENTER) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_text_center, parent, false);
+            return new CenterMsgViewHolder(view);
         } else if (viewType == VOICE_LEFT) {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_voice_left, parent, false);
             return new LeftVoiceMsgViewHolder(view);
@@ -146,6 +153,15 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             RightMsgViewHolder holder = (RightMsgViewHolder) viewHolder;
             holder.rightContent.setText(textMsg.getContent());
             holder.rightTime.setText(textMsg.getSendTime());
+        } else if (viewType == TEXT_CENTER) {
+            TextMsg textMsg = (TextMsg) msgBean;
+            CenterMsgViewHolder holder = (CenterMsgViewHolder) viewHolder;
+            holder.centerTime.setText(textMsg.getSendTime());
+            String content = textMsg.getContent();
+            int index = content.lastIndexOf(Constant.TEXT_END_FLAG);
+            content = content.substring(0, index);
+            holder.centerContent.setText(content);
+
         } else if (viewType == VOICE_LEFT) {
             final VoiceMsg voiceMsg = (VoiceMsg) msgBean;
             LeftVoiceMsgViewHolder holder = (LeftVoiceMsgViewHolder) viewHolder;
@@ -400,6 +416,17 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             rightHead = itemView.findViewById(R.id.iv_head_right);
             rightContent = itemView.findViewById(R.id.tv_content_right);
             rightTime = itemView.findViewById(R.id.text_right_time);
+        }
+    }
+
+    static class CenterMsgViewHolder extends RecyclerView.ViewHolder {
+        private TextView centerTime;
+        private TextView centerContent;
+
+        public CenterMsgViewHolder(@NonNull View itemView) {
+            super(itemView);
+            centerTime = itemView.findViewById(R.id.text_center_time);
+            centerContent = itemView.findViewById(R.id.text_center_content);
         }
     }
 

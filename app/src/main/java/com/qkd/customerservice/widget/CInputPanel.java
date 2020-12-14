@@ -201,7 +201,13 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
         } else if (Constant.SEND_FLAG.equals(action)) {
             TextMsg msgBean = new TextMsg();
             msgBean.setMsgType(MsgBean.MsgType.TEXT);
-            msgBean.setType(1);
+            int sendType;
+            if (text.toString().endsWith(Constant.TEXT_END_FLAG)) {
+                sendType = 2;
+            } else {
+                sendType = 1;
+            }
+            msgBean.setType(sendType);
             msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
             msgBean.setContent(text.toString());
             msgBean.setNickName("我");
@@ -298,7 +304,13 @@ public class CInputPanel extends LinearLayout implements IInputPanel {
                     if (!TextUtils.isEmpty(text)) {
                         TextMsg msgBean = new TextMsg();
                         msgBean.setMsgType(MsgBean.MsgType.TEXT);
-                        msgBean.setType(1);
+                        int sendType;
+                        if (text.toString().endsWith(Constant.TEXT_END_FLAG)) {
+                            sendType = 2;
+                        } else {
+                            sendType = 1;
+                        }
+                        msgBean.setType(sendType);
                         msgBean.setContent(text.toString());
                         msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
                         msgBean.setNickName("我");

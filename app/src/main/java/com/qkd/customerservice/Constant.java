@@ -15,4 +15,6 @@ public class Constant {
     public static final String DELETE_FLAG = "delete_flag";
     public static final String SEND_FLAG = "send_flag";
 
+    public static final String TEXT_END_FLAG = "#";
+
 }
