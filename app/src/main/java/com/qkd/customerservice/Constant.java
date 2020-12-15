@@ -16,5 +16,11 @@ public class Constant {
     public static final String SEND_FLAG = "send_flag";
 
     public static final String TEXT_END_FLAG = "#";
+    public static final String TEXT_ARTICLE_FLAG = "##";
 
+    public static final String USER_TOKEN = "user_token";
+
+    public static final String BASE_URL = "http://47.114.100.72:8082/";
+    public static final String BASE_URL2 = "http://47.114.100.72:8081/";
+    public static final String BASE_URL3 = "http://qkbdev.qukandian573.com/";
 }

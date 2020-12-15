@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
 import com.qkd.customerservice.audio.IAudioPlayListener;
+import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
@@ -55,6 +57,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int IMAGE_LEFT = 4;
     private static final int IMAGE_RIGHT = 5;
     private static final int TEXT_CENTER = 6;
+    private static final int ARTICLE_RIGHT = 7;
 
     private Context context;
     private List<MsgBean> msgList;
@@ -98,6 +101,8 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 return IMAGE_RIGHT;
             }
+        } else if (msgType == MsgBean.MsgType.ARTICLE) {
+            return ARTICLE_RIGHT;
         } else {
             return TEXT_LEFT;
         }
@@ -124,11 +129,14 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_voice_right, parent, false);
             return new RightVoiceMsgViewHolder(view);
         } else if (viewType == IMAGE_LEFT) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_img_left, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_img_left, parent, false);
             return new LeftImageViewHolder(view);
         } else if (viewType == IMAGE_RIGHT) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_img_right, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_img_right, parent, false);
             return new RightImageViewHolder(view);
+        } else if (viewType == ARTICLE_RIGHT) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_article_right, parent, false);
+            return new RightArticleViewHolder(view);
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_text_left, parent, false);
             return new LeftMsgViewHolder(view);
@@ -350,6 +358,16 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
+        } else if (viewType == ARTICLE_RIGHT) {
+            RightArticleViewHolder holder = (RightArticleViewHolder) viewHolder;
+            final ArticleMsg articleMsg = (ArticleMsg) msgBean;
+            Glide.with(context)
+                    .load(articleMsg.getPicUrl())
+                    .apply(options)
+                    .into(holder.mImageView);
+            holder.artTitle.setText(articleMsg.getTitle());
+            holder.artDesc.setText(articleMsg.getDescription());
+            holder.rightTime.setText(articleMsg.getSendTime());
         }
 
     }
@@ -489,6 +507,23 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mImgV = itemView.findViewById(R.id.tv_image_right);
             mappingViews = new SparseArray<>();
             rightTime = itemView.findViewById(R.id.img_right_time);
+        }
+    }
+
+    static class RightArticleViewHolder extends RecyclerView.ViewHolder {
+        private TextView rightTime;
+        private TextView artTitle;
+        private TextView artDesc;
+        private ImageView mImageView;
+        private LinearLayout mLinearLayout;
+
+        public RightArticleViewHolder(@NonNull View itemView) {
+            super(itemView);
+            rightTime = itemView.findViewById(R.id.article_right_time);
+            artTitle = itemView.findViewById(R.id.article_right_title);
+            artDesc = itemView.findViewById(R.id.article_right_desc);
+            mImageView = itemView.findViewById(R.id.article_right_pic);
+            mLinearLayout = itemView.findViewById(R.id.article_right_linear);
         }
     }
 }

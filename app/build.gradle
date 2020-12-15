@@ -75,4 +75,9 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.tencent.tpns:xiaomi:1.2.1.2-release'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    implementation 'io.reactivex:rxandroid:1.2.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 }

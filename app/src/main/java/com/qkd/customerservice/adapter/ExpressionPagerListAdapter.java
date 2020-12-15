@@ -7,8 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.qkd.customerservice.bean.ExpressionManager;
 import com.qkd.customerservice.bean.ExpressionType;
+import com.qkd.customerservice.fragment.ArticleFragment;
 import com.qkd.customerservice.fragment.CommonlyUsedFragment;
 import com.qkd.customerservice.fragment.NormalExpressionPagerFragment;
+import com.qkd.customerservice.fragment.ProductFragment;
 
 import java.util.List;
 
@@ -44,6 +46,10 @@ public class ExpressionPagerListAdapter extends FragmentStateAdapter {
             return NormalExpressionPagerFragment.newInstance(ExpressionManager.instance.getNormalExpressionList());
         } else if (position == 1) {
             return new CommonlyUsedFragment();
+        } else if (position == 2) {
+            return new ArticleFragment();
+        } else if (position == 3) {
+            return new ProductFragment();
         }
         return new Fragment();
     }

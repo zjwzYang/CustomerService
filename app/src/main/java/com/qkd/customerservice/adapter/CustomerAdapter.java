@@ -2,6 +2,7 @@ package com.qkd.customerservice.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.qkd.customerservice.AppUtil;
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.ChatActivity;
 import com.qkd.customerservice.bean.ConversationBean;
@@ -101,7 +103,17 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             holder.lastTime.setText(timeString);
             if (type == V2TIM_ELEM_TYPE_TEXT) {
                 V2TIMTextElem textElem = lastMessage.getTextElem();
-                holder.lastMsg.setText(textElem.getText());
+                String text = textElem.getText();
+                if (!TextUtils.isEmpty(text)) {
+                    if (text.startsWith(Constant.TEXT_ARTICLE_FLAG)) {
+                        String[] strings = text.replace(Constant.TEXT_ARTICLE_FLAG, "").split("&");
+                        holder.lastMsg.setText("[链接]" + strings[1]);
+                    } else {
+                        holder.lastMsg.setText(text);
+                    }
+                } else {
+                    holder.lastMsg.setText(text);
+                }
             } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
                 holder.lastMsg.setText("[图片]");
             } else if (type == V2TIM_ELEM_TYPE_SOUND) {

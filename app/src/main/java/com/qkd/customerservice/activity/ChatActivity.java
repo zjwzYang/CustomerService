@@ -32,13 +32,17 @@ import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MsgAdapter;
+import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ClearByUserId;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
+import com.qkd.customerservice.bean.NewMessageInput;
+import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.bean.VoiceMsg;
 import com.qkd.customerservice.key_library.KeyboardHelper;
 import com.qkd.customerservice.key_library.util.DensityUtil;
+import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.widget.CExpressionPanel;
 import com.qkd.customerservice.widget.CInputPanel;
 import com.qkd.customerservice.widget.CMorePanel;
@@ -164,17 +168,31 @@ public class ChatActivity extends AppCompatActivity {
                     if (type == V2TIM_ELEM_TYPE_TEXT) {
                         String content = message.getTextElem().getText().trim();
                         if (!TextUtils.isEmpty(content)) {
-                            TextMsg textMsg = new TextMsg();
-                            int temType = sendType;
-                            if (content.endsWith(Constant.TEXT_END_FLAG)) {
-                                temType = 2;
+                            if (content.startsWith(Constant.TEXT_ARTICLE_FLAG)) {
+                                String[] strings = content.replace(Constant.TEXT_ARTICLE_FLAG, "").split("&");
+                                ArticleMsg articleMsg = new ArticleMsg();
+                                articleMsg.setPicUrl(strings[0]);
+                                articleMsg.setTitle(strings[1]);
+                                articleMsg.setDescription(strings[2]);
+                                articleMsg.setUrl(strings[3]);
+                                articleMsg.setType(1);
+                                articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                                articleMsg.setSendTime(timeString);
+                                adapter.addMsg(articleMsg);
+
+                            } else {
+                                TextMsg textMsg = new TextMsg();
+                                int temType = sendType;
+                                if (content.endsWith(Constant.TEXT_END_FLAG)) {
+                                    temType = 2;
+                                }
+                                textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                                textMsg.setType(temType);
+                                textMsg.setContent(content);
+                                textMsg.setNickName(showName);
+                                textMsg.setSendTime(timeString);
+                                adapter.addMsg(textMsg);
                             }
-                            textMsg.setMsgType(MsgBean.MsgType.TEXT);
-                            textMsg.setType(temType);
-                            textMsg.setContent(content);
-                            textMsg.setNickName(showName);
-                            textMsg.setSendTime(timeString);
-                            adapter.addMsg(textMsg);
                         }
 
                     } else if (type == V2TIM_ELEM_TYPE_IMAGE) {
@@ -365,6 +383,46 @@ public class ChatActivity extends AppCompatActivity {
                 adapter.addMsgTop(imageMsg);
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetArticletMsg(ArticleMsg articleMsg) {
+        adapter.addMsgTop(articleMsg);
+        String picUrl = articleMsg.getPicUrl();
+        String title = articleMsg.getTitle();
+        String description = articleMsg.getDescription();
+        String url = articleMsg.getUrl();
+
+        NewMessageInput input = new NewMessageInput();
+        input.setOpenId(UserID);
+        input.setTitle(title);
+        input.setDescription(description);
+        input.setUrl(url);
+        input.setPicUrl(picUrl);
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL2).postNewMessage(input), new BaseHttp.HttpObserver<NewMessageOutput>() {
+            @Override
+            public void onSuccess(NewMessageOutput newMessageOutput) {
+
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+        String articleMsgStr = Constant.TEXT_ARTICLE_FLAG + picUrl + "&" + title + "&" + description + "&" + url;
+        // 腾讯云发送文字
+        V2TIMManager.getInstance().sendC2CTextMessage(articleMsgStr, UserID, new V2TIMValueCallback<V2TIMMessage>() {
+            @Override
+            public void onError(int code, String desc) {
+                Log.i("12345678", "发送出错: " + code + "  " + desc);
+            }
+
+            @Override
+            public void onSuccess(V2TIMMessage v2TIMMessage) {
+                Log.i("12345678", "发送成功");
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

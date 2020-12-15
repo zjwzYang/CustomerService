@@ -73,6 +73,8 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
     private void initData() {
         expressionTypeList.add(new ExpressionType(R.drawable.ic_expression_panel_tab_normal));
         expressionTypeList.add(new ExpressionType(R.drawable.ic_chang_text));
+        expressionTypeList.add(new ExpressionType(R.drawable.ic_wenzhang));
+        expressionTypeList.add(new ExpressionType(R.drawable.ic_product));
     }
 
     private void initRecyclerView() {

@@ -58,6 +58,8 @@ public class MsgBean {
     public enum MsgType {
         TEXT,
         IMAGE,
-        VOICE
+        VOICE,
+        ARTICLE,
+        PRODUCT
     }
 }
