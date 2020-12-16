@@ -46,7 +46,7 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:text="标题"
-                    android:textColor="@color/text_black"
+                    android:textColor="@color/c_333333"
                     android:textSize="16sp" />
 
                 <TextView
@@ -57,7 +57,7 @@
                     android:ellipsize="end"
                     android:maxLines="4"
                     android:text="描述"
-                    android:textColor="@color/text_gray"
+                    android:textColor="@color/text_black"
                     android:textSize="12sp" />
 
             </LinearLayout>

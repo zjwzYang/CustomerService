@@ -11,6 +11,8 @@ import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMSDKConfig;
 import com.tencent.imsdk.v2.V2TIMSDKListener;
 import com.tencent.imsdk.v2.V2TIMUserFullInfo;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.qcloud.tim.uikit.TUIKit;
 import com.tencent.qcloud.tim.uikit.config.CustomFaceConfig;
 import com.tencent.qcloud.tim.uikit.config.GeneralConfig;
@@ -34,6 +36,11 @@ public class MyApp extends Application {
     public static int keyboardHeight = 0;
     private static MyApp instance;
 
+    // 微信
+    public static final String WX_APP_ID = "wx88888888";
+    // IWXAPI 是第三方app和微信通信的openApi接口
+    private IWXAPI api;
+
     public static MyApp getInstance() {
         return instance;
     }
@@ -54,19 +61,24 @@ public class MyApp extends Application {
         initTencenIm();
     }
 
-//    private boolean shouldInit() {
-//        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
-//        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
-//        String mainProcessName = getApplicationInfo().processName;
-////        int myPid = Process.myPid();
-//        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
-//            Log.i("12345678", "shouldInit: " + info.pid + "   " + info.processName);
-//            if (mainProcessName.equals(info.processName)) {
-//                return true;
+    private void regToWx() {
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+
+        // 将应用的appId注册到微信
+        api.registerApp(APP_ID);
+
+//        //建议动态监听微信启动广播进行注册到微信
+//        registerReceiver(new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//
+//                // 将该app注册到微信
+//                api.registerApp(Constants.APP_ID);
 //            }
-//        }
-//        return false;
-//    }
+//        }, new IntentFilter(ConstantsAPI.ACTION_REFRESH_WXAPP));
+
+    }
 
 
     private void initTencenIm() {

@@ -47,6 +47,16 @@
         <activity
             android:name=".activity.IndexActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.CustomizedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.qkd.customerservice"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!--小米推送-->
         <service

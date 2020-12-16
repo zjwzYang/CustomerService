@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.activity.CustomizedActivity;
 import com.qkd.customerservice.bean.MoreAction;
 import com.qkd.customerservice.widget.LocalGlideEngine;
 import com.yanzhenjie.permission.Action;
@@ -60,9 +62,10 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "点击了" + moreAction.getActionName(), Toast.LENGTH_SHORT).show();
                 if (position == 0) {
                     selectImg();
+                } else if (position == 2) {
+                    context.startActivity(new Intent(context, CustomizedActivity.class));
                 }
             }
         });
