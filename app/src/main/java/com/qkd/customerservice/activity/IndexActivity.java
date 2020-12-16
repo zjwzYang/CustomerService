@@ -97,7 +97,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
         setTitle("在线");
 
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL).getToken(77), new BaseHttp.HttpObserver<TokenBean>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getToken(77), new BaseHttp.HttpObserver<TokenBean>() {
             @Override
             public void onSuccess(TokenBean output) {
                 String data = output.getData();

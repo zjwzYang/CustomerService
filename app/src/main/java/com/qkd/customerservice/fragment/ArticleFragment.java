@@ -73,7 +73,7 @@ public class ArticleFragment extends Fragment {
         if (!hasMore) {
             return;
         }
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL).getArtList(offset, limit), new BaseHttp.HttpObserver<ArticleOutput>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getArtList(offset, limit), new BaseHttp.HttpObserver<ArticleOutput>() {
             @Override
             public void onSuccess(ArticleOutput output) {
                 loadMoreFlag = false;

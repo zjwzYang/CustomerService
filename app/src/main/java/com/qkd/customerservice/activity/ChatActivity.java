@@ -399,7 +399,7 @@ public class ChatActivity extends AppCompatActivity {
         input.setDescription(description);
         input.setUrl(url);
         input.setPicUrl(picUrl);
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL2).postNewMessage(input), new BaseHttp.HttpObserver<NewMessageOutput>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WX_CHETER).postNewMessage(input), new BaseHttp.HttpObserver<NewMessageOutput>() {
             @Override
             public void onSuccess(NewMessageOutput newMessageOutput) {
 

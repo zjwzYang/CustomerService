@@ -20,7 +20,8 @@ public class Constant {
 
     public static final String USER_TOKEN = "user_token";
 
-    public static final String BASE_URL = "http://47.114.100.72:8082/";
-    public static final String BASE_URL2 = "http://47.114.100.72:8081/";
+    public static final String BASE_URL_CORE = "http://qkbdev.qukandian573.com:8082/";
+    public static final String BASE_URL_WX_CHETER = "http://qkbdev.qukandian573.com:8081/";
+    public static final String BASE_URL_WEB = "http://qkbdev.qukandian573.com:8083/";
     public static final String BASE_URL3 = "http://qkbdev.qukandian573.com/";
 }

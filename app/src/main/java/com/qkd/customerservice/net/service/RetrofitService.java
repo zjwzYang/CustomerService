@@ -2,6 +2,7 @@ package com.qkd.customerservice.net.service;
 
 
 import com.qkd.customerservice.bean.ArticleOutput;
+import com.qkd.customerservice.bean.CustomerBookOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
 import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.ProductOutput;
@@ -35,4 +36,7 @@ public interface RetrofitService {
     // 发送文章或产品
     @POST("im/forwardNewsMessage")
     Observable<NewMessageOutput> postNewMessage(@Body NewMessageInput input);
+
+    @GET("planner/getCustomerBook")
+    Observable<CustomerBookOutput> getCustomerBook(@Query("identifier") String identifier, @Query("userStatus") int userStatus);
 }

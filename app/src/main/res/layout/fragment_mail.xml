@@ -3,9 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.tencent.qcloud.tim.uikit.modules.contact.ContactLayout
-        android:id="@+id/mail_contact_layout"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/mail_tab"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/mail_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
