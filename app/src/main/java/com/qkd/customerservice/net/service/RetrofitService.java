@@ -37,6 +37,7 @@ public interface RetrofitService {
     @POST("im/forwardNewsMessage")
     Observable<NewMessageOutput> postNewMessage(@Body NewMessageInput input);
 
+    // 规划师-获取客户通讯录
     @GET("planner/getCustomerBook")
     Observable<CustomerBookOutput> getCustomerBook(@Query("identifier") String identifier, @Query("userStatus") int userStatus);
 }

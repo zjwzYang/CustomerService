@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class CustomerBookOutput extends BaseOutput {
 
+
     /**
      * errorMsg : null
      * data : [{"openId":"oIzSpwyRRlqZwk5_TuexLuRvgW_U","userName":"燕春","userAvatarUrl":"http://thirdwx.qlogo.cn/mmopen/7khzQhlN6tZECmAEnGrHpupLPibGdAl1WJsO1d1XZISxAIWBlA3LVbz1unZbiah3TeBV6lmlDF1zpGpKSLZSyicHo5Vg0QnjJlm/132"},{"openId":"oMRUWs1jwu7VxnKeGQOD9EWjJzZY","userName":"啊！基米杨","userAvatarUrl":"http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLDyEMaSfgoeFiaOsib1kdFtSJ97icXt63GEibZJ2xDg2FulANNbGVXKyLDO8qic2PQqYjPiaseGgeYDB2kw/132"}]

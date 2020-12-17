@@ -4,13 +4,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.adapter.MailCustomerAdapter;
+import com.qkd.customerservice.bean.CustomerBookOutput;
+import com.qkd.customerservice.net.BaseHttp;
 
 /**
  * Created on 12/16/20 16:28
@@ -22,7 +29,7 @@ import com.qkd.customerservice.R;
 public class MailIndexFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-
+    private MailCustomerAdapter mAdapter;
     private int userStatus;
 
     @Nullable
@@ -37,10 +44,24 @@ public class MailIndexFragment extends Fragment {
     }
 
     private void initView() {
-
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
+        mAdapter = new MailCustomerAdapter(getContext());
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void initData() {
+        String userId = "test_yang";
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getCustomerBook(userId, userStatus), new BaseHttp.HttpObserver<CustomerBookOutput>() {
+            @Override
+            public void onSuccess(CustomerBookOutput customerBookOutput) {
+                mAdapter.addAll(customerBookOutput.getData());
+            }
 
+            @Override
+            public void onError() {
+
+            }
+        });
     }
 }
