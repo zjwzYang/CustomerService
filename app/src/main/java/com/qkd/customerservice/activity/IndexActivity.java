@@ -37,6 +37,7 @@ import com.qkd.customerservice.fragment.MailFragment;
 import com.qkd.customerservice.fragment.MineFragment;
 import com.qkd.customerservice.fragment.MsgFragment;
 import com.qkd.customerservice.net.BaseHttp;
+import com.qkd.customerservice.net.BaseOutput;
 import com.tencent.imsdk.v2.V2TIMAdvancedMsgListener;
 import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -75,6 +76,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     private MailFragment mMailFragment;
     private MineFragment mMineFragment;
     private Fragment currFragment;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +97,20 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
         initListener();
 
-        setTitle("在线");
+        this.sp = getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        int status = sp.getInt(Constant.USER_STATUS, 1);
+        switch (status) {
+            case 1:
+                setTitle("在线");
+                break;
+            case 2:
+                setTitle("忙碌");
+                break;
+            case 3:
+                setTitle("离线");
+                break;
+        }
+
 
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getToken(77), new BaseHttp.HttpObserver<TokenBean>() {
             @Override
@@ -357,17 +372,46 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case 1:
-                setTitle("在线");
+                updateStatus(1);
                 break;
             case 2:
-                setTitle("忙碌");
+                updateStatus(2);
                 break;
             case 3:
-                setTitle("离线");
+                updateStatus(3);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void updateStatus(final int status) {
+        String userId = sp.getString(Constant.USER_IDENTIFIER, "");
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).updateStatus(userId, status), new BaseHttp.HttpObserver<BaseOutput>() {
+            @Override
+            public void onSuccess(BaseOutput baseOutput) {
+                if (baseOutput.isSuccess()) {
+                    sp.edit().putInt(Constant.USER_STATUS, status).apply();
+                    switch (status) {
+                        case 1:
+                            setTitle("在线");
+                            break;
+                        case 2:
+                            setTitle("忙碌");
+                            break;
+                        case 3:
+                            setTitle("离线");
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View view) {

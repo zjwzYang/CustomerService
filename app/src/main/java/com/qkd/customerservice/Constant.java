@@ -24,4 +24,10 @@ public class Constant {
     public static final String BASE_URL_WX_CHETER = "http://qkbdev.qukandian573.com:8081/";
     public static final String BASE_URL_WEB = "http://qkbdev.qukandian573.com:8083/";
     public static final String BASE_URL3 = "http://qkbdev.qukandian573.com/";
+
+
+    public static final String USER_INFO="user_info";
+    public static final String USER_SERVICE_ID="service_id";
+    public static final String USER_IDENTIFIER="user_identifier";
+    public static final String USER_STATUS = "user_status";
 }

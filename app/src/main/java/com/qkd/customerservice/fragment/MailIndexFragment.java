@@ -1,5 +1,7 @@
 package com.qkd.customerservice.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +53,8 @@ public class MailIndexFragment extends Fragment {
     }
 
     private void initData() {
-        String userId = "test_yang";
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        String userId = sp.getString(Constant.USER_IDENTIFIER, "");
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getCustomerBook(userId, userStatus), new BaseHttp.HttpObserver<CustomerBookOutput>() {
             @Override
             public void onSuccess(CustomerBookOutput customerBookOutput) {
