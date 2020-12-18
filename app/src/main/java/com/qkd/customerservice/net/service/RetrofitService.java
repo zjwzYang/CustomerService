@@ -1,13 +1,18 @@
 package com.qkd.customerservice.net.service;
 
 
+import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.ArticleOutput;
 import com.qkd.customerservice.bean.CustomerBookOutput;
+import com.qkd.customerservice.bean.CustomizedListBean;
 import com.qkd.customerservice.bean.LoginOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
 import com.qkd.customerservice.bean.NewMessageOutput;
+import com.qkd.customerservice.bean.PremiumConfigOutput;
+import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
-import com.qkd.customerservice.bean.TokenBean;
+import com.qkd.customerservice.bean.QueryCustomizeOutput;
+import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.Map;
@@ -32,8 +37,8 @@ import rx.Observable;
  */
 public interface RetrofitService {
 
-    @GET("security/getToken")
-    Observable<TokenBean> getToken(@Query("userId") int userId);
+//    @GET("security/getAppToken")
+//    Observable<TokenBean> getAppToken(@Query("identifier") String identifier);
 
     // 文章列表
     @GET("artList")
@@ -60,4 +65,29 @@ public interface RetrofitService {
     @FormUrlEncoded
     @PUT("planner/updateStatus")
     Observable<BaseOutput> updateStatus(@Field("identifier") String identifier, @Field("status") int status);
+
+    // 查询方案客户列表
+    @GET("customize/queryCustomizeList")
+    Observable<QueryCustomizeOutput> queryCustomizeList(@Query("serviceId") int serviceId,
+                                                        @Query("pageNum") int pageNum,
+                                                        @Query("orderStatus") int orderStatus);
+
+    @GET("scheme/to-be-customized/list")
+    Observable<CustomizedListBean> getList(@Query("start") String start, @Query("length") String length);
+
+    // 查询申请信息和投保信息
+    @GET("scheme/to-be-customized/getSchemeCustomizeInfo")
+    Observable<SchemeCustomizeInfo> getSchemeCustomizeInfo(@Query("orderNumber") String orderNumber);
+
+    //查询保险库
+    @GET("scheme/to-be-customized/listProduct")
+    Observable<ProductListOutput> getProductList(@Query("productName") String productName, @Query("productType") String productType);
+
+    // 查询保费试算配置
+    @GET("scheme/to-be-customized/getPremiumConfig")
+    Observable<PremiumConfigOutput> getPremiumConfig(@Query("productId") int productId);
+
+    // 保费试算
+    @POST("scheme/to-be-customized/getAmount")
+    Observable<BaseOutput> getAmount(@Body AmountInput input);
 }

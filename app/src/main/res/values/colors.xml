@@ -12,10 +12,17 @@
     <color name="c_666666">#666666</color>
     <color name="c_333333">#333333</color>
     <color name="c_000000">#000000</color>
+    <color name="c_2d2d2d">#2d2d2d</color>
+    <color name="c_C9C9C9">#C9C9C9</color>
     <color name="c_77cbcbcb">#77cbcbcb</color>
     <color name="c_cbcbcb">#cbcbcb</color>
 
-    <color name="rc_voice_cancel"> #CC933432</color>
+    <color name="rc_voice_cancel">#CC933432</color>
     <color name="rc_voice_color_right">#a2a2a2</color>
     <color name="rc_voice_color_left">#4385bf</color>
+
+    <color name="divi_color">#8D8D8D</color>
+    <color name="app_blue">#597EF7</color>
+    <color name="app_black">#595959</color>
+    <color name="app_backgroud">#F5F5F5</color>
 </resources>

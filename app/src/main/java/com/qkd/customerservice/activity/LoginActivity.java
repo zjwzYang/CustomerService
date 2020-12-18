@@ -15,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.qkd.customerservice.BuildConfig;
 import com.qkd.customerservice.Constant;
-import com.qkd.customerservice.GenerateTestUserSig;
 import com.qkd.customerservice.MyApp;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.LoginOutput;
@@ -52,8 +51,9 @@ public class LoginActivity extends AppCompatActivity {
         setTitle("登录");
         sp = getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         String identifier = sp.getString(Constant.USER_IDENTIFIER, "");
-        if (!TextUtils.isEmpty(identifier)) {
-            loginIn(identifier);
+        String userSig = sp.getString(Constant.USER_SIG, "");
+        if (!TextUtils.isEmpty(identifier) && !TextUtils.isEmpty(userSig)) {
+            loginIn(identifier, userSig);
             return;
         }
 
@@ -111,14 +111,16 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginOutput loginOutput) {
                 if (loginOutput.isSuccess()) {
-
                     SharedPreferences.Editor edit = sp.edit();
                     LoginOutput.DataBean data = loginOutput.getData();
                     edit.putInt(Constant.USER_SERVICE_ID, data.getServiceId());
                     edit.putString(Constant.USER_IDENTIFIER, data.getIdentifier());
                     edit.putInt(Constant.USER_STATUS, data.getStatus());
+                    edit.putString(Constant.USER_SIG, data.getUserSig());
+                    edit.putString(Constant.USER_TOKEN, data.getTokenMap().getToken());
+                    edit.putString(Constant.USER_CORE_TOKEN, data.getCoreToken());
                     edit.apply();
-                    loginIn(data.getIdentifier());
+                    loginIn(data.getIdentifier(), data.getUserSig());
                 }
             }
 
@@ -129,11 +131,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginIn(String identifier) {
-        String userSig = GenerateTestUserSig.genTestUserSig(identifier);
+    private void loginIn(String identifier, String userSig) {
         V2TIMManager.getInstance().login(identifier, userSig, new V2TIMCallback() {
             @Override
             public void onError(int code, String desc) {
+                Toast.makeText(LoginActivity.this, desc, Toast.LENGTH_SHORT).show();
+                sp.edit().clear().apply();
             }
 
             @Override

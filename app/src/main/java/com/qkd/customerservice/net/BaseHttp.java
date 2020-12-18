@@ -118,8 +118,10 @@ public class BaseHttp {
         // OkHttp进行添加拦截器loggingInterceptor
         httpClientBuilder.addInterceptor(loggingInterceptor);
 
-        SharedPreferences sp = MyApp.getInstance().getSharedPreferences(Constant.APP_DATA, Context.MODE_PRIVATE);
-        final String token = sp.getString(Constant.USER_TOKEN, "");
+        SharedPreferences userSp = MyApp.getInstance().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        final String token = userSp.getString(Constant.USER_TOKEN, "");
+        final String coreToken = userSp.getString(Constant.USER_CORE_TOKEN, "");
+        final String identifier = userSp.getString(Constant.USER_IDENTIFIER, "");
         if (!TextUtils.isEmpty(token)) {
             httpClientBuilder.addInterceptor(new Interceptor() {
                 @NotNull
@@ -127,8 +129,9 @@ public class BaseHttp {
                 public Response intercept(@NotNull Chain chain) throws IOException {
                     Request original = chain.request();
                     Request request = original.newBuilder()
-                            .header("token", token)
-                            .header("tokenId", String.valueOf(77))
+                            .header("login-token", token)
+                            .header("token", coreToken)
+                            .header("identifier", identifier)
                             .method(original.method(), original.body())
                             .build();
 

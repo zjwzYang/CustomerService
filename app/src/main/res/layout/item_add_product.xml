@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/blue_point_bg" />
+
+        <TextView
+            android:id="@+id/add_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="平安福20"
+            android:textColor="#ff2d2d2d"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/add_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="修改"
+            android:textColor="#ff597ef7"
+            android:textSize="15sp" />
+
+        <View
+            android:id="@+id/add_change_divi"
+            android:layout_width="1dp"
+            android:layout_height="14dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_toLeftOf="@id/add_change"
+            android:background="#C9C9C9" />
+
+        <TextView
+            android:id="@+id/add_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/add_change_divi"
+            android:text="删除"
+            android:textColor="#ff597ef7"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/add_total_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="首年保费：9880.00"
+        android:textColor="#ff8d8d8d"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/add_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical" />
+
+</LinearLayout>

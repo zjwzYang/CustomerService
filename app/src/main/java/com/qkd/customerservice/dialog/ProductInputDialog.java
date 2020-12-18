@@ -1,0 +1,112 @@
+package com.qkd.customerservice.dialog;
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+
+import com.qkd.customerservice.Constant;
+import com.qkd.customerservice.R;
+import com.qkd.customerservice.adapter.DialogInputAdapter;
+import com.qkd.customerservice.bean.PremiumConfigOutput;
+import com.qkd.customerservice.net.BaseHttp;
+
+import java.util.List;
+
+/**
+ * Created on 12/18/20 13:17
+ * .
+ *
+ * @author yj
+ * @org 浙江房超信息科技有限公司
+ */
+public class ProductInputDialog extends DialogFragment implements View.OnClickListener {
+
+    private RecyclerView mRecyclerView;
+    private DialogInputAdapter mAdapter;
+    private OnSureInputListener onSureInputListener;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.dialog_product_input, container, false);
+        mRecyclerView = view.findViewById(R.id.input_recy);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
+        mAdapter = new DialogInputAdapter(getContext());
+        mRecyclerView.setAdapter(mAdapter);
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
+        view.findViewById(R.id.dialog_product_sure).setOnClickListener(this);
+        view.findViewById(R.id.dialog_product_close).setOnClickListener(this);
+
+        initData();
+        return view;
+    }
+
+    private void initData() {
+        int productId = getArguments().getInt("productId", 0);
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getPremiumConfig(62), new BaseHttp.HttpObserver<PremiumConfigOutput>() {
+            @Override
+            public void onSuccess(PremiumConfigOutput premiumConfigOutput) {
+                mAdapter.addAll(premiumConfigOutput.getData().getConfig());
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null && dialog.getWindow() != null) {
+            Window window = dialog.getWindow();
+            window.setGravity(Gravity.BOTTOM);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setWindowAnimations(R.style.animate_dialog);
+            setCancelable(true);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.dialog_product_sure:
+                if (onSureInputListener != null) {
+                    onSureInputListener.onSoutInput(mAdapter.getAll());
+                }
+                dismiss();
+                break;
+            case R.id.dialog_product_close:
+                dismiss();
+                break;
+        }
+    }
+
+    public void setOnSureInputListener(OnSureInputListener onSureInputListener) {
+        this.onSureInputListener = onSureInputListener;
+    }
+
+    public interface OnSureInputListener {
+        void onSoutInput(List<PremiumConfigOutput.DataBean.ConfigBean> configs);
+    }
+}

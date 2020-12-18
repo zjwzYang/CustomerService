@@ -82,4 +82,5 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    implementation 'com.google.android:flexbox:0.2.6'
 }

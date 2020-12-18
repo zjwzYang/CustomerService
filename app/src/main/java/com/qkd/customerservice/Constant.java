@@ -19,6 +19,7 @@ public class Constant {
     public static final String TEXT_ARTICLE_FLAG = "##";
 
     public static final String USER_TOKEN = "user_token";
+    public static final String USER_CORE_TOKEN = "user_core_token";
 
     public static final String BASE_URL_CORE = "http://qkbdev.qukandian573.com:8082/";
     public static final String BASE_URL_WX_CHETER = "http://qkbdev.qukandian573.com:8081/";
@@ -26,8 +27,9 @@ public class Constant {
     public static final String BASE_URL3 = "http://qkbdev.qukandian573.com/";
 
 
-    public static final String USER_INFO="user_info";
-    public static final String USER_SERVICE_ID="service_id";
-    public static final String USER_IDENTIFIER="user_identifier";
+    public static final String USER_INFO = "user_info";
+    public static final String USER_SERVICE_ID = "service_id";
+    public static final String USER_IDENTIFIER = "user_identifier";
     public static final String USER_STATUS = "user_status";
+    public static final String USER_SIG = "user_user_sig";
 }

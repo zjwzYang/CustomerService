@@ -31,7 +31,6 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
-import com.qkd.customerservice.bean.TokenBean;
 import com.qkd.customerservice.bean.VoiceMsg;
 import com.qkd.customerservice.fragment.MailFragment;
 import com.qkd.customerservice.fragment.MineFragment;
@@ -110,23 +109,6 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 setTitle("离线");
                 break;
         }
-
-
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getToken(77), new BaseHttp.HttpObserver<TokenBean>() {
-            @Override
-            public void onSuccess(TokenBean output) {
-                String data = output.getData();
-                if (!TextUtils.isEmpty(data)) {
-                    SharedPreferences sp = getSharedPreferences(Constant.APP_DATA, Context.MODE_PRIVATE);
-                    sp.edit().putString(Constant.USER_TOKEN, data).apply();
-                }
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
     }
 
     private void initListener() {

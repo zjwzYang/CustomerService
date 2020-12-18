@@ -1,6 +1,601 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/customers_head_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_rela"
+        android:layout_below="@id/customers_head_linear">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- 个人信息-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/white_radio_bg"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/head_img"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/ben_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="燕子"
+                            android:textColor="#ff2d2d2d"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/ben_age"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="女 | 30岁"
+                            android:textColor="#ff2d2d2d"
+                            android:textSize="15sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/shebao_linear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/customize_shouqi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/blue_text_empty_bg"
+                        android:drawableRight="@drawable/ic_top_arrow"
+                        android:drawablePadding="5dp"
+                        android:paddingLeft="6dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="6dp"
+                        android:paddingBottom="8dp"
+                        android:text="收起明细"
+                        android:textColor="#ff597ef7"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:layout_toLeftOf="@id/customize_shouqi"
+                        android:background="@drawable/blue_text_empty_bg"
+                        android:paddingLeft="6dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="6dp"
+                        android:paddingBottom="8dp"
+                        android:text="删除"
+                        android:textColor="#ff597ef7"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <!-- 被保人信息-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="38dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/white_radio_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="15dp"
+                        android:background="#597EF7" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="被保人信息"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:drawableRight="@drawable/ic_right_arrow"
+                        android:drawablePadding="5dp"
+                        android:text="姓名"
+                        android:textColor="#ff597ef7"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:text="性别"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/sex_female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/grey_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="女"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/sex_male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:layout_toLeftOf="@id/sex_female"
+                        android:background="@drawable/blue2_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="男"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:text="年龄"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/age_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/grey_text_bg"
+                        android:drawableRight="@drawable/ic_bottom_select"
+                        android:drawablePadding="20dp"
+                        android:hint="年龄"
+                        android:paddingLeft="9dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="9dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/age_year"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:layout_toLeftOf="@id/age_num"
+                        android:background="@drawable/grey_text_bg"
+                        android:drawableRight="@drawable/ic_bottom_select"
+                        android:drawablePadding="7dp"
+                        android:hint="生日(选填)"
+                        android:paddingLeft="9dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="9dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <!-- 投保人信息(豁免相关)-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/white_radio_bg"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="5dp"
+                            android:layout_height="15dp"
+                            android:background="#597EF7" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="投保人信息(豁免相关)"
+                            android:textColor="#ff2d2d2d"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:drawableRight="@drawable/ic_right_arrow"
+                            android:drawablePadding="5dp"
+                            android:text="姓名"
+                            android:textColor="#ff597ef7"
+                            android:textSize="15sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/ic_select_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:text="投被保人是同一人"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/same_false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/grey_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="否"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/same_true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:layout_toLeftOf="@id/same_false"
+                        android:background="@drawable/blue2_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="是"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:text="性别"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/sex_female2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/grey_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="女"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/sex_male2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:layout_toLeftOf="@id/sex_female2"
+                        android:background="@drawable/blue2_text_bg"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="25dp"
+                        android:paddingBottom="5dp"
+                        android:text="男"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:text="年龄"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/age_num2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/grey_text_bg"
+                        android:drawableRight="@drawable/ic_bottom_select"
+                        android:drawablePadding="20dp"
+                        android:hint="年龄"
+                        android:paddingLeft="9dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="9dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/age_year2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:layout_toLeftOf="@id/age_num2"
+                        android:background="@drawable/grey_text_bg"
+                        android:drawableRight="@drawable/ic_bottom_select"
+                        android:drawablePadding="7dp"
+                        android:hint="生日(选填)"
+                        android:paddingLeft="9dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="9dp"
+                        android:paddingBottom="5dp"
+                        android:textColor="#ff8d8d8d"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <!-- 险种选择-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/white_radio_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="15dp"
+                        android:background="#597EF7" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="险种选择"
+                        android:textColor="#ff2d2d2d"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F5F5F5" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/add_product_recy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/add_product"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_margin="15dp"
+                    android:background="@drawable/blue_text_empty_bg"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="4dp"
+                    android:text="+ 添加主险/附加险"
+                    android:textColor="#ff597ef7"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/btn_rela"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="首年总保费"
+                android:textColor="#ff597ef7"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="128.00"
+                android:textColor="#fffebb00"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="#C9C9C9"
+            android:gravity="center"
+            android:paddingLeft="23dp"
+            android:paddingTop="13dp"
+            android:paddingRight="23dp"
+            android:paddingBottom="13dp"
+            android:text="生成计划书"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

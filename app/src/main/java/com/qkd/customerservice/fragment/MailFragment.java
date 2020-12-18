@@ -50,8 +50,14 @@ public class MailFragment extends Fragment {
         bundle2.putInt("userStatus", 2);
         fragment2.setArguments(bundle2);
 
+        MailIndexFragment fragment3 = new MailIndexFragment();
+        Bundle bundle3 = new Bundle();
+        bundle3.putInt("userStatus", 3);
+        fragment3.setArguments(bundle3);
+
         fragments.add(fragment1);
         fragments.add(fragment2);
+        fragments.add(fragment3);
         MailFAdapter adapter = new MailFAdapter(getChildFragmentManager(), fragments);
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
