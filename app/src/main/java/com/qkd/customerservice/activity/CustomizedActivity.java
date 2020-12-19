@@ -1,6 +1,7 @@
 package com.qkd.customerservice.activity;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -34,6 +36,7 @@ import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.net.BaseOutput;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -62,6 +65,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     private TextView benAge2;
     private TextView benYear;
     private ImageView mHeadV;
+    private TextView generatePlanV;
 
     private RecyclerView mAddRecy;
     private AddProductAdapter mAddProductAdapter;
@@ -103,6 +107,33 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     }
 
     private void initView() {
+        // 删除
+        findViewById(R.id.customize_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CustomizedActivity.this);
+                builder.setMessage("确定删除当前信息？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (data == null) {
+                                    return;
+                                }
+                                List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
+                                if (applyPersonList.size() <= 1) {
+                                    return;
+                                }
+                                applyPersonList.remove(selcetIndex);
+                                selcetIndex = 0;
+                                selectPerson = null;
+                                initData();
+                                dialogInterface.dismiss();
+                            }
+                        });
+                builder.show();
+            }
+        });
         mPersionLinear = findViewById(R.id.customers_head_linear);
         benName = findViewById(R.id.ben_name);
         benAge = findViewById(R.id.ben_age);
@@ -111,6 +142,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mfemale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 String gender = selectPerson.getGender();
                 if (TextUtils.isEmpty(gender) || "男".equals(gender)) {
                     selectPerson.setGender("女");
@@ -125,6 +159,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mMale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 String gender = selectPerson.getGender();
                 if (TextUtils.isEmpty(gender) || "女".equals(gender)) {
                     selectPerson.setGender("男");
@@ -139,6 +176,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mAge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 InputDialog inputDialog = new InputDialog();
                 inputDialog.setOnInputSureListener(new InputDialog.OnInputSureListener() {
                     @Override
@@ -196,6 +236,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         benFemale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 String gender = data.getGender();
                 if (TextUtils.isEmpty(gender) || "男".equals(gender)) {
                     data.setGender("女");
@@ -210,6 +253,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         benMale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 String gender = data.getGender();
                 if (TextUtils.isEmpty(gender) || "女".equals(gender)) {
                     data.setGender("男");
@@ -228,6 +274,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                 inputDialog.setOnInputSureListener(new InputDialog.OnInputSureListener() {
                     @Override
                     public void onSure(int age) {
+                        if (data == null) {
+                            return;
+                        }
                         benAge2.setText(String.valueOf(age));
                         data.setAge(String.valueOf(age));
                     }
@@ -239,6 +288,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         benYear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (data == null) {
+                    return;
+                }
                 String birthday = data.getBirthday();
                 int year;
                 int monthOfYear;
@@ -286,8 +338,15 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mAddRecy.setLayoutManager(new LinearLayoutManager(this));
         mAddRecy.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         mAddProductAdapter = new AddProductAdapter(this);
+        mAddProductAdapter.setOnProductDeleteListener(new AddProductAdapter.OnProductDeleteListener() {
+            @Override
+            public void onProductDelete() {
+                checkData();
+            }
+        });
         mAddRecy.setAdapter(mAddProductAdapter);
         mAddRecy.setNestedScrollingEnabled(false);
+        generatePlanV = findViewById(R.id.generate_plan);
     }
 
 
@@ -478,6 +537,18 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
         benAge2.setText(data.getAge());
         benYear.setText(data.getBirthday());
+
+        List<ProductListOutput.DataBean> productList = selectPerson.getProductList();
+        if (productList != null) {
+            mAddProductAdapter.addAll(productList);
+        } else {
+            mAddProductAdapter.addAll(new ArrayList<ProductListOutput.DataBean>());
+        }
+//        List<ProductListOutput.DataBean> productList2 = data.getApplyPersonList().get(selcetIndex).getProductList();
+//        for (int i = 0; i < productList2.size(); i++) {
+//            ProductListOutput.DataBean dataBean = productList2.get(i);
+//            Log.i("Http请求参数", "onSuccess: " + dataBean.getProductName());
+//        }
     }
 
     @Override
@@ -518,7 +589,15 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getAmount(input), new BaseHttp.HttpObserver<BaseOutput>() {
             @Override
             public void onSuccess(BaseOutput baseOutput) {
+                if (baseOutput.isSuccess()) {
+                    mAddProductAdapter.add(currProduct);
+                    data.getApplyPersonList().get(selcetIndex).setProductList(mAddProductAdapter.getAll());
+                    selectPerson.setProductList(mAddProductAdapter.getAll());
 
+                    checkData();
+
+                    currProduct = null;
+                }
             }
 
             @Override
@@ -526,5 +605,23 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
             }
         });
+    }
+
+    private void checkData() {
+        boolean allHasSelect = true;
+        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
+        for (int i = 0; i < applyPersonList.size(); i++) {
+            SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean = applyPersonList.get(i);
+            List<ProductListOutput.DataBean> productList = bean.getProductList();
+            if (productList == null || productList.size() == 0) {
+                allHasSelect = false;
+                break;
+            }
+        }
+        if (allHasSelect) {
+            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
+        } else {
+            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
+        }
     }
 }

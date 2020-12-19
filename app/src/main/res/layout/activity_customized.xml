@@ -105,6 +105,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/customize_delete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="20dp"
@@ -583,6 +584,7 @@
 
 
         <TextView
+            android:id="@+id/generate_plan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

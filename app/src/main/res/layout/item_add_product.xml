@@ -17,10 +17,13 @@
 
         <TextView
             android:id="@+id/add_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/add_delete"
             android:text="平安福20"
+            android:layout_centerVertical="true"
             android:textColor="#ff2d2d2d"
             android:textSize="17sp" />
 

@@ -4,11 +4,14 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,6 +45,7 @@ public class SelectProductDialog extends DialogFragment implements DialogProduct
     private OnSelectProductDialogListener onSelectProductDialogListener;
 
     private String productType;
+    private String productName;
 
     public void setOnSelectProductDialogListener(OnSelectProductDialogListener onSelectProductDialogListener) {
         this.onSelectProductDialogListener = onSelectProductDialogListener;
@@ -58,6 +62,32 @@ public class SelectProductDialog extends DialogFragment implements DialogProduct
         mAdapter = new DialogProductAdapter(getContext());
         mAdapter.setOnClickProductItemListener(this);
         mRecyclerView.setAdapter(mAdapter);
+        view.findViewById(R.id.dialog_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
+
+        EditText editText = view.findViewById(R.id.product_edit);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String input = editable.toString();
+                productName = input;
+                asynData();
+            }
+        });
 
         initData();
 
@@ -105,7 +135,7 @@ public class SelectProductDialog extends DialogFragment implements DialogProduct
     }
 
     private void asynData() {
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getProductList("", productType), new BaseHttp.HttpObserver<ProductListOutput>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getProductList(productName, productType), new BaseHttp.HttpObserver<ProductListOutput>() {
             @Override
             public void onSuccess(ProductListOutput productListOutput) {
                 mAdapter.addAll(productListOutput.getData());
@@ -140,7 +170,7 @@ public class SelectProductDialog extends DialogFragment implements DialogProduct
         dismiss();
     }
 
-    public interface OnSelectProductDialogListener{
+    public interface OnSelectProductDialogListener {
         void selectProduct(ProductListOutput.DataBean bean);
     }
 }

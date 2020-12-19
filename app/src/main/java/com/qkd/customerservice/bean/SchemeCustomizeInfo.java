@@ -304,6 +304,16 @@ public class SchemeCustomizeInfo extends BaseOutput {
             private String createTime;
             private String updateTime;
 
+            private List<ProductListOutput.DataBean> productList;
+
+            public List<ProductListOutput.DataBean> getProductList() {
+                return productList;
+            }
+
+            public void setProductList(List<ProductListOutput.DataBean> productList) {
+                this.productList = productList;
+            }
+
             public int getId() {
                 return id;
             }
