@@ -1,11 +1,13 @@
 package com.qkd.customerservice.activity;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,12 +27,14 @@ import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
+import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
 import com.qkd.customerservice.dialog.SelectProductDialog;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.net.BaseOutput;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -104,15 +108,170 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         benAge = findViewById(R.id.ben_age);
         sheBaoLinear = findViewById(R.id.shebao_linear);
         mfemale = findViewById(R.id.sex_female);
+        mfemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String gender = selectPerson.getGender();
+                if (TextUtils.isEmpty(gender) || "男".equals(gender)) {
+                    selectPerson.setGender("女");
+                    mfemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
+                    mfemale.setBackgroundResource(R.drawable.blue2_text_bg);
+                    mMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
+                    mMale.setBackgroundResource(R.drawable.grey_text_bg);
+                }
+            }
+        });
         mMale = findViewById(R.id.sex_male);
+        mMale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String gender = selectPerson.getGender();
+                if (TextUtils.isEmpty(gender) || "女".equals(gender)) {
+                    selectPerson.setGender("男");
+                    mMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
+                    mMale.setBackgroundResource(R.drawable.blue2_text_bg);
+                    mfemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
+                    mfemale.setBackgroundResource(R.drawable.grey_text_bg);
+                }
+            }
+        });
         mAge = findViewById(R.id.age_num);
+        mAge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputDialog inputDialog = new InputDialog();
+                inputDialog.setOnInputSureListener(new InputDialog.OnInputSureListener() {
+                    @Override
+                    public void onSure(int age) {
+                        mAge.setText(String.valueOf(age));
+                        selectPerson.setAge(String.valueOf(age));
+                    }
+                });
+                inputDialog.show(getSupportFragmentManager(), "input_dialog");
+            }
+        });
         mYear = findViewById(R.id.age_year);
+        mYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (selectPerson == null) {
+                    return;
+                }
+                String birthday = selectPerson.getBirthday();
+                int year;
+                int monthOfYear;
+                int dayOfMonth;
+                if (TextUtils.isEmpty(birthday)) {
+                    Calendar calendar = Calendar.getInstance();
+                    year = calendar.get(calendar.YEAR);
+                    monthOfYear = calendar.get(calendar.MONTH);
+                    dayOfMonth = calendar.get(calendar.DAY_OF_MONTH);
+                } else {
+                    String[] split = birthday.split("-");
+                    try {
+                        year = Integer.parseInt(split[0]);
+                        monthOfYear = Integer.parseInt(split[1]) - 1;
+                        dayOfMonth = Integer.parseInt(split[2]);
+                    } catch (Exception e) {
+                        Calendar calendar = Calendar.getInstance();
+                        year = calendar.get(calendar.YEAR);
+                        monthOfYear = calendar.get(calendar.MONTH);
+                        dayOfMonth = calendar.get(calendar.DAY_OF_MONTH);
+                    }
+                }
+                DatePickerDialog dialog = new DatePickerDialog(CustomizedActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        String newBir = i + "-" + (i1 + 1) + "-" + i2;
+                        mYear.setText(newBir);
+                        selectPerson.setBirthday(newBir);
+                    }
+                }, year, monthOfYear, dayOfMonth);
+                dialog.show();
+            }
+        });
         benFales = findViewById(R.id.same_false);
         benTrue = findViewById(R.id.same_true);
         benFemale = findViewById(R.id.sex_female2);
+        benFemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String gender = data.getGender();
+                if (TextUtils.isEmpty(gender) || "男".equals(gender)) {
+                    data.setGender("女");
+                    benFemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
+                    benFemale.setBackgroundResource(R.drawable.blue2_text_bg);
+                    benMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
+                    benMale.setBackgroundResource(R.drawable.grey_text_bg);
+                }
+            }
+        });
         benMale = findViewById(R.id.sex_male2);
+        benMale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String gender = data.getGender();
+                if (TextUtils.isEmpty(gender) || "女".equals(gender)) {
+                    data.setGender("男");
+                    benMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
+                    benMale.setBackgroundResource(R.drawable.blue2_text_bg);
+                    benFemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
+                    benFemale.setBackgroundResource(R.drawable.grey_text_bg);
+                }
+            }
+        });
         benAge2 = findViewById(R.id.age_num2);
+        benAge2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputDialog inputDialog = new InputDialog();
+                inputDialog.setOnInputSureListener(new InputDialog.OnInputSureListener() {
+                    @Override
+                    public void onSure(int age) {
+                        benAge2.setText(String.valueOf(age));
+                        data.setAge(String.valueOf(age));
+                    }
+                });
+                inputDialog.show(getSupportFragmentManager(), "input_dialog2");
+            }
+        });
         benYear = findViewById(R.id.age_year2);
+        benYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String birthday = data.getBirthday();
+                int year;
+                int monthOfYear;
+                int dayOfMonth;
+                if (TextUtils.isEmpty(birthday)) {
+                    Calendar calendar = Calendar.getInstance();
+                    year = calendar.get(calendar.YEAR);
+                    monthOfYear = calendar.get(calendar.MONTH);
+                    dayOfMonth = calendar.get(calendar.DAY_OF_MONTH);
+                } else {
+                    String[] split = birthday.split("-");
+                    try {
+                        year = Integer.parseInt(split[0]);
+                        monthOfYear = Integer.parseInt(split[1]) - 1;
+                        dayOfMonth = Integer.parseInt(split[2]);
+                    } catch (Exception e) {
+                        Calendar calendar = Calendar.getInstance();
+                        year = calendar.get(calendar.YEAR);
+                        monthOfYear = calendar.get(calendar.MONTH);
+                        dayOfMonth = calendar.get(calendar.DAY_OF_MONTH);
+                    }
+                }
+                DatePickerDialog dialog = new DatePickerDialog(CustomizedActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        String newBir = i + "-" + (i1 + 1) + "-" + i2;
+                        benYear.setText(newBir);
+                        data.setBirthday(newBir);
+                    }
+                }, year, monthOfYear, dayOfMonth);
+                dialog.show();
+            }
+        });
         mHeadV = findViewById(R.id.head_img);
 
         findViewById(R.id.add_product).setOnClickListener(new View.OnClickListener() {
@@ -277,7 +436,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             mMale.setBackgroundResource(R.drawable.blue2_text_bg);
             mfemale.setTextColor(ContextCompat.getColor(this, R.color.divi_color));
             mfemale.setBackgroundResource(R.drawable.grey_text_bg);
-        } else {
+        } else if ("女".equals(gender)) {
             mfemale.setTextColor(ContextCompat.getColor(this, R.color.white));
             mfemale.setBackgroundResource(R.drawable.blue2_text_bg);
             mMale.setTextColor(ContextCompat.getColor(this, R.color.divi_color));
