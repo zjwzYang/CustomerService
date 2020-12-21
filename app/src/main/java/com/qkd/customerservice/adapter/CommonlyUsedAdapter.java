@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,11 +33,11 @@ import java.util.List;
 public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapter.CommonlyUsedViewHolder> {
 
     private Context context;
-    private List<String> commonlyUsedList;
+    private List<KnowledgeOutput.DataBean.ListBean> dataList;
 
-    public CommonlyUsedAdapter(Context context, List<String> commonlyUsedList) {
+    public CommonlyUsedAdapter(Context context) {
         this.context = context;
-        this.commonlyUsedList = commonlyUsedList;
+        this.dataList = new ArrayList<>();
     }
 
     @NonNull
@@ -47,7 +49,8 @@ public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapte
 
     @Override
     public void onBindViewHolder(@NonNull CommonlyUsedViewHolder holder, int position) {
-        final String text = commonlyUsedList.get(position);
+        KnowledgeOutput.DataBean.ListBean bean = dataList.get(position);
+        final String text = bean.getMediaContent();
         holder.mTextView.setText(text);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +76,12 @@ public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapte
 
     @Override
     public int getItemCount() {
-        return commonlyUsedList.size();
+        return dataList.size();
+    }
+
+    public void addAll(List<KnowledgeOutput.DataBean.ListBean> dataList) {
+        this.dataList.addAll(dataList);
+        notifyDataSetChanged();
     }
 
     static class CommonlyUsedViewHolder extends RecyclerView.ViewHolder {
