@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,29 +41,45 @@ public class ProductInputDialog extends DialogFragment implements View.OnClickLi
     private DialogInputAdapter mAdapter;
     private OnSureInputListener onSureInputListener;
 
+    private TextView mProductName;
+    private TextView mProductName2;
+    private int include;
+
+    private List<PremiumConfigOutput.DataBean.ConfigBean> configs;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_product_input, container, false);
+//        bean = (ProductListOutput.DataBean) getArguments().getSerializable("orignData");
+        configs = getArguments().getParcelableArrayList("configs");
         mRecyclerView = view.findViewById(R.id.input_recy);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
-        mAdapter = new DialogInputAdapter(getContext());
+        mAdapter = new DialogInputAdapter(getContext(), configs);
         mRecyclerView.setAdapter(mAdapter);
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         view.findViewById(R.id.dialog_product_sure).setOnClickListener(this);
         view.findViewById(R.id.dialog_product_close).setOnClickListener(this);
+        mProductName = view.findViewById(R.id.product_name);
+        mProductName2 = view.findViewById(R.id.product_name2);
 
         initData();
         return view;
     }
 
     private void initData() {
-        int productId = getArguments().getInt("productId", 0);
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getPremiumConfig(62), new BaseHttp.HttpObserver<PremiumConfigOutput>() {
+        Bundle bundle = getArguments();
+        int productId = bundle.getInt("productId", 0);
+        String productName = bundle.getString("productName");
+
+        mProductName.setText(productName);
+        mProductName2.setText(productName);
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getPremiumConfig(productId), new BaseHttp.HttpObserver<PremiumConfigOutput>() {
             @Override
             public void onSuccess(PremiumConfigOutput premiumConfigOutput) {
+                include = premiumConfigOutput.getData().getInclude();
                 mAdapter.addAll(premiumConfigOutput.getData().getConfig());
             }
 
@@ -92,7 +109,7 @@ public class ProductInputDialog extends DialogFragment implements View.OnClickLi
         switch (view.getId()) {
             case R.id.dialog_product_sure:
                 if (onSureInputListener != null) {
-                    onSureInputListener.onSoutInput(mAdapter.getAll());
+                    onSureInputListener.onSoutInput(mAdapter.getAll(), include);
                 }
                 dismiss();
                 break;
@@ -107,6 +124,6 @@ public class ProductInputDialog extends DialogFragment implements View.OnClickLi
     }
 
     public interface OnSureInputListener {
-        void onSoutInput(List<PremiumConfigOutput.DataBean.ConfigBean> configs);
+        void onSoutInput(List<PremiumConfigOutput.DataBean.ConfigBean> configs, int include);
     }
 }

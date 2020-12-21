@@ -51,6 +51,8 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
         final ProductListOutput.DataBean dataBean = dataList.get(position);
         holder.add_name.setText(dataBean.getProductName());
 
+        holder.add_total_money.setText("首年保费：" + dataBean.getPremiumNum());
+
         holder.add_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,10 +76,40 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
             }
         });
 
+        holder.add_change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("确定修改？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (onProductDeleteListener != null) {
+                                    onProductDeleteListener.onProductChange(dataBean);
+                                }
+                            }
+                        });
+                builder.show();
+            }
+        });
 
+        String[][] arrayData = dataBean.getArrayData();
         holder.add_linear.removeAllViews();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < arrayData.length; i++) {
+            String[] list = arrayData[i];
             View view = this.inflate.inflate(R.layout.item_item_add_product, null);
+            TextView textView1 = view.findViewById(R.id.tv_sheetRow1);
+            textView1.setText(list[0]);
+            TextView textView2 = view.findViewById(R.id.tv_sheetRow2);
+            textView2.setText(list[1]);
+            TextView textView3 = view.findViewById(R.id.tv_sheetRow3);
+            textView3.setText(list[2]);
+            TextView textView4 = view.findViewById(R.id.tv_sheetRow4);
+            textView4.setText(list[3]);
+            TextView textView5 = view.findViewById(R.id.tv_sheetRow5);
+            textView5.setText(list[4]);
+
             holder.add_linear.addView(view);
             if (i != 0) {
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
@@ -98,7 +130,20 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
     }
 
     public void add(ProductListOutput.DataBean bean) {
-        dataList.add(bean);
+        int id = bean.getId();
+        boolean hasSame = false;
+        for (int i = 0; i < dataList.size(); i++) {
+            ProductListOutput.DataBean orignBean = dataList.get(i);
+            if (orignBean.getId() == id) {
+                dataList.remove(i);
+                dataList.add(i, bean);
+                hasSame = true;
+                break;
+            }
+        }
+        if (!hasSame) {
+            dataList.add(bean);
+        }
         notifyDataSetChanged();
     }
 
@@ -117,6 +162,8 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
 
     public interface OnProductDeleteListener {
         void onProductDelete();
+
+        void onProductChange(ProductListOutput.DataBean dataBean);
     }
 
     static class AddAdapter extends RecyclerView.ViewHolder {

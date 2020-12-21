@@ -3,6 +3,7 @@ package com.qkd.customerservice.activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -26,8 +28,10 @@ import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.AddProductAdapter;
 import com.qkd.customerservice.bean.AmountInput;
+import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
+import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
@@ -66,6 +70,8 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     private TextView benYear;
     private ImageView mHeadV;
     private TextView generatePlanV;
+    private TextView mTotalMoney;
+    private float totalMoney = 0f;
 
     private RecyclerView mAddRecy;
     private AddProductAdapter mAddProductAdapter;
@@ -148,6 +154,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                 String gender = selectPerson.getGender();
                 if (TextUtils.isEmpty(gender) || "男".equals(gender)) {
                     selectPerson.setGender("女");
+                    data.getApplyPersonList().get(selcetIndex).setGender("女");
                     mfemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
                     mfemale.setBackgroundResource(R.drawable.blue2_text_bg);
                     mMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
@@ -165,6 +172,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                 String gender = selectPerson.getGender();
                 if (TextUtils.isEmpty(gender) || "女".equals(gender)) {
                     selectPerson.setGender("男");
+                    data.getApplyPersonList().get(selcetIndex).setGender("男");
                     mMale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.white));
                     mMale.setBackgroundResource(R.drawable.blue2_text_bg);
                     mfemale.setTextColor(ContextCompat.getColor(CustomizedActivity.this, R.color.divi_color));
@@ -185,6 +193,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                     public void onSure(int age) {
                         mAge.setText(String.valueOf(age));
                         selectPerson.setAge(String.valueOf(age));
+                        data.getApplyPersonList().get(selcetIndex).setAge(String.valueOf(age));
                     }
                 });
                 inputDialog.show(getSupportFragmentManager(), "input_dialog");
@@ -342,11 +351,65 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             @Override
             public void onProductDelete() {
                 checkData();
+                try {
+                    totalMoney = 0f;
+                    List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
+                    for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
+                        List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
+                        if (productList == null) {
+                            continue;
+                        }
+                        for (ProductListOutput.DataBean selectP : productList) {
+                            String premiumNum = selectP.getPremiumNum();
+                            totalMoney += Float.parseFloat(premiumNum);
+                        }
+                    }
+                    mTotalMoney.setText(String.valueOf(totalMoney));
+                } catch (Exception e) {
+
+                }
+            }
+
+            @Override
+            public void onProductChange(ProductListOutput.DataBean bean) {
+                ProductInputDialog productInputDialog = new ProductInputDialog();
+                Bundle bundle = new Bundle();
+                bundle.putInt("productId", bean.getId());
+                bundle.putString("productName", bean.getProductName());
+                bundle.putSerializable("orignData", bean);
+                bundle.putParcelableArrayList("configs", (ArrayList<? extends Parcelable>) configs);
+                productInputDialog.setArguments(bundle);
+                productInputDialog.setOnSureInputListener(CustomizedActivity.this);
+                productInputDialog.show(getSupportFragmentManager(), "productInputDialog");
             }
         });
         mAddRecy.setAdapter(mAddProductAdapter);
         mAddRecy.setNestedScrollingEnabled(false);
         generatePlanV = findViewById(R.id.generate_plan);
+        generatePlanV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkData()) {
+                    SaveSchemeConfigInput input = new SaveSchemeConfigInput();
+                    input.setOrderNumber(orderNumber);
+                    input.setUserId(data.getUserId());
+                    input.setNickName(data.getNickName());
+
+                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<BaseOutput>() {
+                        @Override
+                        public void onSuccess(BaseOutput baseOutput) {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                }
+            }
+        });
+        mTotalMoney = findViewById(R.id.customized_total);
     }
 
 
@@ -562,6 +625,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     }
 
     private ProductListOutput.DataBean currProduct;
+    private List<PremiumConfigOutput.DataBean.ConfigBean> configs;
 
     @Override
     public void selectProduct(ProductListOutput.DataBean bean) {
@@ -569,34 +633,170 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         ProductInputDialog productInputDialog = new ProductInputDialog();
         Bundle bundle = new Bundle();
         bundle.putInt("productId", bean.getId());
+        bundle.putString("productName", bean.getProductName());
         productInputDialog.setArguments(bundle);
         productInputDialog.setOnSureInputListener(this);
         productInputDialog.show(getSupportFragmentManager(), "productInputDialog");
     }
 
     @Override
-    public void onSoutInput(List<PremiumConfigOutput.DataBean.ConfigBean> configs) {
+    public void onSoutInput(final List<PremiumConfigOutput.DataBean.ConfigBean> configs, int include) {
+        this.configs = configs;
         AmountInput input = new AmountInput();
         input.setProductType(currProduct.getProductType());
         input.setFromCustAge(data.getAge());
 //        input.setFrodmCustHasTss(data.);
-        input.setFromCustSex(data.getGender());
+        String benGender = data.getGender();
+        if ("男".equals(benGender)) {
+            input.setFromCustSex("1");
+        } else {
+            input.setFromCustSex("0");
+        }
         input.setToCustAge(selectPerson.getAge());
-        input.setToCustHasTss(selectPerson.getSocialSecurity());
-        input.setToCustSex(selectPerson.getGender());
+        String socialSecurity = selectPerson.getSocialSecurity();
+        if ("有".equals(socialSecurity)) {
+            input.setToCustHasTss("1");
+        } else {
+            input.setToCustHasTss("0");
+        }
+
         input.setProductId(String.valueOf(currProduct.getId()));
-        input.setIsMain("0");
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getAmount(input), new BaseHttp.HttpObserver<BaseOutput>() {
+        input.setIsMain(String.valueOf(include));
+
+        // 周岁
+        input.setParam1(selectPerson.getAge());
+
+        String gender = selectPerson.getGender();
+        if ("男".equals(gender)) {
+            input.setParam4("1");
+            input.setToCustSex("1");
+        } else {
+            input.setParam4("0");
+            input.setToCustSex("0");
+        }
+        for (int i = 0; i < configs.size(); i++) {
+            PremiumConfigOutput.DataBean.ConfigBean configBean = configs.get(i);
+            List<PremiumConfigOutput.DataBean.ConfigBean.DictListBean> selectBeans = new ArrayList<>();
+            for (int j = 0; j < configBean.getDictList().size(); j++) {
+                PremiumConfigOutput.DataBean.ConfigBean.DictListBean bean = configBean.getDictList().get(j);
+                if (bean.isSelect()) {
+                    selectBeans.add(bean);
+                }
+            }
+
+            String realValue = "";
+            if (selectBeans.size() > 0) {
+                realValue = selectBeans.get(0).getRealValue();
+            }
+            if (TextUtils.isEmpty(realValue)) {
+                continue;
+            }
+            String fieldName = configBean.getFieldName();
+            if ("param2".equals(fieldName)) {
+                input.setParam2(realValue);
+            } else if ("param3".equals(fieldName)) {
+                input.setParam3(realValue);
+            } else if ("param5".equals(fieldName)) {
+                input.setParam5(realValue);
+            } else if ("param6".equals(fieldName)) {
+                input.setParam6(realValue);
+            } else if ("param7".equals(fieldName)) {
+                input.setParam7(realValue);
+            } else if ("param8".equals(fieldName)) {
+                input.setParam8(realValue);
+            } else if ("param9".equals(fieldName)) {
+                input.setParam9(realValue);
+            } else if ("param10".equals(fieldName)) {
+                input.setParam10(realValue);
+            } else if ("param11".equals(fieldName)) {
+                input.setParam11(realValue);
+            } else if ("param12".equals(fieldName)) {
+                input.setParam12(realValue);
+            } else if ("param13".equals(fieldName)) {
+                input.setParam13(realValue);
+            } else if ("param14".equals(fieldName)) {
+                input.setParam14(realValue);
+            } else if ("param15".equals(fieldName)) {
+                input.setParam15(realValue);
+            } else if ("param16".equals(fieldName)) {
+                input.setParam16(realValue);
+            } else if ("param17".equals(fieldName)) {
+                input.setParam17(realValue);
+            } else if ("param18".equals(fieldName)) {
+                input.setParam18(realValue);
+            } else if ("param19".equals(fieldName)) {
+                input.setParam19(realValue);
+            } else if ("param20".equals(fieldName)) {
+                input.setParam20(realValue);
+            }
+
+        }
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getAmount(input), new BaseHttp.HttpObserver<AmountOutput>() {
             @Override
-            public void onSuccess(BaseOutput baseOutput) {
+            public void onSuccess(AmountOutput baseOutput) {
                 if (baseOutput.isSuccess()) {
+                    String dataNum = baseOutput.getData();
+                    if (TextUtils.isEmpty(dataNum)) {
+                        Toast.makeText(CustomizedActivity.this, "添加出错", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    currProduct.setPremiumNum(dataNum);
+                    String[][] arrayData = new String[2][];
+                    String[] list1 = {"投保险种", "保额", "保险期", "交费期", "首年保费"};
+                    String valueBao = "";
+                    String valueQi = "";
+                    String valueNian = "";
+                    for (PremiumConfigOutput.DataBean.ConfigBean config : configs) {
+                        String fieldName = config.getFieldName();
+                        List<PremiumConfigOutput.DataBean.ConfigBean.DictListBean> dictList = config.getDictList();
+                        String showValue = "";
+                        for (PremiumConfigOutput.DataBean.ConfigBean.DictListBean bean : dictList) {
+                            if (bean.isSelect()) {
+                                showValue = bean.getShowValue();
+                                break;
+                            }
+                        }
+                        if ("param2".equals(fieldName)) {
+                            valueBao = showValue;
+                        } else if ("param5".equals(fieldName)) {
+                            valueQi = showValue;
+                        } else if ("param3".equals(fieldName)) {
+                            valueNian = showValue;
+                        }
+                    }
+                    String[] list2 = {currProduct.getProductName(), valueBao, valueQi, valueNian, dataNum};
+                    arrayData[0] = list1;
+                    arrayData[1] = list2;
+                    currProduct.setArrayData(arrayData);
+
+
                     mAddProductAdapter.add(currProduct);
-                    data.getApplyPersonList().get(selcetIndex).setProductList(mAddProductAdapter.getAll());
-                    selectPerson.setProductList(mAddProductAdapter.getAll());
+                    List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();
+                    List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
+                    applyPersonList.get(selcetIndex).setProductList(allProduct);
+                    selectPerson.setProductList(allProduct);
+
+                    try {
+                        totalMoney = 0f;
+                        for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
+                            List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
+                            if (productList == null) {
+                                continue;
+                            }
+                            for (ProductListOutput.DataBean selectP : productList) {
+                                String premiumNum = selectP.getPremiumNum();
+                                totalMoney += Float.parseFloat(premiumNum);
+                            }
+                        }
+                        mTotalMoney.setText(String.valueOf(totalMoney));
+                    } catch (Exception e) {
+
+                    }
 
                     checkData();
 
-                    currProduct = null;
+                    //currProduct = null;
                 }
             }
 
@@ -607,7 +807,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         });
     }
 
-    private void checkData() {
+    private boolean checkData() {
         boolean allHasSelect = true;
         List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
         for (int i = 0; i < applyPersonList.size(); i++) {
@@ -623,5 +823,6 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         } else {
             generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
         }
+        return allHasSelect;
     }
 }

@@ -2,6 +2,7 @@ package com.qkd.customerservice.bean;
 
 import com.qkd.customerservice.net.BaseOutput;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class ProductListOutput extends BaseOutput {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable {
         /**
          * id : 57
          * productName : 好医保长期医疗2020好医保长期医疗2020
@@ -42,6 +43,33 @@ public class ProductListOutput extends BaseOutput {
         private String productType;
         private String companyId;
         private String companyName;
+        private int isContainAttachInsurance;
+        private String premiumNum;
+        private String[][] arrayData;
+
+        public String[][] getArrayData() {
+            return arrayData;
+        }
+
+        public void setArrayData(String[][] arrayData) {
+            this.arrayData = arrayData;
+        }
+
+        public String getPremiumNum() {
+            return premiumNum;
+        }
+
+        public void setPremiumNum(String premiumNum) {
+            this.premiumNum = premiumNum;
+        }
+
+        public int getIsContainAttachInsurance() {
+            return isContainAttachInsurance;
+        }
+
+        public void setIsContainAttachInsurance(int isContainAttachInsurance) {
+            this.isContainAttachInsurance = isContainAttachInsurance;
+        }
 
         public int getId() {
             return id;

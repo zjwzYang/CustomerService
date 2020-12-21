@@ -1,5 +1,8 @@
 package com.qkd.customerservice.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.List;
@@ -53,7 +56,7 @@ public class PremiumConfigOutput extends BaseOutput {
             this.config = config;
         }
 
-        public static class ConfigBean {
+        public static class ConfigBean implements Parcelable {
             /**
              * showData : sex
              * showName : 性别
@@ -148,7 +151,7 @@ public class PremiumConfigOutput extends BaseOutput {
                 this.dictList = dictList;
             }
 
-            public static class DictListBean {
+            public static class DictListBean implements Parcelable {
                 /**
                  * showValue : 男
                  * realValue : 1
@@ -211,7 +214,91 @@ public class PremiumConfigOutput extends BaseOutput {
                 public void setDictKey(String dictKey) {
                     this.dictKey = dictKey;
                 }
+
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
+
+                @Override
+                public void writeToParcel(Parcel dest, int flags) {
+                    dest.writeString(this.showValue);
+                    dest.writeString(this.realValue);
+                    dest.writeInt(this.showOrder);
+                    dest.writeInt(this.id);
+                    dest.writeString(this.dictKey);
+                    dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
+                }
+
+                public DictListBean() {
+                }
+
+                protected DictListBean(Parcel in) {
+                    this.showValue = in.readString();
+                    this.realValue = in.readString();
+                    this.showOrder = in.readInt();
+                    this.id = in.readInt();
+                    this.dictKey = in.readString();
+                    this.isSelect = in.readByte() != 0;
+                }
+
+                public static final Creator<DictListBean> CREATOR = new Creator<DictListBean>() {
+                    @Override
+                    public DictListBean createFromParcel(Parcel source) {
+                        return new DictListBean(source);
+                    }
+
+                    @Override
+                    public DictListBean[] newArray(int size) {
+                        return new DictListBean[size];
+                    }
+                };
             }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeString(this.showData);
+                dest.writeString(this.showName);
+                dest.writeString(this.fieldName);
+                dest.writeInt(this.productId);
+                dest.writeString(this.showDesc);
+                dest.writeInt(this.showWay);
+                dest.writeInt(this.showOrder);
+                dest.writeInt(this.id);
+                dest.writeTypedList(this.dictList);
+            }
+
+            public ConfigBean() {
+            }
+
+            protected ConfigBean(Parcel in) {
+                this.showData = in.readString();
+                this.showName = in.readString();
+                this.fieldName = in.readString();
+                this.productId = in.readInt();
+                this.showDesc = in.readString();
+                this.showWay = in.readInt();
+                this.showOrder = in.readInt();
+                this.id = in.readInt();
+                this.dictList = in.createTypedArrayList(DictListBean.CREATOR);
+            }
+
+            public static final Creator<ConfigBean> CREATOR = new Creator<ConfigBean>() {
+                @Override
+                public ConfigBean createFromParcel(Parcel source) {
+                    return new ConfigBean(source);
+                }
+
+                @Override
+                public ConfigBean[] newArray(int size) {
+                    return new ConfigBean[size];
+                }
+            };
         }
     }
 }

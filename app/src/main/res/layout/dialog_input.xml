@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="被保人姓名"
+            android:text="年龄："
             android:textColor="#ff2d2d2d"
             android:textSize="18sp" />
 

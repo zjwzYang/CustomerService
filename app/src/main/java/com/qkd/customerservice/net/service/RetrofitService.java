@@ -2,6 +2,7 @@ package com.qkd.customerservice.net.service;
 
 
 import com.qkd.customerservice.bean.AmountInput;
+import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.ArticleOutput;
 import com.qkd.customerservice.bean.CustomerBookOutput;
 import com.qkd.customerservice.bean.CustomizedListBean;
@@ -12,6 +13,7 @@ import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
+import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.net.BaseOutput;
 
@@ -89,5 +91,9 @@ public interface RetrofitService {
 
     // 保费试算
     @POST("scheme/to-be-customized/getAmount")
-    Observable<BaseOutput> getAmount(@Body AmountInput input);
+    Observable<AmountOutput> getAmount(@Body AmountInput input);
+
+    // 保存预览
+    @POST("scheme/to-be-customized/saveSchemeConfig")
+    Observable<BaseOutput> saveSchemeConfig(@Body SaveSchemeConfigInput input);
 }
