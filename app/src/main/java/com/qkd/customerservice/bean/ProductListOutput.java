@@ -45,7 +45,26 @@ public class ProductListOutput extends BaseOutput {
         private String companyName;
         private int isContainAttachInsurance;
         private String premiumNum;
+        private String insuredAmount;
+        private String paymentPeriod;
+        private String guaranteePeriod;
         private String[][] arrayData;
+
+        public String getGuaranteePeriod() {
+            return guaranteePeriod;
+        }
+
+        public void setGuaranteePeriod(String guaranteePeriod) {
+            this.guaranteePeriod = guaranteePeriod;
+        }
+
+        public String getPaymentPeriod() {
+            return paymentPeriod;
+        }
+
+        public void setPaymentPeriod(String paymentPeriod) {
+            this.paymentPeriod = paymentPeriod;
+        }
 
         public String[][] getArrayData() {
             return arrayData;
@@ -61,6 +80,14 @@ public class ProductListOutput extends BaseOutput {
 
         public void setPremiumNum(String premiumNum) {
             this.premiumNum = premiumNum;
+        }
+
+        public String getInsuredAmount() {
+            return insuredAmount;
+        }
+
+        public void setInsuredAmount(String insuredAmount) {
+            this.insuredAmount = insuredAmount;
         }
 
         public int getIsContainAttachInsurance() {

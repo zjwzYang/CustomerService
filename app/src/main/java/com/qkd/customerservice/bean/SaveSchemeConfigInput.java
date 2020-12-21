@@ -71,7 +71,7 @@ public class SaveSchemeConfigInput {
         private String insuranceInfoId;
         private String productId;
         private String productName;
-        private int productType;
+        private String productType;
         private String productByUrl;
         private String insuredAmount;
         private String firstYearPremium;
@@ -102,11 +102,11 @@ public class SaveSchemeConfigInput {
             this.productName = productName;
         }
 
-        public int getProductType() {
+        public String getProductType() {
             return productType;
         }
 
-        public void setProductType(int productType) {
+        public void setProductType(String productType) {
             this.productType = productType;
         }
 

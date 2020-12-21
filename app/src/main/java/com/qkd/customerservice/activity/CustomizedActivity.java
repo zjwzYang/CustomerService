@@ -376,7 +376,6 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                 Bundle bundle = new Bundle();
                 bundle.putInt("productId", bean.getId());
                 bundle.putString("productName", bean.getProductName());
-                bundle.putSerializable("orignData", bean);
                 bundle.putParcelableArrayList("configs", (ArrayList<? extends Parcelable>) configs);
                 productInputDialog.setArguments(bundle);
                 productInputDialog.setOnSureInputListener(CustomizedActivity.this);
@@ -394,11 +393,30 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                     input.setOrderNumber(orderNumber);
                     input.setUserId(data.getUserId());
                     input.setNickName(data.getNickName());
+                    List<SaveSchemeConfigInput.DataListBean> dataList = new ArrayList<>();
+                    for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean : data.getApplyPersonList()) {
+                        List<ProductListOutput.DataBean> productList = bean.getProductList();
+                        for (ProductListOutput.DataBean product : productList) {
+                            SaveSchemeConfigInput.DataListBean configBean = new SaveSchemeConfigInput.DataListBean();
+                            configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
+                            configBean.setProductId(String.valueOf(product.getId()));
+                            configBean.setProductName(product.getProductName());
+                            configBean.setProductType(product.getProductType());
+                            configBean.setInsuredAmount(product.getInsuredAmount());
+                            configBean.setFirstYearPremium(product.getPremiumNum());
+                            configBean.setPaymentPeriod(product.getPaymentPeriod());
+                            configBean.setGuaranteePeriod(product.getGuaranteePeriod());
+                            dataList.add(configBean);
+                        }
+                    }
+                    input.setDataList(dataList);
 
                     BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<BaseOutput>() {
                         @Override
                         public void onSuccess(BaseOutput baseOutput) {
-
+                            if (baseOutput.isSuccess()) {
+                                Toast.makeText(CustomizedActivity.this, "成功", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
@@ -759,10 +777,13 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                         }
                         if ("param2".equals(fieldName)) {
                             valueBao = showValue;
+                            currProduct.setInsuredAmount(showValue);
                         } else if ("param5".equals(fieldName)) {
                             valueQi = showValue;
+                            currProduct.setGuaranteePeriod(showValue);
                         } else if ("param3".equals(fieldName)) {
                             valueNian = showValue;
+                            currProduct.setPaymentPeriod(showValue);
                         }
                     }
                     String[] list2 = {currProduct.getProductName(), valueBao, valueQi, valueNian, dataNum};
