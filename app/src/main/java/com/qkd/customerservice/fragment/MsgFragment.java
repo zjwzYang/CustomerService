@@ -21,6 +21,7 @@ import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.bean.VoiceMsg;
+import com.qkd.customerservice.dialog.PlannerDialog;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.imsdk.v2.V2TIMConversationResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -51,6 +52,17 @@ public class MsgFragment extends Fragment {
         EventBus.getDefault().register(this);
         mRecyclerView = view.findViewById(R.id.msg_recy);
         mAdapter = new CustomerAdapter(getContext());
+        mAdapter.setOnLongClickListener(new CustomerAdapter.OnLongClickListener() {
+            @Override
+            public void onLongClick(ConversationBean conversation) {
+                PlannerDialog plannerDialog = new PlannerDialog();
+                String userId = conversation.getUserId();
+                Bundle bundle = new Bundle();
+                bundle.putString("userId", userId);
+                plannerDialog.setArguments(bundle);
+                plannerDialog.show(getChildFragmentManager(), "plannerDialog");
+            }
+        });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
@@ -82,7 +94,7 @@ public class MsgFragment extends Fragment {
                 List<V2TIMConversation> conversationList = v2TIMConversationResult.getConversationList();
                 List<ConversationBean> conversationBeans = new ArrayList<>();
                 for (V2TIMConversation conversation : conversationList) {
-                    Log.i("12345678", "会话: " + conversation.getShowName());
+                    Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUserID());
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
                 }

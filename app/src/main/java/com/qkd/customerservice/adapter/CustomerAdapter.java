@@ -43,6 +43,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     private LayoutInflater inflater;
     private List<ConversationBean> conversationList;
     private RequestOptions options;
+    private OnLongClickListener onLongClickListener;
 
     public CustomerAdapter(Context context) {
         this.context = context;
@@ -76,6 +77,16 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 context.startActivity(intent);
 //                conversation.setHasUnread(false);
                 notifyItemChanged(position);
+            }
+        });
+        // 长按
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (onLongClickListener != null) {
+                    onLongClickListener.onLongClick(conversation);
+                }
+                return true;
             }
         });
 
@@ -155,5 +166,13 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             lastMsg = itemView.findViewById(R.id.customer_last_msg);
             lastTime = itemView.findViewById(R.id.customer_last_time);
         }
+    }
+
+    public void setOnLongClickListener(OnLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
+    }
+
+    public interface OnLongClickListener {
+        void onLongClick(ConversationBean conversation);
     }
 }

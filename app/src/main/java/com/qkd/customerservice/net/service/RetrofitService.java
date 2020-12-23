@@ -10,12 +10,14 @@ import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.bean.LoginOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
 import com.qkd.customerservice.bean.NewMessageOutput;
+import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
 import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
+import com.qkd.customerservice.bean.TransferOutput;
 import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.Map;
@@ -103,4 +105,16 @@ public interface RetrofitService {
     Observable<KnowledgeOutput> queryKnowledge(@Query("mediaType") int mediaType,
                                                @Query("serviceId") int serviceId,
                                                @Query("pageNum") int pageNum);
+
+    //查询规划师列表
+    @GET("planner/queryPlannerList")
+    Observable<PlannerOutput> queryPlannerList(@Query("identifier") String identifier, @Query("pageNum") int pageNum);
+
+    // 转移客户至别的规划师
+    @FormUrlEncoded
+    @PUT("planner/transferCustomer")
+    Observable<TransferOutput> transferCustomer(@Field("openId") String openId,
+                                                @Field("identifier") String identifier,
+                                                @Field("newServiceId") int newServiceId,
+                                                @Field("newIdentifier") String newIdentifier);
 }
