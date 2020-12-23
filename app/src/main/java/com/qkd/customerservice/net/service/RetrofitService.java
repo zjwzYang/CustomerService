@@ -16,6 +16,7 @@ import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
 import com.qkd.customerservice.bean.SaveSchemeConfigInput;
+import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TransferOutput;
 import com.qkd.customerservice.net.BaseOutput;
@@ -98,7 +99,7 @@ public interface RetrofitService {
 
     // 保存预览
     @POST("scheme/to-be-customized/saveSchemeConfig")
-    Observable<BaseOutput> saveSchemeConfig(@Body SaveSchemeConfigInput input);
+    Observable<SchemeConfigOutput> saveSchemeConfig(@Body SaveSchemeConfigInput input);
 
     // 查询知识库列表（1-文本 2-图片 3-语音 4-视频）
     @GET("knowledge/queryKnowledge")

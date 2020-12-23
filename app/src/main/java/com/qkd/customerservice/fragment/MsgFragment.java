@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CustomerAdapter;
 import com.qkd.customerservice.bean.ConversationBean;
@@ -59,6 +60,7 @@ public class MsgFragment extends Fragment {
                 String userId = conversation.getUserId();
                 Bundle bundle = new Bundle();
                 bundle.putString("userId", userId);
+                bundle.putString("conversationID", conversation.getConversationID());
                 plannerDialog.setArguments(bundle);
                 plannerDialog.show(getChildFragmentManager(), "plannerDialog");
             }
@@ -101,6 +103,13 @@ public class MsgFragment extends Fragment {
                 mAdapter.addAll(conversationBeans);
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshMsg(String msg) {
+        if (Constant.REFRESH_CONVERSATION.equals(msg)) {
+            getConversation();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

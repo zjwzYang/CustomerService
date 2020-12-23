@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class BaseOutput implements Serializable {
 
     private boolean success;
-    private Object errorMsg;
+    private String errorMsg;
     private int error;
 
     public boolean isSuccess() {
@@ -22,11 +22,11 @@ public class BaseOutput implements Serializable {
         this.success = success;
     }
 
-    public Object getErrorMsg() {
+    public String getErrorMsg() {
         return errorMsg;
     }
 
-    public void setErrorMsg(Object errorMsg) {
+    public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
     }
 

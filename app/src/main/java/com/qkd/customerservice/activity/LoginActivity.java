@@ -121,6 +121,8 @@ public class LoginActivity extends AppCompatActivity {
                     edit.putString(Constant.USER_CORE_TOKEN, data.getCoreToken());
                     edit.apply();
                     loginIn(data.getIdentifier(), data.getUserSig());
+                } else {
+                    Toast.makeText(LoginActivity.this, loginOutput.getErrorMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
 

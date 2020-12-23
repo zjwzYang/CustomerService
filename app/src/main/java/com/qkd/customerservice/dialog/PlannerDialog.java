@@ -27,6 +27,10 @@ import com.qkd.customerservice.adapter.PlannerAdapter;
 import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.TransferOutput;
 import com.qkd.customerservice.net.BaseHttp;
+import com.tencent.imsdk.v2.V2TIMCallback;
+import com.tencent.imsdk.v2.V2TIMManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created on 12/23/20 14:48
@@ -40,6 +44,7 @@ public class PlannerDialog extends DialogFragment implements PlannerAdapter.OnPl
     private RecyclerView mRecyclerView;
     private PlannerAdapter mAdapter;
     private String userId;
+    private String conversationID;
     private String identifier;
 
     @Nullable
@@ -54,6 +59,7 @@ public class PlannerDialog extends DialogFragment implements PlannerAdapter.OnPl
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
         Bundle bundle = getArguments();
         userId = bundle.getString("userId");
+        conversationID = bundle.getString("conversationID");
         initData();
         return view;
     }
@@ -81,9 +87,25 @@ public class PlannerDialog extends DialogFragment implements PlannerAdapter.OnPl
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE)
                 .transferCustomer(userId, identifier, listBean.getId(), listBean.getIdentifier()), new BaseHttp.HttpObserver<TransferOutput>() {
             @Override
-            public void onSuccess(TransferOutput baseOutput) {
-                Toast.makeText(getContext(), baseOutput.getData(), Toast.LENGTH_SHORT).show();
-                dismiss();
+            public void onSuccess(final TransferOutput baseOutput) {
+                if (baseOutput.isSuccess()) {
+                    V2TIMManager.getConversationManager().deleteConversation(conversationID, new V2TIMCallback() {
+                        @Override
+                        public void onError(int code, String desc) {
+
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(getContext(), baseOutput.getData(), Toast.LENGTH_SHORT).show();
+                            EventBus.getDefault().post(Constant.REFRESH_CONVERSATION);
+                            dismiss();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), baseOutput.getErrorMsg(), Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
             }
 
             @Override

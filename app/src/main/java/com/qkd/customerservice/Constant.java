@@ -32,4 +32,6 @@ public class Constant {
     public static final String USER_IDENTIFIER = "user_identifier";
     public static final String USER_STATUS = "user_status";
     public static final String USER_SIG = "user_user_sig";
+
+    public static final String REFRESH_CONVERSATION="refresh_conversation";
 }

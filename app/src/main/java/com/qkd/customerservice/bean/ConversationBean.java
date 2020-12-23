@@ -14,6 +14,7 @@ public class ConversationBean {
     private String showName;
     private String userId;
     private String faceUrl;
+    private String conversationID;
     private int unreadCount;
     private V2TIMMessage lastMessage;
 
@@ -23,6 +24,15 @@ public class ConversationBean {
         this.faceUrl = conversation.getFaceUrl();
         this.unreadCount = conversation.getUnreadCount();
         this.lastMessage = conversation.getLastMessage();
+        this.conversationID = conversation.getConversationID();
+    }
+
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
     }
 
     public V2TIMMessage getLastMessage() {

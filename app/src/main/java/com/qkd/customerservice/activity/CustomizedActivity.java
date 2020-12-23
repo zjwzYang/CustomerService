@@ -2,6 +2,7 @@ package com.qkd.customerservice.activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -32,13 +33,13 @@ import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.SaveSchemeConfigInput;
+import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
 import com.qkd.customerservice.dialog.SelectProductDialog;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.net.BaseHttp;
-import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -411,12 +412,13 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                     }
                     input.setDataList(dataList);
 
-                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<BaseOutput>() {
+                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<SchemeConfigOutput>() {
                         @Override
-                        public void onSuccess(BaseOutput baseOutput) {
-                            if (baseOutput.isSuccess()) {
-                                Toast.makeText(CustomizedActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                            }
+                        public void onSuccess(SchemeConfigOutput baseOutput) {
+                            Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
+                            intent.putExtra("orderNumber", baseOutput.getOrderNumber());
+                            intent.putExtra("userId", baseOutput.getUserId());
+                            startActivity(intent);
                         }
 
                         @Override

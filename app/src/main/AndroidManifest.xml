@@ -57,6 +57,9 @@
             android:launchMode="singleTask"
             android:taskAffinity="com.qkd.customerservice"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".activity.WebActivity"
+            android:screenOrientation="portrait" />
 
         <!--小米推送-->
         <service
