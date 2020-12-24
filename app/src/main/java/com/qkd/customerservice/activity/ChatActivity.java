@@ -279,7 +279,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        recycler_view.setHasFixedSize(true);
+//        recycler_view.setHasFixedSize(true);
         faceUrl = getIntent().getStringExtra("faceUrl");
         adapter = new MsgAdapter(this, msgList, faceUrl);
         adapter.setOnClickImageListener(new MsgAdapter.OnClickImageListener() {

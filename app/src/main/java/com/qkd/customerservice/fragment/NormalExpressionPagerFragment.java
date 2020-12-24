@@ -67,7 +67,7 @@ public class NormalExpressionPagerFragment extends Fragment implements View.OnCl
     private void init() {
         Bundle bundle = getArguments();
         expressionList = (List<Expression>) bundle.getSerializable(KEY_EXPRESSION_LIST);
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
         layoutManager = new GridLayoutManager(getActivity(), ExpressionManager.NORMAL_COUNT_BY_ROW);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new TopPaddingDecoration(DensityUtil.dp2px(getContext(), 24.0f)));

@@ -25,6 +25,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.hms.aaid.HmsInstanceId;
+import com.huawei.hms.common.ApiException;
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
@@ -38,10 +41,12 @@ import com.qkd.customerservice.fragment.MsgFragment;
 import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.net.BaseOutput;
 import com.tencent.imsdk.v2.V2TIMAdvancedMsgListener;
+import com.tencent.imsdk.v2.V2TIMCallback;
 import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMMessage;
 import com.tencent.imsdk.v2.V2TIMMessageReceipt;
+import com.tencent.imsdk.v2.V2TIMOfflinePushConfig;
 import com.tencent.imsdk.v2.V2TIMSoundElem;
 import com.tencent.imsdk.v2.V2TIMTextElem;
 import com.tencent.imsdk.v2.V2TIMValueCallback;
@@ -110,6 +115,45 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 setTitle("离线");
                 break;
         }
+
+        getHWToken();
+    }
+
+    private void getHWToken() {
+        // 创建一个新线程
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    // 从agconnect-service.json文件中读取appId
+                    String appId = AGConnectServicesConfig.fromContext(IndexActivity.this).getString("client/app_id");
+
+                    // 输入token标识"HCM"
+                    String tokenScope = "HCM";
+                    String token = HmsInstanceId.getInstance(IndexActivity.this).getToken(appId, tokenScope);
+                    Log.i("12345678", "get token: " + token);
+
+                    // 判断token是否为空
+                    if (!TextUtils.isEmpty(token)) {
+                        //sendRegTokenToServer(token);
+                        V2TIMOfflinePushConfig config = new V2TIMOfflinePushConfig(Constant.IM_HW_ID, token);
+                        V2TIMManager.getOfflinePushManager().setOfflinePushConfig(config, new V2TIMCallback() {
+                            @Override
+                            public void onError(int code, String desc) {
+
+                            }
+
+                            @Override
+                            public void onSuccess() {
+                                Log.i("12345678", "token上次成功 ");
+                            }
+                        });
+                    }
+                } catch (ApiException e) {
+                    Log.e("12345678", "get token failed, " + e);
+                }
+            }
+        }.start();
     }
 
     private void initListener() {

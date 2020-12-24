@@ -531,12 +531,18 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         loanValue.setText(familyLoan);
         sheBaoLinear.addView(loanView);
 
-        String birthday = selectPerson.getBirthday();
+        String selectBirthday = selectPerson.getBirthday();
+        String selectForBirthday;
+        if (!TextUtils.isEmpty(selectBirthday)) {
+            selectForBirthday = selectBirthday.split("T")[0];
+        } else {
+            selectForBirthday = "";
+        }
         View birthdayView = inflater.inflate(R.layout.item_shebao, null);
         TextView birthdaylabel = birthdayView.findViewById(R.id.shebao_label);
         TextView birthdayValue = birthdayView.findViewById(R.id.shebao_value);
         birthdaylabel.setText("出生日期");
-        birthdayValue.setText(birthday);
+        birthdayValue.setText(selectForBirthday);
         sheBaoLinear.addView(birthdayView);
 
         String profession = selectPerson.getProfession();
@@ -547,23 +553,23 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         professionValue.setText(profession);
         sheBaoLinear.addView(professionView);
 
-        String city = data.getCity();
-        if (!TextUtils.isEmpty(city)) {
-            View cityView = inflater.inflate(R.layout.item_shebao, null);
-            TextView citylabel = cityView.findViewById(R.id.shebao_label);
-            TextView cityValue = cityView.findViewById(R.id.shebao_value);
-            citylabel.setText("居住省市");
-            cityValue.setText(city);
-            sheBaoLinear.addView(cityView);
-        }
-
-        String phoneNumber = data.getPhoneNumber();
-        View phoneView = inflater.inflate(R.layout.item_shebao, null);
-        TextView phonelabel = phoneView.findViewById(R.id.shebao_label);
-        TextView phoneValue = phoneView.findViewById(R.id.shebao_value);
-        phonelabel.setText("手机号码");
-        phoneValue.setText(phoneNumber);
-        sheBaoLinear.addView(phoneView);
+//        String city = data.getCity();
+//        if (!TextUtils.isEmpty(city)) {
+//            View cityView = inflater.inflate(R.layout.item_shebao, null);
+//            TextView citylabel = cityView.findViewById(R.id.shebao_label);
+//            TextView cityValue = cityView.findViewById(R.id.shebao_value);
+//            citylabel.setText("居住省市");
+//            cityValue.setText(city);
+//            sheBaoLinear.addView(cityView);
+//        }
+//
+//        String phoneNumber = data.getPhoneNumber();
+//        View phoneView = inflater.inflate(R.layout.item_shebao, null);
+//        TextView phonelabel = phoneView.findViewById(R.id.shebao_label);
+//        TextView phoneValue = phoneView.findViewById(R.id.shebao_value);
+//        phonelabel.setText("手机号码");
+//        phoneValue.setText(phoneNumber);
+//        sheBaoLinear.addView(phoneView);
 
         String medicalHistory = selectPerson.getMedicalHistory();
         View medicalView = inflater.inflate(R.layout.item_shebao, null);
@@ -586,7 +592,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         }
 
         mAge.setText(selectPerson.getAge());
-        mYear.setText(selectPerson.getBirthday());
+        mYear.setText(selectForBirthday);
 
         if ("本人".equals(insuredPerson)) {
             benTrue.setTextColor(ContextCompat.getColor(this, R.color.white));
@@ -619,7 +625,12 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         }
 
         benAge2.setText(data.getAge());
-        benYear.setText(data.getBirthday());
+        String benBirthday = data.getBirthday();
+        if (!TextUtils.isEmpty(benBirthday)) {
+            benYear.setText(benBirthday.split("T")[0]);
+        } else {
+            benYear.setText("");
+        }
 
         List<ProductListOutput.DataBean> productList = selectPerson.getProductList();
         if (productList != null) {

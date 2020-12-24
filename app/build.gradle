@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.qkd.customerservice"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -25,7 +25,7 @@ android {
             v1SigningEnabled true
             v2SigningEnabled true
             storePassword 'xmzhangku'
-            storeFile file('../qukandian.jks')
+            storeFile file('/Users/yfx/Documents/workspace/CustomerService/qukandian.jks')
             keyAlias 'key0'
             keyPassword 'xmzkqukandian'
         }
@@ -33,14 +33,18 @@ android {
             v1SigningEnabled true
             v2SigningEnabled true
             storePassword 'xmzhangku'
-            storeFile file('../qukandian.jks')
+            storeFile file('/Users/yfx/Documents/workspace/CustomerService/qukandian.jks')
             keyAlias 'key0'
             keyPassword 'xmzkqukandian'
         }
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -66,7 +70,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     api 'com.tencent.imsdk:imsdk:5.1.2'
-    implementation 'com.tencent.imsdk:tuikit:5.1.2'
+//    implementation 'com.tencent.imsdk:tuikit:5.1.2'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.zhihu.android:matisse:0.5.3-beta3'
     implementation 'com.yanzhenjie:permission:2.0.3'
@@ -83,4 +87,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
     implementation 'com.google.android:flexbox:0.2.6'
+    implementation 'com.huawei.hms:push:5.0.4.302'
 }

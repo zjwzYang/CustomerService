@@ -13,10 +13,6 @@ import com.tencent.imsdk.v2.V2TIMSDKListener;
 import com.tencent.imsdk.v2.V2TIMUserFullInfo;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tencent.qcloud.tim.uikit.TUIKit;
-import com.tencent.qcloud.tim.uikit.config.CustomFaceConfig;
-import com.tencent.qcloud.tim.uikit.config.GeneralConfig;
-import com.tencent.qcloud.tim.uikit.config.TUIKitConfigs;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 /**
@@ -126,11 +122,11 @@ public class MyApp extends Application {
         Log.i("12345678", "登录initSDK：" + initSDK);
 
         // 配置 Config，请按需配置
-        TUIKitConfigs configs = TUIKit.getConfigs();
-        configs.setSdkConfig(new V2TIMSDKConfig());
-        configs.setCustomFaceConfig(new CustomFaceConfig());
-        configs.setGeneralConfig(new GeneralConfig());
-
-        TUIKit.init(this, TEN_SDKAPPID, configs);
+//        TUIKitConfigs configs = TUIKit.getConfigs();
+//        configs.setSdkConfig(new V2TIMSDKConfig());
+//        configs.setCustomFaceConfig(new CustomFaceConfig());
+//        configs.setGeneralConfig(new GeneralConfig());
+//
+//        TUIKit.init(this, TEN_SDKAPPID, configs);
     }
 }

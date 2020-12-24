@@ -70,12 +70,12 @@ public class CMorePanel extends FrameLayout implements IPanel {
 //            mActionList.add(action);
 //        }
         MoreAction action1 = new MoreAction();
-        action1.setActionReId(R.drawable.ic_more_picture);
+        action1.setActionReId(R.drawable.ic_more_dingzhi);
         action1.setActionName("照片");
         mActionList.add(action1);
 
         MoreAction action2 = new MoreAction();
-        action2.setActionReId(R.drawable.ic_more_camera);
+        action2.setActionReId(R.drawable.ic_more_dingzhi);
         action2.setActionName("拍摄");
         mActionList.add(action2);
 

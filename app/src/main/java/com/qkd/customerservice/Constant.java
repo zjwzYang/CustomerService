@@ -33,5 +33,7 @@ public class Constant {
     public static final String USER_STATUS = "user_status";
     public static final String USER_SIG = "user_user_sig";
 
-    public static final String REFRESH_CONVERSATION="refresh_conversation";
+    public static final String REFRESH_CONVERSATION = "refresh_conversation";
+
+    public static final long IM_HW_ID = 14478;
 }
