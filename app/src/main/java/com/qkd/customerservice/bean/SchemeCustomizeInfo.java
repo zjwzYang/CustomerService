@@ -57,7 +57,7 @@ public class SchemeCustomizeInfo extends BaseOutput {
          */
 
         private int id;
-        private int orderNumber;
+        private long orderNumber;
         private int schemeType;
         private String amount;
         private int payFlag;
@@ -89,11 +89,11 @@ public class SchemeCustomizeInfo extends BaseOutput {
             this.id = id;
         }
 
-        public int getOrderNumber() {
+        public long getOrderNumber() {
             return orderNumber;
         }
 
-        public void setOrderNumber(int orderNumber) {
+        public void setOrderNumber(long orderNumber) {
             this.orderNumber = orderNumber;
         }
 
@@ -291,7 +291,7 @@ public class SchemeCustomizeInfo extends BaseOutput {
              */
 
             private int id;
-            private int orderNumber;
+            private long orderNumber;
             private String userId;
             private String insuredPerson;
             private String gender;
@@ -322,11 +322,11 @@ public class SchemeCustomizeInfo extends BaseOutput {
                 this.id = id;
             }
 
-            public int getOrderNumber() {
+            public long getOrderNumber() {
                 return orderNumber;
             }
 
-            public void setOrderNumber(int orderNumber) {
+            public void setOrderNumber(long orderNumber) {
                 this.orderNumber = orderNumber;
             }
 

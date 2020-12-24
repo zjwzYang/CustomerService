@@ -347,7 +347,7 @@ public class ChatActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
         if (!TextUtils.isEmpty(voiceMsg.getSenderId())) {
-            if (UserID.equals(voiceMsg.getSenderId()) && !adapter.hasAddMsg(voiceMsg)) {
+            if (UserID.equals(voiceMsg.getSenderId())) {
                 adapter.addMsgTop(voiceMsg);
             }
         } else {
@@ -383,7 +383,7 @@ public class ChatActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetImageMsg(ImageMsg imageMsg) {
         if (!TextUtils.isEmpty(imageMsg.getSenderId())) {
-            if (UserID.equals(imageMsg.getSenderId()) && !adapter.hasAddMsg(imageMsg)) {
+            if (UserID.equals(imageMsg.getSenderId())) {
                 adapter.addMsgTop(imageMsg);
             }
         }
@@ -433,7 +433,7 @@ public class ChatActivity extends AppCompatActivity {
     public void onGetTextMsg(TextMsg textMsg) {
         Log.i("12345678", "onGetTextMsg: " + textMsg.getContent());
         if (!TextUtils.isEmpty(textMsg.getSenderId())) {
-            if (UserID.equals(textMsg.getSenderId()) && !adapter.hasAddMsg(textMsg)) {
+            if (UserID.equals(textMsg.getSenderId())) {
                 adapter.addMsgTop(textMsg);
             }
         } else {

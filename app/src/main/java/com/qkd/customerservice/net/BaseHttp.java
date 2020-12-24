@@ -63,7 +63,7 @@ public class BaseHttp {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        httpObserver.onError();
                     }
 
                     @Override

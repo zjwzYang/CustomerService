@@ -76,6 +76,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     private MineFragment mMineFragment;
     private Fragment currFragment;
     private SharedPreferences sp;
+    private V2TIMAdvancedMsgListener mListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,36 +113,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initListener() {
-//        V2TIMManager.getInstance().addSimpleMsgListener(new V2TIMSimpleMsgListener() {
-//            @Override
-//            public void onRecvC2CTextMessage(String msgID, V2TIMUserInfo sender, String text) {
-//                super.onRecvC2CTextMessage(msgID, sender, text);
-//                Log.i("12345678", "msgID: " + msgID + "   text:" + text);
-//                TextMsg textMsg = new TextMsg();
-//                textMsg.setContent(text);
-//                textMsg.setMsgType(MsgBean.MsgType.TEXT);
-//                textMsg.setSenderId(sender.getUserID());
-//                textMsg.setNickName(sender.getNickName());
-//                textMsg.setType(0);
-//                EventBus.getDefault().post(textMsg);
-//            }
-//
-//            @Override
-//            public void onRecvC2CCustomMessage(String msgID, V2TIMUserInfo sender, byte[] customData) {
-//                super.onRecvC2CCustomMessage(msgID, sender, customData);
-//            }
-//
-//            @Override
-//            public void onRecvGroupTextMessage(String msgID, String groupID, V2TIMGroupMemberInfo sender, String text) {
-//                super.onRecvGroupTextMessage(msgID, groupID, sender, text);
-//            }
-//
-//            @Override
-//            public void onRecvGroupCustomMessage(String msgID, String groupID, V2TIMGroupMemberInfo sender, byte[] customData) {
-//                super.onRecvGroupCustomMessage(msgID, groupID, sender, customData);
-//            }
-//        });
-        V2TIMManager.getMessageManager().addAdvancedMsgListener(new V2TIMAdvancedMsgListener() {
+        mListener = new V2TIMAdvancedMsgListener() {
             @Override
             public void onRecvNewMessage(final V2TIMMessage message) {
                 // Log.i("12345678", "onRecvNewMessage: 新消息");
@@ -234,7 +206,8 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
             public void onRecvMessageRevoked(String msgID) {
                 super.onRecvMessageRevoked(msgID);
             }
-        });
+        };
+        V2TIMManager.getMessageManager().addAdvancedMsgListener(mListener);
     }
 
     private void sendNotifi() {
@@ -414,5 +387,11 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 selectImg(2);
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        V2TIMManager.getMessageManager().removeAdvancedMsgListener(mListener);
+        super.onDestroy();
     }
 }
