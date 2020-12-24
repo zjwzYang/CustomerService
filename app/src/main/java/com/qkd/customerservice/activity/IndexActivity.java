@@ -144,7 +144,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         V2TIMManager.getMessageManager().addAdvancedMsgListener(new V2TIMAdvancedMsgListener() {
             @Override
             public void onRecvNewMessage(final V2TIMMessage message) {
-                Log.i("12345678", "onRecvNewMessage: 新消息");
+                // Log.i("12345678", "onRecvNewMessage: 新消息");
 
                 if (AppUtil.isBackground(IndexActivity.this)) {
                     // 在后台
@@ -153,11 +153,14 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
                 super.onRecvNewMessage(message);
                 int type = message.getElemType();
+                final String msgID = message.getMsgID();
                 final String timeString = AppUtil.getTimeString(new Date().getTime());
                 if (type == V2TIM_ELEM_TYPE_TEXT) {
                     TextMsg textMsg = new TextMsg();
                     V2TIMTextElem textElem = message.getTextElem();
+                    textMsg.setMsgId(msgID);
                     String text = textElem.getText();
+                    Log.i("12345678", "onRecvNewMessage: 新消息" + text + message.getSender() + "  " + message.getMsgID());
                     textMsg.setContent(text);
                     textMsg.setMsgType(MsgBean.MsgType.TEXT);
                     textMsg.setSenderId(message.getSender());
@@ -180,6 +183,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                         if (!TextUtils.isEmpty(url)) {
                             Log.i("12345678", "HistoryMessage图片: " + url);
                             ImageMsg imageMsg = new ImageMsg();
+                            imageMsg.setMsgId(msgID);
                             imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                             imageMsg.setType(0);
                             imageMsg.setImgPath(url);
@@ -205,6 +209,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
                                 int duration = soundElem.getDuration();
                                 VoiceMsg voiceMsg = new VoiceMsg();
+                                voiceMsg.setMsgId(msgID);
                                 voiceMsg.setNickName(message.getNickName());
                                 voiceMsg.setPlaying(false);
                                 voiceMsg.setDuration(duration);

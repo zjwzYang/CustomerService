@@ -33,7 +33,6 @@ import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MsgAdapter;
 import com.qkd.customerservice.bean.ArticleMsg;
-import com.qkd.customerservice.bean.ClearByUserId;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.NewMessageInput;
@@ -165,12 +164,14 @@ public class ChatActivity extends AppCompatActivity {
                         sendType = 1;
                     }
                     int type = message.getElemType();
+                    final String msgID = message.getMsgID();
                     if (type == V2TIM_ELEM_TYPE_TEXT) {
                         String content = message.getTextElem().getText().trim();
                         if (!TextUtils.isEmpty(content)) {
                             if (content.startsWith(Constant.TEXT_ARTICLE_FLAG)) {
                                 String[] strings = content.replace(Constant.TEXT_ARTICLE_FLAG, "").split("&");
                                 ArticleMsg articleMsg = new ArticleMsg();
+                                articleMsg.setMsgId(msgID);
                                 articleMsg.setPicUrl(strings[0]);
                                 articleMsg.setTitle(strings[1]);
                                 articleMsg.setDescription(strings[2]);
@@ -182,6 +183,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             } else {
                                 TextMsg textMsg = new TextMsg();
+                                textMsg.setMsgId(msgID);
                                 int temType = sendType;
                                 if (content.endsWith(Constant.TEXT_END_FLAG)) {
                                     temType = 2;
@@ -204,6 +206,7 @@ public class ChatActivity extends AppCompatActivity {
                             if (!TextUtils.isEmpty(url) && !hasJoin) {
                                 hasJoin = true;
                                 ImageMsg imageMsg = new ImageMsg();
+                                imageMsg.setMsgId(msgID);
                                 imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
                                 imageMsg.setType(sendType);
                                 imageMsg.setImgPath(url);
@@ -225,6 +228,7 @@ public class ChatActivity extends AppCompatActivity {
                                     if (s.startsWith("http:") || s.startsWith("https:")) {
                                         int duration = soundElem.getDuration();
                                         VoiceMsg voiceMsg = new VoiceMsg();
+                                        voiceMsg.setMsgId(msgID);
                                         voiceMsg.setNickName(showName);
                                         voiceMsg.setPlaying(false);
                                         voiceMsg.setDuration(duration);
@@ -343,7 +347,7 @@ public class ChatActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
         if (!TextUtils.isEmpty(voiceMsg.getSenderId())) {
-            if (UserID.equals(voiceMsg.getSenderId())) {
+            if (UserID.equals(voiceMsg.getSenderId()) && !adapter.hasAddMsg(voiceMsg)) {
                 adapter.addMsgTop(voiceMsg);
             }
         } else {
@@ -379,7 +383,7 @@ public class ChatActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetImageMsg(ImageMsg imageMsg) {
         if (!TextUtils.isEmpty(imageMsg.getSenderId())) {
-            if (UserID.equals(imageMsg.getSenderId())) {
+            if (UserID.equals(imageMsg.getSenderId()) && !adapter.hasAddMsg(imageMsg)) {
                 adapter.addMsgTop(imageMsg);
             }
         }
@@ -427,8 +431,9 @@ public class ChatActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
+        Log.i("12345678", "onGetTextMsg: " + textMsg.getContent());
         if (!TextUtils.isEmpty(textMsg.getSenderId())) {
-            if (UserID.equals(textMsg.getSenderId())) {
+            if (UserID.equals(textMsg.getSenderId()) && !adapter.hasAddMsg(textMsg)) {
                 adapter.addMsgTop(textMsg);
             }
         } else {
@@ -507,7 +512,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        EventBus.getDefault().post(new ClearByUserId(UserID));
+//        EventBus.getDefault().post(new ClearByUserId(UserID));
         super.finish();
     }
 

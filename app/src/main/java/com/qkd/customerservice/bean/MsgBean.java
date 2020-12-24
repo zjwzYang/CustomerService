@@ -14,6 +14,15 @@ public class MsgBean {
     private String nickName;
     private String senderId;
     private String sendTime;
+    private String msgId;
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+    }
 
     public String getSenderId() {
         return senderId;

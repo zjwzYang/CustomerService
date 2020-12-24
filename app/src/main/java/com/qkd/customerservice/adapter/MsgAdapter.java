@@ -387,6 +387,20 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public boolean hasAddMsg(MsgBean msgBean) {
+        boolean added = false;
+        for (MsgBean bean : this.msgList) {
+            String msgId = bean.getMsgId();
+            if (!TextUtils.isEmpty(msgId)) {
+                if (msgId.equals(msgBean.getMsgId())) {
+                    added = true;
+                    break;
+                }
+            }
+        }
+        return added;
+    }
+
     public void notifyImageItem(String path, String url) {
         for (int i = 0; i < msgList.size(); i++) {
             MsgBean msgBean = msgList.get(i);
