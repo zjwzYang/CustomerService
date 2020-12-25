@@ -1,6 +1,7 @@
 package com.qkd.customerservice.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.AppUtil;
@@ -52,24 +54,35 @@ public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapte
         KnowledgeOutput.DataBean.ListBean bean = dataList.get(position);
         final String text = bean.getMediaContent();
         holder.mTextView.setText(text);
+        holder.used_purpose.setText(bean.getMediaPurpose());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!TextUtils.isEmpty(text)) {
-                    TextMsg msgBean = new TextMsg();
-                    msgBean.setMsgType(MsgBean.MsgType.TEXT);
-                    int sendType;
-                    if (text.endsWith(Constant.TEXT_END_FLAG)) {
-                        sendType = 2;
-                    } else {
-                        sendType = 1;
-                    }
-                    msgBean.setType(sendType);
-                    msgBean.setContent(text);
-                    msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
-                    msgBean.setNickName("我");
-                    EventBus.getDefault().post(msgBean);
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("提示")
+                        .setMessage("确定发送？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("发送", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (!TextUtils.isEmpty(text)) {
+                                    TextMsg msgBean = new TextMsg();
+                                    msgBean.setMsgType(MsgBean.MsgType.TEXT);
+                                    int sendType;
+                                    if (text.endsWith(Constant.TEXT_END_FLAG)) {
+                                        sendType = 2;
+                                    } else {
+                                        sendType = 1;
+                                    }
+                                    msgBean.setType(sendType);
+                                    msgBean.setContent(text);
+                                    msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                                    msgBean.setNickName("我");
+                                    EventBus.getDefault().post(msgBean);
+                                }
+                            }
+                        });
+                builder.create().show();
             }
         });
     }
@@ -86,10 +99,12 @@ public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapte
 
     static class CommonlyUsedViewHolder extends RecyclerView.ViewHolder {
         private TextView mTextView;
+        private TextView used_purpose;
 
         public CommonlyUsedViewHolder(@NonNull View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.used_content);
+            used_purpose = itemView.findViewById(R.id.used_purpose);
         }
     }
 }

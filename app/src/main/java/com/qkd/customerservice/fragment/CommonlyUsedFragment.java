@@ -3,6 +3,7 @@ package com.qkd.customerservice.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CommonlyUsedAdapter;
+import com.qkd.customerservice.adapter.YuYinUsedAdapter;
+import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.net.BaseHttp;
 
@@ -34,12 +37,19 @@ public class CommonlyUsedFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private CommonlyUsedAdapter adapter;
+    private YuYinUsedAdapter mYinUsedAdapter;
+    private String type;
+    private int page = 1;
+    private boolean hasMore = true;
+    private boolean loadMoreFlag = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_commonly_used, container, false);
         mRecyclerView = view.findViewById(R.id.commonly_used_recy);
+        Bundle bundle = getArguments();
+        type = bundle.getString("type");
 
         initView();
 
@@ -50,20 +60,68 @@ public class CommonlyUsedFragment extends Fragment {
     private void initView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
-        adapter = new CommonlyUsedAdapter(getContext());
-        mRecyclerView.setAdapter(adapter);
+        if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+            adapter = new CommonlyUsedAdapter(getContext());
+            mRecyclerView.setAdapter(adapter);
+        } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+            mYinUsedAdapter = new YuYinUsedAdapter(getContext());
+            mRecyclerView.setAdapter(mYinUsedAdapter);
+        }
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int lastVisibleItemPosition = manager.findLastVisibleItemPosition();
+                    RecyclerView.Adapter mAdapter = null;
+                    if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+                        mAdapter = adapter;
+                    } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+                        mAdapter = mYinUsedAdapter;
+                    }
+                    if (lastVisibleItemPosition == mAdapter.getItemCount() - 1 && !loadMoreFlag) {
+                        loadMoreFlag = true;
+                        page++;
+                        initData();
+                    }
+                }
+            }
+        });
     }
 
     private void initData() {
+        if (!hasMore) {
+            return;
+        }
         SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         int serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
+        int mediaType = 1;
+        if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+            mediaType = 1;
+        } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+            mediaType = 3;
+        }
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE)
-                .queryKnowledge(1, serviceId, 1), new BaseHttp.HttpObserver<KnowledgeOutput>() {
+                .queryKnowledge(mediaType, serviceId, page), new BaseHttp.HttpObserver<KnowledgeOutput>() {
             @Override
             public void onSuccess(KnowledgeOutput baseOutput) {
+                loadMoreFlag = false;
                 if (baseOutput.isSuccess()) {
                     List<KnowledgeOutput.DataBean.ListBean> list = baseOutput.getData().getList();
-                    adapter.addAll(list);
+                    if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+                        Log.i("CommonlyUsedFragment", "onSuccess: 文本长度" + list.size());
+                        adapter.addAll(list);
+                    } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+                        Log.i("CommonlyUsedFragment", "onSuccess: 语音长度" + list.size());
+                        mYinUsedAdapter.addAll(list);
+                    }
+                    if (list.size() == baseOutput.getData().getPageSize()) {
+                        hasMore = true;
+                    } else {
+                        hasMore = false;
+                    }
                 }
             }
 

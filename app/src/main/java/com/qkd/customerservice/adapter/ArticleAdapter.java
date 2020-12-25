@@ -1,6 +1,7 @@
 package com.qkd.customerservice.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -69,15 +71,25 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArticleMsg articleMsg = new ArticleMsg();
-                articleMsg.setTitle(articleTitle);
-                articleMsg.setDescription(articleAbridge);
-                articleMsg.setUrl(Constant.BASE_URL3 + "insurArticle?id=" + dataBean.getId());
-                articleMsg.setPicUrl(articleLeftUrl);
-                articleMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
-                articleMsg.setType(1);
-                articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
-                EventBus.getDefault().post(articleMsg);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("提示")
+                        .setMessage("确定发送？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("发送", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ArticleMsg articleMsg = new ArticleMsg();
+                                articleMsg.setTitle(articleTitle);
+                                articleMsg.setDescription(articleAbridge);
+                                articleMsg.setUrl(Constant.BASE_URL3 + "insurArticle?id=" + dataBean.getId());
+                                articleMsg.setPicUrl(articleLeftUrl);
+                                articleMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                                articleMsg.setType(1);
+                                articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                                EventBus.getDefault().post(articleMsg);
+                            }
+                        });
+                builder.create().show();
             }
         });
     }

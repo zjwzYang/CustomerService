@@ -240,7 +240,13 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == VOICE_RIGHT) {
             final VoiceMsg voiceMsg = (VoiceMsg) msgBean;
             RightVoiceMsgViewHolder holder = (RightVoiceMsgViewHolder) viewHolder;
-            holder.mDuringV.setText(String.format("%s\"", voiceMsg.getDuration()));
+            int rightDuration = voiceMsg.getDuration();
+            if (rightDuration == -1 || rightDuration == 0) {
+                holder.mDuringV.setText("");
+                rightDuration = 15;
+            } else {
+                holder.mDuringV.setText(String.format("%s\"", rightDuration));
+            }
             holder.rightTime.setText(voiceMsg.getSendTime());
 
             int minWidth = 70, maxWidth = 204;
@@ -248,7 +254,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             minWidth = (int) (minWidth * scale + 0.5f);
             maxWidth = (int) (maxWidth * scale + 0.5f);
             int duration = AudioRecordManager.getInstance().getMaxVoiceDuration();
-            holder.mVoiceV.getLayoutParams().width = minWidth + (maxWidth - minWidth) / duration * voiceMsg.getDuration();
+            holder.mVoiceV.getLayoutParams().width = minWidth + (maxWidth - minWidth) / duration * rightDuration;
 
             holder.mVoiceV.setScaleType(ImageView.ScaleType.FIT_END);
             holder.mVoiceV.setBackgroundResource(R.drawable.bg_chat_sender);

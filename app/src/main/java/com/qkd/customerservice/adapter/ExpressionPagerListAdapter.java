@@ -1,5 +1,7 @@
 package com.qkd.customerservice.adapter;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -42,15 +44,29 @@ public class ExpressionPagerListAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if (position == 0) {
-            return NormalExpressionPagerFragment.newInstance(ExpressionManager.instance.getNormalExpressionList());
-        } else if (position == 1) {
-            return new CommonlyUsedFragment();
-        } else if (position == 2) {
-            return new ArticleFragment();
-        } else if (position == 3) {
-            return new ProductFragment();
+        ExpressionType expressionType = expressionTypeList.get(position);
+        String type = expressionType.getType();
+        switch (type) {
+            case ExpressionType.EXPRESSION_EMOJI:
+                return NormalExpressionPagerFragment.newInstance(ExpressionManager.instance.getNormalExpressionList());
+            case ExpressionType.EXPRESSION_KNOWLEDGE_TEXT:
+                CommonlyUsedFragment textFragment = new CommonlyUsedFragment();
+                Bundle textB = new Bundle();
+                textB.putString("type", ExpressionType.EXPRESSION_KNOWLEDGE_TEXT);
+                textFragment.setArguments(textB);
+                return textFragment;
+            case ExpressionType.EXPRESSION_KNOWLEDGE_YUYING:
+                CommonlyUsedFragment yuyinFragment = new CommonlyUsedFragment();
+                Bundle yuyinB = new Bundle();
+                yuyinB.putString("type", ExpressionType.EXPRESSION_KNOWLEDGE_YUYING);
+                yuyinFragment.setArguments(yuyinB);
+                return yuyinFragment;
+            case ExpressionType.EXPRESSION_PRODUCT_ONE:
+                return new ArticleFragment();
+            case ExpressionType.EXPRESSION_PRODUCT_TWO:
+                return new ProductFragment();
+            default:
+                return new Fragment();
         }
-        return new Fragment();
     }
 }

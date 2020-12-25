@@ -1,5 +1,7 @@
 package com.qkd.customerservice;
 
+import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -42,24 +44,40 @@ public class NetUtil {
 
 
     /**
-     * @param url          下载连接
-     * @param destFileDir  下载的文件储存目录
-     * @param destFileName 下载文件名称，后面记得拼接后缀，否则手机没法识别文件类型
-     * @param listener     下载监听
+     * @param url      下载连接
+     * @param listener 下载监听
      */
 
-    public void download(final String url, final String destFileDir, final String destFileName, final OnDownloadListener listener) {
+    public void download(Context context, final String url, final OnDownloadListener listener) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        File savePath = context.getCacheDir();
+        // file:///data/user/0/com.qkd.customerservice/cache/1608866179196temp.mp3
+        final String destFileDir = savePath.getAbsolutePath();
+        // http://47.114.100.72/files/media/1608791322730c4ec714d-f334-4278-8227-4fcc6f3f4cbc.mp3
+        int lastIndex = url.lastIndexOf("/");
+        final String destFileName = url.substring(lastIndex + 1);
+
+        File file = new File(savePath, destFileName);
+        Log.i("NetUtil", "download: 文件存在" + file.exists() + file.getAbsolutePath());
+        if (file.exists()) {
+            listener.onDownloadSuccess(file);
+            return;
+        }
+
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
         OkHttpClient client = new OkHttpClient();
 
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Response response = client.newCall(request).execute();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         //异步请求
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -96,9 +114,11 @@ public class NetUtil {
                         int progress = (int) (sum * 1.0f / total * 100);
                         //下载中更新进度条
                         listener.onDownloading(progress);
+                        Log.i("NetUtil", "onResponse: 下载进度" + progress);
                     }
                     fos.flush();
                     //下载完成
+                    Log.i("NetUtil", "onResponse: 下载完成" + file.getAbsolutePath());
                     listener.onDownloadSuccess(file);
                 } catch (Exception e) {
                     listener.onDownloadFailed(e);
