@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -125,16 +126,6 @@ public class ChatActivity extends AppCompatActivity {
         init();
 
         initConversation();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void initConversation() {
@@ -523,4 +514,40 @@ public class ChatActivity extends AppCompatActivity {
         chat_input_panel.onActivityDestory();
         keyboardHelper.release();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE, 1, 0, "搜索常用语");
+        menu.add(Menu.NONE, 2, 0, "搜索语音");
+        menu.add(Menu.NONE, 3, 0, "搜索文章库");
+        menu.add(Menu.NONE, 4, 0, "搜索产品库");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
+        }
+        Intent intent = new Intent(this, SearchActivity.class);
+        switch (item.getItemId()) {
+            case 1:
+                intent.putExtra("searchType", SearchActivity.search_chang);
+                break;
+            case 2:
+                intent.putExtra("searchType", SearchActivity.search_yuyin);
+                break;
+            case 3:
+                intent.putExtra("searchType", SearchActivity.search_wenzhang);
+                break;
+            case 4:
+                intent.putExtra("searchType", SearchActivity.search_caiping);
+                break;
+        }
+        startActivity(intent);
+        return super.onOptionsItemSelected(item);
+    }
+
 }

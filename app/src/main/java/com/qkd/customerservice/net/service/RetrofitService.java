@@ -48,11 +48,14 @@ public interface RetrofitService {
 
     // 文章列表
     @GET("artList")
-    Observable<ArticleOutput> getArtList(@Query("offset") int offset, @Query("limit") int limit);
+    Observable<ArticleOutput> getArtList(@Query("offset") int offset, @Query("limit") int limit,
+                                         @Query("articleTitle") String articleTitle,
+                                         @Query("labelName") String labelName);
 
     //保险产品列表
     @GET("productList")
-    Observable<ProductOutput> getProductList(@Query("offset") int offset, @Query("limit") int limit);
+    Observable<ProductOutput> getProductList(@Query("offset") int offset, @Query("limit") int limit,
+                                             @Query("productName") String productName);
 
     // 发送文章或产品
     @POST("im/forwardNewsMessage")
@@ -105,7 +108,8 @@ public interface RetrofitService {
     @GET("knowledge/queryKnowledge")
     Observable<KnowledgeOutput> queryKnowledge(@Query("mediaType") int mediaType,
                                                @Query("serviceId") int serviceId,
-                                               @Query("pageNum") int pageNum);
+                                               @Query("pageNum") int pageNum,
+                                               @Query("params") String params);
 
     //查询规划师列表
     @GET("planner/queryPlannerList")

@@ -104,7 +104,7 @@ public class CommonlyUsedFragment extends Fragment {
             mediaType = 3;
         }
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE)
-                .queryKnowledge(mediaType, serviceId, page), new BaseHttp.HttpObserver<KnowledgeOutput>() {
+                .queryKnowledge(mediaType, serviceId, page, ""), new BaseHttp.HttpObserver<KnowledgeOutput>() {
             @Override
             public void onSuccess(KnowledgeOutput baseOutput) {
                 loadMoreFlag = false;

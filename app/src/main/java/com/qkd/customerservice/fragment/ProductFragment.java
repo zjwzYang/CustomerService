@@ -73,7 +73,7 @@ public class ProductFragment extends Fragment {
         if (!hasMore) {
             return;
         }
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getProductList(offset,limit), new BaseHttp.HttpObserver<ProductOutput>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getProductList(offset, limit, ""), new BaseHttp.HttpObserver<ProductOutput>() {
             @Override
             public void onSuccess(ProductOutput output) {
                 loadMoreFlag = false;
