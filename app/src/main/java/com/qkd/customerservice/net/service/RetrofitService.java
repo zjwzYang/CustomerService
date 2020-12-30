@@ -122,4 +122,10 @@ public interface RetrofitService {
                                                 @Field("identifier") String identifier,
                                                 @Field("newServiceId") int newServiceId,
                                                 @Field("newIdentifier") String newIdentifier);
+
+    // 发送给客户
+    @FormUrlEncoded
+    @PUT("scheme/to-be-customized/saveAsHasSend")
+    Observable<BaseOutput> saveAsHasSend(@Field("orderNumber") long orderNumber,
+                                         @Field("userId") String userId);
 }

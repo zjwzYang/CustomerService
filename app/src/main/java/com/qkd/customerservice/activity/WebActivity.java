@@ -45,7 +45,7 @@ public class WebActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         Intent intent = getIntent();
-        String orderNumber = intent.getStringExtra("orderNumber");
+        long orderNumber = intent.getLongExtra("orderNumber", 0l);
         String userId = intent.getStringExtra("userId");
 //        orderNumber="10087";
 //        userId = "76";

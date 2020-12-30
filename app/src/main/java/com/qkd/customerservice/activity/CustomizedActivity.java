@@ -32,14 +32,13 @@ import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
-import com.qkd.customerservice.bean.SaveSchemeConfigInput;
-import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
 import com.qkd.customerservice.dialog.SelectProductDialog;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 import com.qkd.customerservice.net.BaseHttp;
+import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -389,36 +388,16 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         generatePlanV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkData()) {
-                    SaveSchemeConfigInput input = new SaveSchemeConfigInput();
-                    input.setOrderNumber(orderNumber);
-                    input.setUserId(data.getUserId());
-                    input.setNickName(data.getNickName());
-                    List<SaveSchemeConfigInput.DataListBean> dataList = new ArrayList<>();
-                    for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean : data.getApplyPersonList()) {
-                        List<ProductListOutput.DataBean> productList = bean.getProductList();
-                        for (ProductListOutput.DataBean product : productList) {
-                            SaveSchemeConfigInput.DataListBean configBean = new SaveSchemeConfigInput.DataListBean();
-                            configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
-                            configBean.setProductId(String.valueOf(product.getId()));
-                            configBean.setProductName(product.getProductName());
-                            configBean.setProductType(product.getProductType());
-                            configBean.setInsuredAmount(product.getInsuredAmount());
-                            configBean.setFirstYearPremium(product.getPremiumNum());
-                            configBean.setPaymentPeriod(product.getPaymentPeriod());
-                            configBean.setGuaranteePeriod(product.getGuaranteePeriod());
-                            dataList.add(configBean);
-                        }
-                    }
-                    input.setDataList(dataList);
-
-                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<SchemeConfigOutput>() {
+                if (checkData() && data != null) {
+                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsHasSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
                         @Override
-                        public void onSuccess(SchemeConfigOutput baseOutput) {
-                            Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
-                            intent.putExtra("orderNumber", baseOutput.getOrderNumber());
-                            intent.putExtra("userId", baseOutput.getUserId());
-                            startActivity(intent);
+                        public void onSuccess(BaseOutput baseOutput) {
+                            if (baseOutput.isSuccess()) {
+                                Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
+                                intent.putExtra("orderNumber", data.getOrderNumber());
+                                intent.putExtra("userId", data.getUserId());
+                                startActivity(intent);
+                            }
                         }
 
                         @Override
@@ -426,6 +405,42 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                         }
                     });
+//                    SaveSchemeConfigInput input = new SaveSchemeConfigInput();
+//                    input.setOrderNumber(orderNumber);
+//                    input.setUserId(data.getUserId());
+//                    input.setNickName(data.getNickName());
+//                    List<SaveSchemeConfigInput.DataListBean> dataList = new ArrayList<>();
+//                    for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean : data.getApplyPersonList()) {
+//                        List<ProductListOutput.DataBean> productList = bean.getProductList();
+//                        for (ProductListOutput.DataBean product : productList) {
+//                            SaveSchemeConfigInput.DataListBean configBean = new SaveSchemeConfigInput.DataListBean();
+//                            configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
+//                            configBean.setProductId(String.valueOf(product.getId()));
+//                            configBean.setProductName(product.getProductName());
+//                            configBean.setProductType(product.getProductType());
+//                            configBean.setInsuredAmount(product.getInsuredAmount());
+//                            configBean.setFirstYearPremium(product.getPremiumNum());
+//                            configBean.setPaymentPeriod(product.getPaymentPeriod());
+//                            configBean.setGuaranteePeriod(product.getGuaranteePeriod());
+//                            dataList.add(configBean);
+//                        }
+//                    }
+//                    input.setDataList(dataList);
+//
+//                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<SchemeConfigOutput>() {
+//                        @Override
+//                        public void onSuccess(SchemeConfigOutput baseOutput) {
+//                            Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
+//                            intent.putExtra("orderNumber", baseOutput.getData().getOrderNumber());
+//                            intent.putExtra("userId", baseOutput.getData().getUserId());
+//                            startActivity(intent);
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//
+//                        }
+//                    });
                 }
             }
         });
@@ -702,8 +717,8 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             input.setParam4("1");
             input.setToCustSex("1");
         } else {
-            input.setParam4("0");
-            input.setToCustSex("0");
+            input.setParam4("2");
+            input.setToCustSex("2");
         }
         for (int i = 0; i < configs.size(); i++) {
             PremiumConfigOutput.DataBean.ConfigBean configBean = configs.get(i);
