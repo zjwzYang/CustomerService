@@ -36,4 +36,10 @@ public class Constant {
     public static final String REFRESH_CONVERSATION = "refresh_conversation";
 
     public static final long IM_HW_ID = 14478;
+
+    public static final String SORT_FLAG="sort_flag";
+    public static final String SORT_TOP="sort_top";
+
+
+    public static final String REFRESH_CUSTOMIZED_LIST = "refresh_customized_list";
 }

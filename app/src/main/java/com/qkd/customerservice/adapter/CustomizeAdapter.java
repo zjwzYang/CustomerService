@@ -75,7 +75,7 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
     }
 
     public void addAll(List<QueryCustomizeOutput.DataBean.ListBean> dataList) {
-        this.dataList.addAll(dataList);
+        this.dataList = dataList;
         notifyDataSetChanged();
     }
 

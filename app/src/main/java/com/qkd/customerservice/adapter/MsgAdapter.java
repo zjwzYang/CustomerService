@@ -2,7 +2,6 @@ package com.qkd.customerservice.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,17 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
@@ -178,6 +172,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .into(holder.mHeadV);
             holder.mDuringV.setText(String.format("%s\"", voiceMsg.getDuration()));
             holder.leftTime.setText(voiceMsg.getSendTime());
+            holder.leftName.setText(voiceMsg.getNickName());
 
             int minWidth = 70, maxWidth = 204;
             float scale = context.getResources().getDisplayMetrics().density;
@@ -314,7 +309,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .into(holder.mHeadV);
             Glide.with(context)
                     .load(imageMsg.getImgPath())
-                    .apply(options)
+//                    .apply(options)
                     .into(holder.mImgV);
             holder.mappingViews.put(0, holder.mImgV);
             final List<String> photoUrlList = new ArrayList<>();
@@ -334,19 +329,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.rightTime.setText(imageMsg.getSendTime());
             Glide.with(context)
                     .load(imageMsg.getImgPath())
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            Log.i("12345678", "onLoadFailed: " + e.getMessage());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .apply(options)
+                    //.apply(options)
                     .into(holder.mImgV);
             holder.mappingViews.put(0, holder.mImgV);
             holder.mImgV.setOnClickListener(new View.OnClickListener() {
@@ -473,6 +456,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView mVoiceV;
         private TextView mDuringV;
         private TextView leftTime;
+        private TextView leftName;
 
         public LeftVoiceMsgViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -480,6 +464,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mVoiceV = itemView.findViewById(R.id.rc_img_left);
             mDuringV = itemView.findViewById(R.id.rc_during_left);
             leftTime = itemView.findViewById(R.id.voice_left_time);
+            leftName = itemView.findViewById(R.id.tv_nickname_left);
         }
     }
 

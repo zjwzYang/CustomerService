@@ -23,6 +23,10 @@ import com.qkd.customerservice.bean.CustomerBookOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
 import com.qkd.customerservice.net.BaseHttp;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 /**
  * Created on 12/16/20 16:28
  * .
@@ -42,6 +46,7 @@ public class MailIndexFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mail_index, container, false);
+        EventBus.getDefault().register(this);
         mRecyclerView = view.findViewById(R.id.mail_index_recy);
         userStatus = getArguments().getInt("userStatus", 1);
         initView();
@@ -58,6 +63,13 @@ public class MailIndexFragment extends Fragment {
         } else {
             mCustomizeAdapter = new CustomizeAdapter(getContext());
             mRecyclerView.setAdapter(mCustomizeAdapter);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMsg(String msg) {
+        if (Constant.REFRESH_CUSTOMIZED_LIST.equals(msg) && userStatus == 3) {
+            initData();
         }
     }
 
@@ -92,5 +104,11 @@ public class MailIndexFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 }

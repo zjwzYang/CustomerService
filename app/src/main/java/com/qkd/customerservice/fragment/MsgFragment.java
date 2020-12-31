@@ -1,6 +1,9 @@
 package com.qkd.customerservice.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,7 @@ import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.bean.VoiceMsg;
+import com.qkd.customerservice.dialog.OptionDialog;
 import com.qkd.customerservice.dialog.PlannerDialog;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.imsdk.v2.V2TIMConversationResult;
@@ -41,7 +45,7 @@ import java.util.List;
  *
  * @author yj
  */
-public class MsgFragment extends Fragment {
+public class MsgFragment extends Fragment implements OptionDialog.OnClickOptionsListener {
 
     private RecyclerView mRecyclerView;
     private CustomerAdapter mAdapter;
@@ -55,14 +59,15 @@ public class MsgFragment extends Fragment {
         mAdapter = new CustomerAdapter(getContext());
         mAdapter.setOnLongClickListener(new CustomerAdapter.OnLongClickListener() {
             @Override
-            public void onLongClick(ConversationBean conversation) {
-                PlannerDialog plannerDialog = new PlannerDialog();
-                String userId = conversation.getUserId();
+            public void onLongClick(ConversationBean conversation, int position) {
                 Bundle bundle = new Bundle();
-                bundle.putString("userId", userId);
+                bundle.putString("userId", conversation.getUserId());
                 bundle.putString("conversationID", conversation.getConversationID());
-                plannerDialog.setArguments(bundle);
-                plannerDialog.show(getChildFragmentManager(), "plannerDialog");
+                bundle.putInt("clickPosition", position);
+                OptionDialog optionDialog = new OptionDialog();
+                optionDialog.setArguments(bundle);
+                optionDialog.setOnClickOptionsListener(MsgFragment.this);
+                optionDialog.show(getChildFragmentManager(), "optionDialog");
             }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -100,6 +105,24 @@ public class MsgFragment extends Fragment {
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
                 }
+                SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
+                String tops = sp.getString(Constant.SORT_TOP, "");
+                if (!TextUtils.isEmpty(tops)) {
+                    String[] split = tops.split("/");
+                    for (int i = 0; i < split.length; i++) {
+                        String top = split[i];
+                        if (!TextUtils.isEmpty(top)) {
+                            for (int j = 0; j < conversationBeans.size(); j++) {
+                                ConversationBean bean = conversationBeans.get(j);
+                                if (top.equals(bean.getUserId())) {
+                                    conversationBeans.remove(j);
+                                    conversationBeans.add(0, bean);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
                 mAdapter.addAll(conversationBeans);
             }
         });
@@ -130,6 +153,29 @@ public class MsgFragment extends Fragment {
     public void onGetTextMsg(TextMsg textMsg) {
 //        checkUnread(textMsg.getSenderId());
         getConversation();
+    }
+
+    @Override
+    public void onClickOptionOne(int clickPosition, String userId) {
+        if (clickPosition < 0) {
+            return;
+        }
+        mAdapter.refreshTop(clickPosition);
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
+        String tops = sp.getString(Constant.SORT_TOP, "");
+        tops = tops + "/" + userId;
+        sp.edit().putString(Constant.SORT_TOP, tops).apply();
+        Log.i("12345678", "tops: " + tops);
+    }
+
+    @Override
+    public void onClickOptionTwo(String userId, String conversationID) {
+        PlannerDialog plannerDialog = new PlannerDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("userId", userId);
+        bundle.putString("conversationID", conversationID);
+        plannerDialog.setArguments(bundle);
+        plannerDialog.show(getChildFragmentManager(), "plannerDialog");
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)

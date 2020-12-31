@@ -84,7 +84,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             @Override
             public boolean onLongClick(View view) {
                 if (onLongClickListener != null) {
-                    onLongClickListener.onLongClick(conversation);
+                    onLongClickListener.onLongClick(conversation, position);
                 }
                 return true;
             }
@@ -147,6 +147,13 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         notifyDataSetChanged();
     }
 
+    public void refreshTop(int topIndex) {
+        ConversationBean topBean = this.conversationList.get(topIndex);
+        this.conversationList.remove(topIndex);
+        this.conversationList.add(0, topBean);
+        notifyDataSetChanged();
+    }
+
     public List<ConversationBean> getConversationList() {
         return conversationList;
     }
@@ -173,6 +180,6 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     }
 
     public interface OnLongClickListener {
-        void onLongClick(ConversationBean conversation);
+        void onLongClick(ConversationBean conversation, int position);
     }
 }

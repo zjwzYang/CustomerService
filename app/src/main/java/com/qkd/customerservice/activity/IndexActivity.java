@@ -222,7 +222,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onSuccess(String s) {
                             if (!TextUtils.isEmpty(s)) {
-                                Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration());
+                                Log.i("12345678", "获取语音: " + s + "  getDuration:" + soundElem.getDuration() + "  " + message.getNickName());
                                 int duration = soundElem.getDuration();
                                 VoiceMsg voiceMsg = new VoiceMsg();
                                 voiceMsg.setMsgId(msgID);
