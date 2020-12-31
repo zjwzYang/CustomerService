@@ -3,6 +3,8 @@ package com.qkd.customerservice.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +51,13 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
     private RecyclerView mRecyclerView;
     private CustomerAdapter mAdapter;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            getConversation();
+        }
+    };
 
     @Nullable
     @Override
@@ -100,10 +109,17 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
             public void onSuccess(V2TIMConversationResult v2TIMConversationResult) {
                 List<V2TIMConversation> conversationList = v2TIMConversationResult.getConversationList();
                 List<ConversationBean> conversationBeans = new ArrayList<>();
+                int unreadNum = 0;
                 for (V2TIMConversation conversation : conversationList) {
-                    Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUserID());
+                    if (conversation.getUnreadCount() > 0) {
+                        unreadNum++;
+                    }
+                    Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUnreadCount());
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
+                }
+                if (unreadNum >= 2) {
+                    EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
                 }
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String tops = sp.getString(Constant.SORT_TOP, "");
@@ -124,6 +140,25 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     }
                 }
                 mAdapter.addAll(conversationBeans);
+
+
+//                V2TIMManager.getFriendshipManager().getFriendsInfo(userIDList, new V2TIMValueCallback<List<V2TIMFriendInfoResult>>() {
+//                    @Override
+//                    public void onError(int code, String desc) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(List<V2TIMFriendInfoResult> v2TIMFriendInfoResults) {
+//                        for (int i = 0; i < v2TIMFriendInfoResults.size(); i++) {
+//                            V2TIMFriendInfoResult result = v2TIMFriendInfoResults.get(i);
+//                            V2TIMFriendInfo friendInfo = result.getFriendInfo();
+//
+//                            Log.i("V2TIMFriendInfoResult", "ResultInfo: " + result.getResultInfo() + "  FriendInfo（）：" + friendInfo +
+//                                    "  Relation：---" + result.getRelation() + "  ResultCode：---" + result.getResultCode());
+//                        }
+//                    }
+//                });
             }
         });
     }
@@ -137,22 +172,17 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
-        String senderId = voiceMsg.getSenderId();
-        //checkUnread(senderId);
-        getConversation();
+        mHandler.sendMessageDelayed(Message.obtain(), 500);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetImageMsg(ImageMsg imageMsg) {
-        String senderId = imageMsg.getSenderId();
-//        checkUnread(senderId);
-        getConversation();
+        mHandler.sendMessageDelayed(Message.obtain(), 500);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
-//        checkUnread(textMsg.getSenderId());
-        getConversation();
+        mHandler.sendMessageDelayed(Message.obtain(), 500);
     }
 
     @Override

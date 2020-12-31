@@ -52,6 +52,8 @@ import com.tencent.imsdk.v2.V2TIMTextElem;
 import com.tencent.imsdk.v2.V2TIMValueCallback;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -87,6 +89,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+        EventBus.getDefault().register(this);
         mMsgImg = findViewById(R.id.index_msg_img);
         mMsgText = findViewById(R.id.index_msg_text);
         mMailImg = findViewById(R.id.index_mail_img);
@@ -388,6 +391,13 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGettMsg(String msg) {
+        if (Constant.UPDATE_USER_STATUS.equals(msg)) {
+            updateStatus(2);
+        }
+    }
+
     private void updateStatus(final int status) {
         String userId = sp.getString(Constant.USER_IDENTIFIER, "");
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).updateStatus(userId, status), new BaseHttp.HttpObserver<BaseOutput>() {
@@ -436,6 +446,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         V2TIMManager.getMessageManager().removeAdvancedMsgListener(mListener);
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 }

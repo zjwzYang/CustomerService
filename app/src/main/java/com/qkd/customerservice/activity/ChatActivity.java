@@ -80,6 +80,8 @@ import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
  */
 public class ChatActivity extends AppCompatActivity {
 
+    private static String TAG = "ChatActivity";
+
     public static final int IMAGE_REQUEST = 110;
 
     private List<MsgBean> msgList;
@@ -340,6 +342,7 @@ public class ChatActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(voiceMsg.getSenderId())) {
             if (UserID.equals(voiceMsg.getSenderId())) {
                 adapter.addMsgTop(voiceMsg);
+                V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
             }
         } else {
             adapter.addMsgTop(voiceMsg);
@@ -376,6 +379,7 @@ public class ChatActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(imageMsg.getSenderId())) {
             if (UserID.equals(imageMsg.getSenderId())) {
                 adapter.addMsgTop(imageMsg);
+                V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
             }
         }
     }
@@ -426,6 +430,7 @@ public class ChatActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(textMsg.getSenderId())) {
             if (UserID.equals(textMsg.getSenderId())) {
                 adapter.addMsgTop(textMsg);
+                V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
             }
         } else {
             adapter.addMsgTop(textMsg);
@@ -503,7 +508,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-//        EventBus.getDefault().post(new ClearByUserId(UserID));
+        //EventBus.getDefault().post(Constant.REFRESH_CONVERSATION);
         super.finish();
     }
 
