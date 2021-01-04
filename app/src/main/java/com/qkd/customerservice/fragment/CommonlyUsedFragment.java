@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +35,7 @@ import java.util.List;
  * @author yj
  * @org 浙江房超信息科技有限公司
  */
-public class CommonlyUsedFragment extends Fragment {
+public class CommonlyUsedFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView mRecyclerView;
     private CommonlyUsedAdapter adapter;
@@ -43,16 +45,26 @@ public class CommonlyUsedFragment extends Fragment {
     private boolean hasMore = true;
     private boolean loadMoreFlag = false;
 
+    private TextView mPrivateV;
+    private TextView mPublicV;
+
+    private boolean isPrivate = true;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_commonly_used, container, false);
         mRecyclerView = view.findViewById(R.id.commonly_used_recy);
+        mPrivateV = view.findViewById(R.id.commonly_private);
+        mPrivateV.setOnClickListener(this);
+        mPublicV = view.findViewById(R.id.commonly_public);
+        mPublicV.setOnClickListener(this);
         Bundle bundle = getArguments();
         type = bundle.getString("type");
 
         initView();
 
+        isPrivate = true;
         initData();
         return view;
     }
@@ -95,8 +107,13 @@ public class CommonlyUsedFragment extends Fragment {
         if (!hasMore) {
             return;
         }
-        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
-        int serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
+        int serviceId;
+        if (isPrivate) {
+            SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+            serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
+        } else {
+            serviceId = 0;
+        }
         int mediaType = 1;
         if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
             mediaType = 1;
@@ -112,9 +129,15 @@ public class CommonlyUsedFragment extends Fragment {
                     List<KnowledgeOutput.DataBean.ListBean> list = baseOutput.getData().getList();
                     if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
                         Log.i("CommonlyUsedFragment", "onSuccess: 文本长度" + list.size());
+                        if (page == 1) {
+                            adapter.clear();
+                        }
                         adapter.addAll(list);
                     } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
                         Log.i("CommonlyUsedFragment", "onSuccess: 语音长度" + list.size());
+                        if (page == 1) {
+                            mYinUsedAdapter.clear();
+                        }
                         mYinUsedAdapter.addAll(list);
                     }
                     if (list.size() == baseOutput.getData().getPageSize()) {
@@ -130,5 +153,31 @@ public class CommonlyUsedFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View view) {
+        mPrivateV.setTextColor(ContextCompat.getColor(getContext(), R.color.divi_color));
+        mPrivateV.setBackgroundResource(R.drawable.text_gray_bg);
+        mPublicV.setTextColor(ContextCompat.getColor(getContext(), R.color.divi_color));
+        mPublicV.setBackgroundResource(R.drawable.text_gray_bg);
+        switch (view.getId()) {
+            case R.id.commonly_private:
+                mPrivateV.setTextColor(ContextCompat.getColor(getContext(), R.color.app_blue));
+                mPrivateV.setBackgroundResource(R.drawable.text_blue_bg);
+                isPrivate = true;
+                hasMore = true;
+                page = 1;
+                initData();
+                break;
+            case R.id.commonly_public:
+                mPublicV.setTextColor(ContextCompat.getColor(getContext(), R.color.app_blue));
+                mPublicV.setBackgroundResource(R.drawable.text_blue_bg);
+                isPrivate = false;
+                hasMore = true;
+                page = 1;
+                initData();
+                break;
+        }
     }
 }

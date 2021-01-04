@@ -27,8 +27,10 @@ import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.bean.VoiceMsg;
+import com.qkd.customerservice.bean.WxchatListOutput;
 import com.qkd.customerservice.dialog.OptionDialog;
 import com.qkd.customerservice.dialog.PlannerDialog;
+import com.qkd.customerservice.net.BaseHttp;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.imsdk.v2.V2TIMConversationResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -110,11 +112,13 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 List<V2TIMConversation> conversationList = v2TIMConversationResult.getConversationList();
                 List<ConversationBean> conversationBeans = new ArrayList<>();
                 int unreadNum = 0;
+                List<String> userIDList = new ArrayList<>();
                 for (V2TIMConversation conversation : conversationList) {
                     if (conversation.getUnreadCount() > 0) {
                         unreadNum++;
                     }
-                    Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUnreadCount());
+                    userIDList.add(conversation.getUserID());
+                    //Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUserID());
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
                 }
@@ -141,24 +145,49 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 }
                 mAdapter.addAll(conversationBeans);
 
-
-//                V2TIMManager.getFriendshipManager().getFriendsInfo(userIDList, new V2TIMValueCallback<List<V2TIMFriendInfoResult>>() {
+//                V2TIMManager.getInstance().getUsersInfo(userIDList, new V2TIMValueCallback<List<V2TIMUserFullInfo>>() {
 //                    @Override
 //                    public void onError(int code, String desc) {
 //
 //                    }
 //
 //                    @Override
-//                    public void onSuccess(List<V2TIMFriendInfoResult> v2TIMFriendInfoResults) {
-//                        for (int i = 0; i < v2TIMFriendInfoResults.size(); i++) {
-//                            V2TIMFriendInfoResult result = v2TIMFriendInfoResults.get(i);
-//                            V2TIMFriendInfo friendInfo = result.getFriendInfo();
-//
-//                            Log.i("V2TIMFriendInfoResult", "ResultInfo: " + result.getResultInfo() + "  FriendInfo（）：" + friendInfo +
-//                                    "  Relation：---" + result.getRelation() + "  ResultCode：---" + result.getResultCode());
+//                    public void onSuccess(List<V2TIMUserFullInfo> v2TIMUserFullInfos) {
+//                        for (V2TIMUserFullInfo info : v2TIMUserFullInfos) {
+//                            String userID = info.getUserID();
+//                            HashMap<String, byte[]> customInfo = info.getCustomInfo();
+//                            Set<Map.Entry<String, byte[]>> entries = customInfo.entrySet();
+//                            for (Map.Entry<String, byte[]> entry : entries) {
+//                                byte[] value = entry.getValue();
+//                                String wxFlag = new String(value);
+//                                if ("1".equals(wxFlag)) {
+//                                    mAdapter.setWxAdd(userID);
+//                                }
+//                            }
 //                        }
 //                    }
 //                });
+                initWx();
+            }
+        });
+    }
+
+    private void initWx() {
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        String identifier = sp.getString(Constant.USER_IDENTIFIER, "");
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getAddWechat(identifier), new BaseHttp.HttpObserver<WxchatListOutput>() {
+            @Override
+            public void onSuccess(WxchatListOutput output) {
+                if (output.isSuccess()) {
+                    for (WxchatListOutput.DataBean bean : output.getData()) {
+                        mAdapter.setWxAdd(bean.getOpenId(), bean.getIsAddWechat());
+                    }
+                }
+            }
+
+            @Override
+            public void onError() {
+
             }
         });
     }

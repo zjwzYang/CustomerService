@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/customer_info_wx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="是否已经添加微信：否"
+            android:textColor="#333"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/customer_info_wx_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="修改" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户标签"
+            android:textColor="#333"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/customer_info_tag_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="修改" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/customer_tags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#333"
+        android:textSize="20sp" />
+
+
+</LinearLayout>

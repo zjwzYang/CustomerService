@@ -97,6 +97,10 @@ public class CommonlyUsedAdapter extends RecyclerView.Adapter<CommonlyUsedAdapte
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        this.dataList.clear();
+    }
+
     static class CommonlyUsedViewHolder extends RecyclerView.ViewHolder {
         private TextView mTextView;
         private TextView used_purpose;

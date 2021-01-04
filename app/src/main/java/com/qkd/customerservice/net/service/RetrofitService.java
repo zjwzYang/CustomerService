@@ -1,11 +1,14 @@
 package com.qkd.customerservice.net.service;
 
 
+import com.qkd.customerservice.bean.AddKnowledgeInput;
+import com.qkd.customerservice.bean.AddKnowledgeOutput;
 import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.ArticleOutput;
 import com.qkd.customerservice.bean.CustomerBookOutput;
 import com.qkd.customerservice.bean.CustomizedListBean;
+import com.qkd.customerservice.bean.DeleteKnowledgeOutput;
 import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.bean.LoginOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
@@ -19,6 +22,11 @@ import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TransferOutput;
+import com.qkd.customerservice.bean.UpdateUserTagInput;
+import com.qkd.customerservice.bean.UpdateWechatInput;
+import com.qkd.customerservice.bean.UserTagOutput;
+import com.qkd.customerservice.bean.UserTagsBean;
+import com.qkd.customerservice.bean.WxchatListOutput;
 import com.qkd.customerservice.net.BaseOutput;
 
 import java.util.Map;
@@ -28,6 +36,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -128,4 +137,29 @@ public interface RetrofitService {
     @PUT("scheme/to-be-customized/saveAsHasSend")
     Observable<BaseOutput> saveAsHasSend(@Field("orderNumber") long orderNumber,
                                          @Field("userId") String userId);
+
+    // 删除素材
+    @HTTP(method = "DELETE", path = "knowledge/deleteKnowledge", hasBody = true)
+    Observable<DeleteKnowledgeOutput> deleteKnowledge(@Query("mediaId") int mediaId);
+
+    // 知识库-新增素材
+    @POST("knowledge/addKnowledge")
+    Observable<AddKnowledgeOutput> addKnowledge(@Body AddKnowledgeInput input);
+
+    @GET("appUser/queryUserTag")
+    Observable<UserTagsBean> queryUserTag(@Query("openId") String openId);
+
+    // 用户-查询用户标签列表
+    @GET("appUser/getUserTag")
+    Observable<UserTagOutput> getUserTags(@Query("pageNum") int pageNum);
+
+    // 更新是否已添加微信状态
+    @POST("planner/updateIsAddWechat")
+    Observable<BaseOutput> updateIsAddWechat(@Body UpdateWechatInput input);
+
+    @GET("planner/getAddWechat")
+    Observable<WxchatListOutput> getAddWechat(@Query("identifier") String identifier);
+
+    @POST("appUser/updateUserTag")
+    Observable<BaseOutput> updateUserTag(@Body UpdateUserTagInput input);
 }

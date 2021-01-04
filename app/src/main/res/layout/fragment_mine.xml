@@ -4,6 +4,15 @@
     android:layout_height="match_parent">
 
     <Button
+        android:id="@+id/mine_exchange_knowleage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="20dp"
+        android:text="知识库修改" />
+
+    <Button
         android:id="@+id/mine_login_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

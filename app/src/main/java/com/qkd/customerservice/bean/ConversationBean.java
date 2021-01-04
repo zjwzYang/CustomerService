@@ -17,6 +17,7 @@ public class ConversationBean {
     private String conversationID;
     private int unreadCount;
     private V2TIMMessage lastMessage;
+    private boolean addedWx;
 
     public ConversationBean(V2TIMConversation conversation) {
         this.showName = conversation.getShowName();
@@ -25,6 +26,14 @@ public class ConversationBean {
         this.unreadCount = conversation.getUnreadCount();
         this.lastMessage = conversation.getLastMessage();
         this.conversationID = conversation.getConversationID();
+    }
+
+    public boolean isAddedWx() {
+        return addedWx;
+    }
+
+    public void setAddedWx(boolean addedWx) {
+        this.addedWx = addedWx;
     }
 
     public String getConversationID() {

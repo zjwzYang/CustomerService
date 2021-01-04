@@ -20,6 +20,7 @@ import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.ChatActivity;
+import com.qkd.customerservice.activity.CustomerInfoActivity;
 import com.qkd.customerservice.bean.ConversationBean;
 import com.tencent.imsdk.v2.V2TIMMessage;
 import com.tencent.imsdk.v2.V2TIMTextElem;
@@ -94,6 +95,16 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 .load(conversation.getFaceUrl())
                 .apply(options)
                 .into(holder.mHeadV);
+        holder.mHeadV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, CustomerInfoActivity.class);
+                intent.putExtra("openId", conversation.getUserId());
+                intent.putExtra("showName", conversation.getShowName());
+                intent.putExtra("addedWx", conversation.isAddedWx());
+                context.startActivity(intent);
+            }
+        });
         if (conversation.getUnreadCount() == 0) {
             holder.readV.setVisibility(View.GONE);
         } else {
@@ -134,6 +145,12 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 holder.lastMsg.setVisibility(View.GONE);
             }
         }
+
+        if (conversation.isAddedWx()) {
+            holder.wxAddFlag.setVisibility(View.VISIBLE);
+        } else {
+            holder.wxAddFlag.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -154,6 +171,24 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         notifyDataSetChanged();
     }
 
+    public void setWxAdd(String userId, int isAddWechat) {
+        if (TextUtils.isEmpty(userId)) {
+            return;
+        }
+        for (int i = 0; i < this.conversationList.size(); i++) {
+            ConversationBean bean = this.conversationList.get(i);
+            if (userId.equals(bean.getUserId())) {
+                if (isAddWechat == 0) {
+                    bean.setAddedWx(false);
+                } else {
+                    bean.setAddedWx(true);
+                }
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
     public List<ConversationBean> getConversationList() {
         return conversationList;
     }
@@ -164,6 +199,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         private TextView readV;
         private TextView lastMsg;
         private TextView lastTime;
+        private ImageView wxAddFlag;
 
         public CustomerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -172,6 +208,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             readV = itemView.findViewById(R.id.customer_read);
             lastMsg = itemView.findViewById(R.id.customer_last_msg);
             lastTime = itemView.findViewById(R.id.customer_last_time);
+            wxAddFlag = itemView.findViewById(R.id.customer_wx_added);
         }
     }
 

@@ -63,6 +63,12 @@
         <activity
             android:name=".activity.SearchActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ExchangeKnoledgeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.CustomerInfoActivity"
+            android:screenOrientation="portrait" />
 
         <!--小米推送-->
         <service

@@ -14,7 +14,7 @@
         android:paddingBottom="10dp">
 
         <TextView
-            android:id="@+id/commonly_private"
+            android:id="@+id/exchage_private"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -22,12 +22,12 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="个人"
+            android:text="常用语"
             android:textColor="@color/app_blue"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/commonly_public"
+            android:id="@+id/exchage_public"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -35,14 +35,14 @@
             android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="公共"
+            android:text="语音"
             android:textColor="@color/divi_color"
             android:textSize="16sp" />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/commonly_used_recy"
+        android:id="@+id/exchage_used_recy"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical" />

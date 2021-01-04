@@ -106,6 +106,10 @@ public class YuYinUsedAdapter extends RecyclerView.Adapter<YuYinUsedAdapter.YuYi
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        this.list.clear();
+    }
+
     static class YuYinViewHolder extends RecyclerView.ViewHolder {
         private TextView mTextView;
 

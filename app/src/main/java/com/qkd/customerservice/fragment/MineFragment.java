@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.activity.ExchangeKnoledgeActivity;
 import com.qkd.customerservice.activity.LoginActivity;
 
 /**
@@ -30,6 +31,7 @@ public class MineFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_mine, container, false);
 
         view.findViewById(R.id.mine_login_out).setOnClickListener(this);
+        view.findViewById(R.id.mine_exchange_knowleage).setOnClickListener(this);
         return view;
     }
 
@@ -44,6 +46,10 @@ public class MineFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
                 getActivity().finish();
+                break;
+            case R.id.mine_exchange_knowleage:
+                Intent exIntent = new Intent(getContext(), ExchangeKnoledgeActivity.class);
+                startActivity(exIntent);
                 break;
         }
     }
