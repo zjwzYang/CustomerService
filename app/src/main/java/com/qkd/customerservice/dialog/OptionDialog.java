@@ -40,6 +40,7 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
         clickPosition = bundle.getInt("clickPosition", -1);
         view.findViewById(R.id.option_one).setOnClickListener(this);
         view.findViewById(R.id.option_two).setOnClickListener(this);
+        view.findViewById(R.id.option_three).setOnClickListener(this);
         return view;
     }
 
@@ -71,6 +72,11 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
                     onClickOptionsListener.onClickOptionTwo(userId, conversationID);
                 }
                 break;
+            case R.id.option_three:
+                if (onClickOptionsListener != null) {
+                    onClickOptionsListener.onClickOptionThree(clickPosition, userId);
+                }
+                break;
         }
     }
 
@@ -82,5 +88,7 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
         void onClickOptionOne(int clickPosition, String userId);
 
         void onClickOptionTwo(String userId, String conversationID);
+
+        void onClickOptionThree(int clickPosition, String userId);
     }
 }

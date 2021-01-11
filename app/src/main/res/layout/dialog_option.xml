@@ -32,4 +32,20 @@
         android:text="转移至其他规划师"
         android:textColor="#333" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divi_color" />
+
+    <TextView
+        android:id="@+id/option_three"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:text="删除"
+        android:textColor="#333" />
+
 </LinearLayout>

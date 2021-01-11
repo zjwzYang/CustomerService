@@ -1,6 +1,7 @@
 package com.qkd.customerservice;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -180,6 +181,33 @@ public class NetUtil {
                 }
             }
         });
+
+    }
+
+    public static void upLoadVideoFile(File file, Callback callback) {
+        String url = Constant.BASE_URL_CORE + "common/uploadMedia";
+        OkHttpClient client = new OkHttpClient();
+
+        SharedPreferences userSp = MyApp.getInstance().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        final String token = userSp.getString(Constant.USER_TOKEN, "");
+        final String coreToken = userSp.getString(Constant.USER_CORE_TOKEN, "");
+        final String identifier = userSp.getString(Constant.USER_IDENTIFIER, "");
+
+        // form 表单形式上传
+        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if (file != null) {
+            // MediaType.parse() 里面是上传的文件类型。
+            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+            String filename = file.getName();
+            // 参数分别为， 请求key ，文件名称 ， RequestBody
+            requestBody.addFormDataPart("file", filename, body);
+        }
+        Request request = new Request.Builder().url(url)
+                .addHeader("login-token", token)
+                .addHeader("token", coreToken)
+                .addHeader("identifier", identifier).post(requestBody.build()).build();
+        // readTimeout("请求超时时间" , 时间单位);
+        client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(callback);
 
     }
 

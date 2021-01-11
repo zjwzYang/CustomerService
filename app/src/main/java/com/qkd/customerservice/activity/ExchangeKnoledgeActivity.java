@@ -26,6 +26,7 @@ import com.qkd.customerservice.bean.DeleteKnowledgeOutput;
 import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.dialog.AddKnoledgeDialog;
+import com.qkd.customerservice.dialog.AddYuYingDialog;
 import com.qkd.customerservice.net.BaseHttp;
 
 import java.util.List;
@@ -193,12 +194,21 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
             this.finish();
             return true;
         } else if (item.getItemId() == R.id.menu_add) {
-            Bundle bundle = new Bundle();
-            bundle.putString("type", type);
-            AddKnoledgeDialog addKnoledgeDialog = new AddKnoledgeDialog();
-            addKnoledgeDialog.setArguments(bundle);
-            addKnoledgeDialog.setOnRefreshKnoledge(this);
-            addKnoledgeDialog.show(getSupportFragmentManager(), "addKnoledgeDialog");
+            if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+                Bundle bundle = new Bundle();
+                bundle.putString("type", type);
+                AddKnoledgeDialog addKnoledgeDialog = new AddKnoledgeDialog();
+                addKnoledgeDialog.setArguments(bundle);
+                addKnoledgeDialog.setOnRefreshKnoledge(this);
+                addKnoledgeDialog.show(getSupportFragmentManager(), "addKnoledgeDialog");
+            } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+                Bundle bundle = new Bundle();
+                bundle.putString("type", type);
+                AddYuYingDialog addYuYingDialog = new AddYuYingDialog();
+                addYuYingDialog.setArguments(bundle);
+                addYuYingDialog.setOnRefreshKnoledge(this);
+                addYuYingDialog.show(getSupportFragmentManager(), "addYuYingDialog");
+            }
         }
         return super.onOptionsItemSelected(item);
     }

@@ -177,8 +177,10 @@ public class SearchActivity extends AppCompatActivity {
             public void onSuccess(KnowledgeOutput baseOutput) {
                 if (baseOutput.isSuccess()) {
                     if (mediaType == 1) {
+                        changAdapter.clear();
                         changAdapter.addAll(baseOutput.getData().getList());
                     } else {
+                        yuyinAdapter.clear();
                         yuyinAdapter.addAll(baseOutput.getData().getList());
                     }
                 }

@@ -41,6 +41,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -122,26 +123,38 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
                 }
-                if (unreadNum >= 2) {
+                if (unreadNum >= 3) {
                     EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
                 }
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String tops = sp.getString(Constant.SORT_TOP, "");
-                if (!TextUtils.isEmpty(tops)) {
+                String deletes = sp.getString(Constant.DELETE_USERID, "");
+                if (!TextUtils.isEmpty(tops) || !TextUtils.isEmpty(deletes)) {
                     String[] split = tops.split("/");
-                    for (int i = 0; i < split.length; i++) {
-                        String top = split[i];
-                        if (!TextUtils.isEmpty(top)) {
-                            for (int j = 0; j < conversationBeans.size(); j++) {
-                                ConversationBean bean = conversationBeans.get(j);
-                                if (top.equals(bean.getUserId())) {
-                                    conversationBeans.remove(j);
-                                    conversationBeans.add(0, bean);
-                                    break;
-                                }
-                            }
+                    String[] deleteA = deletes.split("/");
+                    for (int i = 0; i < conversationBeans.size(); i++) {
+                        ConversationBean bean = conversationBeans.get(i);
+                        if (Arrays.asList(deleteA).contains(bean.getUserId())) {
+                            conversationBeans.remove(i);
+                        }
+                        if (Arrays.asList(split).contains(bean.getUserId())) {
+                            conversationBeans.remove(i);
+                            conversationBeans.add(0, bean);
                         }
                     }
+//                    for (int i = 0; i < split.length; i++) {
+//                        String top = split[i];
+//                        if (!TextUtils.isEmpty(top)) {
+//                            for (int j = 0; j < conversationBeans.size(); j++) {
+//                                ConversationBean bean = conversationBeans.get(j);
+//                                if (top.equals(bean.getUserId())) {
+//                                    conversationBeans.remove(j);
+//                                    conversationBeans.add(0, bean);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
                 }
                 mAdapter.addAll(conversationBeans);
 
@@ -235,6 +248,18 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
         bundle.putString("conversationID", conversationID);
         plannerDialog.setArguments(bundle);
         plannerDialog.show(getChildFragmentManager(), "plannerDialog");
+    }
+
+    @Override
+    public void onClickOptionThree(int clickPosition, String userId) {
+        if (clickPosition < 0) {
+            return;
+        }
+        mAdapter.remove(clickPosition);
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
+        String deletes = sp.getString(Constant.DELETE_USERID, "");
+        deletes = deletes + "/" + userId;
+        sp.edit().putString(Constant.DELETE_USERID, deletes).apply();
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)

@@ -171,6 +171,14 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         notifyDataSetChanged();
     }
 
+    public void remove(int index) {
+        this.conversationList.remove(index);
+        notifyItemRemoved(index);
+        if (index != conversationList.size()) {
+            notifyItemRangeChanged(index, conversationList.size() - index);
+        }
+    }
+
     public void setWxAdd(String userId, int isAddWechat) {
         if (TextUtils.isEmpty(userId)) {
             return;

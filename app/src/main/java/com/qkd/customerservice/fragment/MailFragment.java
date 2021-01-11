@@ -59,6 +59,7 @@ public class MailFragment extends Fragment {
         fragments.add(fragment2);
         fragments.add(fragment3);
         MailFAdapter adapter = new MailFAdapter(getChildFragmentManager(), fragments);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
