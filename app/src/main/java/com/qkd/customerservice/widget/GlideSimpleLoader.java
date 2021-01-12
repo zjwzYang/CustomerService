@@ -18,7 +18,7 @@ import com.qkd.customerservice.R;
  * 图片加载类.
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class GlideSimpleLoader implements ImageWatcher.Loader {
     @Override

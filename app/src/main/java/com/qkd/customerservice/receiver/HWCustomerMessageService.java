@@ -15,7 +15,7 @@ import com.tencent.imsdk.v2.V2TIMOfflinePushConfig;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class HWCustomerMessageService extends HmsMessageService {
 

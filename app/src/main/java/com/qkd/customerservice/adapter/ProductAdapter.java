@@ -32,7 +32,7 @@ import java.util.List;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ArticleViewHolder> {
 
@@ -101,6 +101,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ArticleV
 
     public void addAll(List<ProductOutput.DataBean> dataList) {
         this.dataList.addAll(dataList);
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        this.dataList.clear();
         notifyDataSetChanged();
     }
 

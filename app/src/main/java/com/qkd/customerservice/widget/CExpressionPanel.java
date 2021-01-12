@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.ExpressionPagerListAdapter;
 import com.qkd.customerservice.adapter.ExpressionTypeListAdapter;
 import com.qkd.customerservice.bean.ExpressionType;
+import com.qkd.customerservice.dialog.SearchDialog;
 import com.qkd.customerservice.key_library.IPanel;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 
@@ -37,6 +39,7 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
     private List<ExpressionType> expressionTypeList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private ViewPager2 mViewPager2;
+    private ImageView mSearchV;
 
     public CExpressionPanel(Context context) {
         this(context, null);
@@ -51,6 +54,7 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
         LayoutInflater.from(context).inflate(R.layout.layout_expression_panel, this, true);
         mRecyclerView = findViewById(R.id.recycler_view);
         mViewPager2 = findViewById(R.id.view_pager);
+        mSearchV = findViewById(R.id.content_search);
         init();
     }
 
@@ -68,6 +72,7 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
         initData();
         initRecyclerView();
         initViewPager();
+        initSearch();
     }
 
     private void initData() {
@@ -94,6 +99,16 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
         ExpressionPagerListAdapter adapter = new ExpressionPagerListAdapter((FragmentActivity) getContext(), expressionTypeList);
         mViewPager2.setAdapter(adapter);
         mViewPager2.setUserInputEnabled(true);
+    }
+
+    public void initSearch() {
+        mSearchV.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchDialog searchDialog = new SearchDialog();
+                searchDialog.show(((FragmentActivity) getContext()).getSupportFragmentManager(), "searchDialog");
+            }
+        });
     }
 
     @Override

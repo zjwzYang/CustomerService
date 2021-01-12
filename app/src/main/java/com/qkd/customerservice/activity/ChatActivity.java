@@ -99,6 +99,7 @@ public class ChatActivity extends AppCompatActivity {
     private String UserID;
     private String showName;
     private String faceUrl;
+    private boolean addedWx;
 
     private boolean getMsgFlag = false;
     private V2TIMMessage lastMsg = null;
@@ -123,6 +124,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = getIntent();
         UserID = intent.getStringExtra("UserID");
         showName = intent.getStringExtra("showName");
+        addedWx = intent.getBooleanExtra("addedWx", false);
         setTitle(showName);
 
         init();
@@ -503,6 +505,8 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         });
             }
+        } else if (requestCode == 1011 && resultCode == RESULT_OK) {
+            addedWx = data.getBooleanExtra("addedWx", false);
         }
     }
 
@@ -523,10 +527,11 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, 1, 0, "搜索常用语");
-        menu.add(Menu.NONE, 2, 0, "搜索语音");
-        menu.add(Menu.NONE, 3, 0, "搜索文章库");
-        menu.add(Menu.NONE, 4, 0, "搜索产品库");
+//        menu.add(Menu.NONE, 1, 0, "搜索常用语");
+//        menu.add(Menu.NONE, 2, 0, "搜索语音");
+//        menu.add(Menu.NONE, 3, 0, "搜索文章库");
+//        menu.add(Menu.NONE, 4, 0, "搜索产品库");
+        getMenuInflater().inflate(R.menu.exchange_biaoqian, menu);
         return true;
     }
 
@@ -534,6 +539,13 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finish();
+            return true;
+        } else if (item.getItemId() == R.id.menu_biao) {
+            Intent intent = new Intent(this, CustomerInfoActivity.class);
+            intent.putExtra("openId", UserID);
+            intent.putExtra("showName", showName);
+            intent.putExtra("addedWx", addedWx);
+            startActivityForResult(intent, 1011);
             return true;
         }
         Intent intent = new Intent(this, SearchActivity.class);

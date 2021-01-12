@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -32,7 +31,7 @@ import java.util.List;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class CustomerInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,7 +58,6 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
 
         Intent intent = getIntent();
         openId = intent.getStringExtra("openId");
-        Log.i("Http请求参数", "onCreate: " + openId);
         addedWx = intent.getBooleanExtra("addedWx", false);
         setTitle(intent.getStringExtra("showName"));
 
@@ -216,5 +214,13 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
+    }
+
+    @Override
+    public void finish() {
+        Intent intent = new Intent();
+        intent.putExtra("addedWx", addedWx);
+        setResult(RESULT_OK, intent);
+        super.finish();
     }
 }

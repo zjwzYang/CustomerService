@@ -8,7 +8,7 @@ import com.tencent.imsdk.v2.V2TIMMessage;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class ConversationBean {
     private String showName;

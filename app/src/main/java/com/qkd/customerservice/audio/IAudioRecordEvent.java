@@ -5,7 +5,7 @@ package com.qkd.customerservice.audio;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class IAudioRecordEvent {
     public final static int AUDIO_RECORD_EVENT_TRIGGER = 1;

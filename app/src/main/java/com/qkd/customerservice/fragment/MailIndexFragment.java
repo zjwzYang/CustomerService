@@ -32,7 +32,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class MailIndexFragment extends Fragment {
 

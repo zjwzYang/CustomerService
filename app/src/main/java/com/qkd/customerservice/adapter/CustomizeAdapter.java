@@ -27,7 +27,7 @@ import java.util.List;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.CustomizeViewHolder> {
     private Context context;

@@ -35,7 +35,7 @@ import rx.schedulers.Schedulers;
  * 网络请求.
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class BaseHttp {
 

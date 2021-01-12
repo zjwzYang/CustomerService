@@ -5,7 +5,7 @@ package com.qkd.customerservice;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class Constant {
     public static final String APP_DATA = "app_data";

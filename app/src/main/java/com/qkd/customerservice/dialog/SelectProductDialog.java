@@ -35,7 +35,7 @@ import com.qkd.customerservice.net.BaseHttp;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class SelectProductDialog extends DialogFragment implements DialogProductAdapter.OnClickProductItemListener {
 

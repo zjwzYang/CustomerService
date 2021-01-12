@@ -33,7 +33,7 @@ import java.util.List;
  * .
  *
  * @author yj
- * @org 浙江房超信息科技有限公司
+ * @org 趣看点
  */
 public class ProductInputDialog extends DialogFragment implements View.OnClickListener {
 

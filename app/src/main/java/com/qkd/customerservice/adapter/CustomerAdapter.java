@@ -75,6 +75,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 intent.putExtra("UserID", conversation.getUserId());
                 intent.putExtra("showName", conversation.getShowName());
                 intent.putExtra("faceUrl", conversation.getFaceUrl());
+                intent.putExtra("addedWx", conversation.isAddedWx());
                 context.startActivity(intent);
 //                conversation.setHasUnread(false);
                 notifyItemChanged(position);
