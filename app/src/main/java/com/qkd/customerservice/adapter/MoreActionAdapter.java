@@ -14,14 +14,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.MoreAction;
+import com.qkd.customerservice.bean.MsgBean;
+import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.widget.LocalGlideEngine;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Date;
 import java.util.List;
 
 import static com.qkd.customerservice.activity.ChatActivity.IMAGE_REQUEST;
@@ -62,8 +68,15 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
             public void onClick(View view) {
                 if (position == 0) {
                     selectImg();
-                } else if (position == 2) {
-                    //context.startActivity(new Intent(context, CustomizedActivity.class));
+                } else if (position == 2) { // 定制
+                    String text = "http://qkbdev.qukandian573.com/scheme";
+                    TextMsg msgBean = new TextMsg();
+                    msgBean.setMsgType(MsgBean.MsgType.TEXT);
+                    msgBean.setType(1);
+                    msgBean.setContent(text);
+                    msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                    msgBean.setNickName("我");
+                    EventBus.getDefault().post(msgBean);
                 }
             }
         });

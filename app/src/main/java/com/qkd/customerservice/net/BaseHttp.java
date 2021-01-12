@@ -15,6 +15,7 @@ import com.qkd.customerservice.net.service.RetrofitService;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -131,7 +132,7 @@ public class BaseHttp {
                     Request request = original.newBuilder()
                             .header("login-token", token)
                             .header("token", coreToken)
-                            .header("identifier", identifier)
+                            .header("identifier", URLEncoder.encode(identifier, "utf-8"))
                             .method(original.method(), original.body())
                             .build();
 

@@ -169,6 +169,12 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                     // 在后台
                     sendNotifi();
                 }
+                String userID = message.getUserID();
+                SharedPreferences sp = getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
+                String deletes = sp.getString(Constant.DELETE_USERID, "");
+                String replace = deletes.replace(deletes, "/" + userID);
+                //Log.i("deletes", "deletes: " + deletes + "  replace:" + replace);
+                sp.edit().putString(Constant.DELETE_USERID, replace).apply();
 
                 super.onRecvNewMessage(message);
                 int type = message.getElemType();

@@ -106,6 +106,10 @@ public class MailIndexFragment extends Fragment {
         }
     }
 
+    public void refresh() {
+        initData();
+    }
+
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);

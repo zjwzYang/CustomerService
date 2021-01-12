@@ -27,6 +27,8 @@ public class MailFragment extends Fragment {
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    private List<Fragment> fragments;
+    private int currIndex = 0;
 
     @Nullable
     @Override
@@ -38,8 +40,16 @@ public class MailFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && fragments != null) {
+            ((MailIndexFragment) fragments.get(currIndex)).refresh();
+        }
+    }
+
     private void initView() {
-        List<Fragment> fragments = new ArrayList<>();
+        fragments = new ArrayList<>();
         MailIndexFragment fragment1 = new MailIndexFragment();
         Bundle bundle1 = new Bundle();
         bundle1.putInt("userStatus", 1);
@@ -62,9 +72,22 @@ public class MailFragment extends Fragment {
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
-    }
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-    private void initData() {
+            }
 
+            @Override
+            public void onPageSelected(int position) {
+                currIndex = position;
+                ((MailIndexFragment) fragments.get(position)).refresh();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }
