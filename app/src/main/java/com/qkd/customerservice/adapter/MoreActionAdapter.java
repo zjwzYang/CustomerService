@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MoreAction;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
@@ -43,10 +45,15 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
 
     private Context context;
     private List<MoreAction> mMoreActions;
+    private String qrCode;
 
     public MoreActionAdapter(Context context, List<MoreAction> moreActions) {
         this.context = context;
         mMoreActions = moreActions;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
     @NonNull
@@ -66,17 +73,34 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (position == 0) {
-                    selectImg();
-                } else if (position == 2) { // 定制
-                    String text = "http://qkbdev.qukandian573.com/scheme";
-                    TextMsg msgBean = new TextMsg();
-                    msgBean.setMsgType(MsgBean.MsgType.TEXT);
-                    msgBean.setType(1);
-                    msgBean.setContent(text);
-                    msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
-                    msgBean.setNickName("我");
-                    EventBus.getDefault().post(msgBean);
+                int actionType = moreAction.getActionType();
+                switch (actionType) {
+                    case MoreAction.ACTION_TYPE_PHOTO:
+                        selectImg();
+                        break;
+                    case MoreAction.ACTION_TYPE_DINGZHI:
+                        String text = "http://qkbdev.qukandian573.com/scheme";
+                        TextMsg msgBean = new TextMsg();
+                        msgBean.setMsgType(MsgBean.MsgType.TEXT);
+                        msgBean.setType(1);
+                        msgBean.setContent(text);
+                        msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                        msgBean.setNickName("我");
+                        EventBus.getDefault().post(msgBean);
+                        break;
+                    case MoreAction.ACTION_TYPE_CODE:
+                        if (!TextUtils.isEmpty(qrCode)) {
+                            ImageMsg imageMsg = new ImageMsg();
+                            imageMsg.setNickName("我");
+                            imageMsg.setType(1);
+                            imageMsg.setMsgType(MsgBean.MsgType.IMAGE);
+                            imageMsg.setImgPath(qrCode);
+                            imageMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                            EventBus.getDefault().post(imageMsg);
+                        } else {
+                            Toast.makeText(context, "发送失败", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
                 }
             }
         });

@@ -17,6 +17,7 @@ import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
+import com.qkd.customerservice.bean.QrCodeOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
 import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
@@ -162,4 +163,7 @@ public interface RetrofitService {
 
     @POST("appUser/updateUserTag")
     Observable<BaseOutput> updateUserTag(@Body UpdateUserTagInput input);
+
+    @GET("knowledge/getQrCode")
+    Observable<QrCodeOutput> getQrCode(@Query("identifier") String identifier);
 }

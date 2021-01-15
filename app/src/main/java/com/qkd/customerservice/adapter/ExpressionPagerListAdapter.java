@@ -55,6 +55,12 @@ public class ExpressionPagerListAdapter extends FragmentStateAdapter {
                 textB.putString("type", ExpressionType.EXPRESSION_KNOWLEDGE_TEXT);
                 textFragment.setArguments(textB);
                 return textFragment;
+            case ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO:
+                CommonlyUsedFragment photoFragment = new CommonlyUsedFragment();
+                Bundle photoB = new Bundle();
+                photoB.putString("type", ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO);
+                photoFragment.setArguments(photoB);
+                return photoFragment;
             case ExpressionType.EXPRESSION_KNOWLEDGE_YUYING:
                 CommonlyUsedFragment yuyinFragment = new CommonlyUsedFragment();
                 Bundle yuyinB = new Bundle();

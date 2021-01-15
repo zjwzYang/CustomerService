@@ -383,6 +383,56 @@ public class ChatActivity extends AppCompatActivity {
                 adapter.addMsgTop(imageMsg);
                 V2TIMManager.getMessageManager().markC2CMessageAsRead(UserID, null);
             }
+        } else {
+            adapter.addMsgTop(imageMsg);
+
+            final String path = imageMsg.getImgPath();
+
+            NetUtil.get().download(ChatActivity.this, path, new NetUtil.OnDownloadListener() {
+                @Override
+                public void onDownloadSuccess(final File file) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("msgType", String.valueOf(6));
+                    map.put("openId", UserID);
+                    NetUtil.upLoadFile(map, file);
+
+                    // 创建图片消息
+                    V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(file.getAbsolutePath());
+                    // 发送图片消息
+                    V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
+                            null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                                @Override
+                                public void onProgress(int progress) {
+                                    Log.i("12345678", "onProgress: " + progress);
+                                }
+
+                                @Override
+                                public void onError(int code, String desc) {
+                                    Log.i("12345678", "发送出错: " + code + "  " + desc);
+                                }
+
+                                @Override
+                                public void onSuccess(V2TIMMessage v2TIMMessage) {
+                                    List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
+                                    for (V2TIMImageElem.V2TIMImage image : imageList) {
+                                        String url = image.getUrl();
+                                        adapter.notifyImageItem(file.getAbsolutePath(), url);
+                                    }
+                                    Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                                }
+                            });
+                }
+
+                @Override
+                public void onDownloading(int progress) {
+
+                }
+
+                @Override
+                public void onDownloadFailed(Exception e) {
+
+                }
+            });
         }
     }
 

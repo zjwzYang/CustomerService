@@ -15,12 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CommonlyUsedAdapter;
+import com.qkd.customerservice.adapter.PhotoUsedAdapter;
 import com.qkd.customerservice.adapter.YuYinUsedAdapter;
 import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.bean.KnowledgeOutput;
@@ -39,6 +41,7 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
 
     private RecyclerView mRecyclerView;
     private CommonlyUsedAdapter adapter;
+    private PhotoUsedAdapter mPhotoUsedAdapter;
     private YuYinUsedAdapter mYinUsedAdapter;
     private String type;
     private int page = 1;
@@ -70,12 +73,17 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
     }
 
     private void initView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
         if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             adapter = new CommonlyUsedAdapter(getContext());
             mRecyclerView.setAdapter(adapter);
+        } else if (ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO.equals(type)) {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            mPhotoUsedAdapter = new PhotoUsedAdapter(getContext());
+            mRecyclerView.setAdapter(mPhotoUsedAdapter);
         } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             mYinUsedAdapter = new YuYinUsedAdapter(getContext());
             mRecyclerView.setAdapter(mYinUsedAdapter);
         }
@@ -90,6 +98,8 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
                     RecyclerView.Adapter mAdapter = null;
                     if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
                         mAdapter = adapter;
+                    } else if (ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO.equals(type)) {
+                        mAdapter = mPhotoUsedAdapter;
                     } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
                         mAdapter = mYinUsedAdapter;
                     }
@@ -117,6 +127,8 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
         int mediaType = 1;
         if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
             mediaType = 1;
+        } else if (ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO.equals(type)) {
+            mediaType = 2;
         } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
             mediaType = 3;
         }
@@ -133,6 +145,11 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
                             adapter.clear();
                         }
                         adapter.addAll(list);
+                    } else if (ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO.equals(type)) {
+                        if (page == 1) {
+                            mPhotoUsedAdapter.clear();
+                        }
+                        mPhotoUsedAdapter.addAll(list);
                     } else if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
                         Log.i("CommonlyUsedFragment", "onSuccess: 语音长度" + list.size());
                         if (page == 1) {

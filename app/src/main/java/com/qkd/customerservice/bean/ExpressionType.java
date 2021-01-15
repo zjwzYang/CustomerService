@@ -40,6 +40,7 @@ public class ExpressionType {
 
     public static final String EXPRESSION_EMOJI = "expression_emoji";
     public static final String EXPRESSION_KNOWLEDGE_TEXT = "expression_knowledge_text";
+    public static final String EXPRESSION_KNOWLEDGE_PHOTO = "expression_knowledge_photo";
     public static final String EXPRESSION_KNOWLEDGE_YUYING = "expression_knowledge_yuying";
     public static final String EXPRESSION_PRODUCT_ONE = "expression_product_one";
     public static final String EXPRESSION_PRODUCT_TWO = "expression_product_two";

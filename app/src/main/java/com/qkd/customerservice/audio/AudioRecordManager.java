@@ -36,7 +36,7 @@ public class AudioRecordManager implements Handler.Callback {
 
     private final static String TAG = "12345678";
 
-    private int RECORD_INTERVAL = 60;
+    private int RECORD_INTERVAL = 57;
 
     private IAudioState mCurAudioState;
     private View mRootView;

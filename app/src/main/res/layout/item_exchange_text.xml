@@ -4,9 +4,50 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/used_yuyin_linear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_chang_yuyin" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/used_yuyin_length"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text=""
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/used_yuyin_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="播放中..."
+                android:textColor="@color/app_blue"
+                android:textSize="14sp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/exchange_delete"
+        android:layout_toRightOf="@id/used_yuyin_linear"
         android:orientation="vertical"
         android:padding="15dp">
 

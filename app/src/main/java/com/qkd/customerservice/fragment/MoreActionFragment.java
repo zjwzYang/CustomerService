@@ -1,5 +1,7 @@
 package com.qkd.customerservice.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MoreActionAdapter;
 import com.qkd.customerservice.bean.MoreAction;
+import com.qkd.customerservice.bean.QrCodeOutput;
+import com.qkd.customerservice.net.BaseHttp;
 
 import java.util.List;
 
@@ -47,7 +52,22 @@ public class MoreActionFragment extends Fragment {
         mActionList = (List<MoreAction>) bundle.getSerializable(ACTION_LIST);
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
-        MoreActionAdapter adapter = new MoreActionAdapter(getContext(), mActionList);
+        final MoreActionAdapter adapter = new MoreActionAdapter(getContext(), mActionList);
         mRecyclerView.setAdapter(adapter);
+
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        String identifier = sp.getString(Constant.USER_IDENTIFIER, "");
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getQrCode(identifier), new BaseHttp.HttpObserver<QrCodeOutput>() {
+            @Override
+            public void onSuccess(QrCodeOutput output) {
+                String qrCode = output.getData();
+                adapter.setQrCode(qrCode);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
     }
 }

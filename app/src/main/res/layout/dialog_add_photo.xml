@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_radio_bg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/dialog_add_title"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="新增图片素材"
+        android:textColor="#ff2d2d2d"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="素材内容："
+            android:textColor="#ff2d2d2d"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/photo_add_img"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/ic_add_img" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="素材用途："
+            android:textColor="#ff2d2d2d"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/dialog_purpose_input"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_input_bg"
+            android:gravity="top"
+            android:padding="8dp" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/dialog_input_sure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/blue_input_bg"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="确定"
+        android:textColor="@color/app_blue"
+        android:textSize="18sp" />
+
+</LinearLayout>

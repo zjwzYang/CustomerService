@@ -78,6 +78,7 @@ public class CExpressionPanel extends LinearLayout implements IPanel {
     private void initData() {
         expressionTypeList.add(new ExpressionType(R.drawable.ic_expression_panel_tab_normal, ExpressionType.EXPRESSION_EMOJI));
         expressionTypeList.add(new ExpressionType(R.drawable.ic_chang_text, ExpressionType.EXPRESSION_KNOWLEDGE_TEXT));
+        expressionTypeList.add(new ExpressionType(R.drawable.ic_chang_photo, ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO));
         expressionTypeList.add(new ExpressionType(R.drawable.ic_chang_yuyin, ExpressionType.EXPRESSION_KNOWLEDGE_YUYING));
         expressionTypeList.add(new ExpressionType(R.drawable.ic_wenzhang, ExpressionType.EXPRESSION_PRODUCT_ONE));
         expressionTypeList.add(new ExpressionType(R.drawable.ic_product, ExpressionType.EXPRESSION_PRODUCT_TWO));
