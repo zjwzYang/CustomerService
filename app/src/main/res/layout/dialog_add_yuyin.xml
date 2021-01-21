@@ -61,10 +61,29 @@
                 android:textColor="#ff2d2d2d"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/dialog_content_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/video_play_linear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chang_yuyin" />
+
+                <TextView
+                    android:id="@+id/dialog_content_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:text="录制完成，点击播放"
+                    android:textColor="@color/text_black" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/dialog_content_btn"

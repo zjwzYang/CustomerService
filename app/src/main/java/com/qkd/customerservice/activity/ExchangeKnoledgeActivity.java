@@ -1,5 +1,7 @@
 package com.qkd.customerservice.activity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +29,8 @@ import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.ExchangePhotoAdapter;
 import com.qkd.customerservice.adapter.ExchangeTextAdapter;
+import com.qkd.customerservice.audio.AudioPlayManager;
+import com.qkd.customerservice.audio.AudioRecordManager;
 import com.qkd.customerservice.bean.DeleteKnowledgeOutput;
 import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.bean.FileUploadBean;
@@ -35,6 +39,8 @@ import com.qkd.customerservice.dialog.AddKnoledgeDialog;
 import com.qkd.customerservice.dialog.AddPhotoDialog;
 import com.qkd.customerservice.dialog.AddYuYingDialog;
 import com.qkd.customerservice.net.BaseHttp;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
 import com.zhihu.matisse.Matisse;
 
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +79,7 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
 
     private AddPhotoDialog addPhotoDialog;
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +102,24 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
         type = ExpressionType.EXPRESSION_KNOWLEDGE_TEXT;
         initView();
         initData();
+
+        String[] permissions = {Manifest.permission.RECORD_AUDIO};
+        AndPermission.with(this)
+                .runtime()
+                .permission(permissions)
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+                        Toast.makeText(ExchangeKnoledgeActivity.this, "请先获取权限", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .start();
     }
 
     private void initView() {
@@ -217,6 +242,8 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
 
     @Override
     public void onClick(View view) {
+        AudioPlayManager.getInstance().stopPlay();
+        AudioRecordManager.getInstance().destroyRecord();
         mPrivateV.setTextColor(ContextCompat.getColor(this, R.color.divi_color));
         mPrivateV.setBackgroundResource(R.drawable.text_gray_bg);
         mPhotoV.setTextColor(ContextCompat.getColor(this, R.color.divi_color));

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -67,6 +68,11 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     @Override
     public void onBindViewHolder(@NonNull CustomerViewHolder holder, final int position) {
         final ConversationBean conversation = conversationList.get(position);
+        if (conversation.isTopFlag()) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.app_backgroud));
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+        }
         holder.mNameV.setText(conversation.getShowName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,6 +173,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
 
     public void refreshTop(int topIndex) {
         ConversationBean topBean = this.conversationList.get(topIndex);
+        topBean.setTopFlag(true);
         this.conversationList.remove(topIndex);
         this.conversationList.add(0, topBean);
         notifyDataSetChanged();

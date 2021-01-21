@@ -18,6 +18,7 @@ public class ConversationBean {
     private int unreadCount;
     private V2TIMMessage lastMessage;
     private boolean addedWx;
+    private boolean topFlag;
 
     public ConversationBean(V2TIMConversation conversation) {
         this.showName = conversation.getShowName();
@@ -26,6 +27,14 @@ public class ConversationBean {
         this.unreadCount = conversation.getUnreadCount();
         this.lastMessage = conversation.getLastMessage();
         this.conversationID = conversation.getConversationID();
+    }
+
+    public boolean isTopFlag() {
+        return topFlag;
+    }
+
+    public void setTopFlag(boolean topFlag) {
+        this.topFlag = topFlag;
     }
 
     public boolean isAddedWx() {

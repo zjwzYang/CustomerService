@@ -2,9 +2,11 @@ package com.qkd.customerservice.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,6 +33,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
 import com.qkd.customerservice.audio.ConversationType;
+import com.qkd.customerservice.audio.IAudioPlayListener;
 import com.qkd.customerservice.bean.AddKnowledgeInput;
 import com.qkd.customerservice.bean.AddKnowledgeOutput;
 import com.qkd.customerservice.bean.ExpressionType;
@@ -71,6 +74,9 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
     private float mOffsetLimit;
     private boolean videoFlag = false;
 
+    private String videoUrl;
+    private View videoPlayLinear;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,6 +89,8 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
         mRootV = view.findViewById(R.id.dialog_yuyin_root);
         view.findViewById(R.id.dialog_input_sure).setOnClickListener(this);
         view.findViewById(R.id.dialog_input_cancle).setOnClickListener(this);
+        videoPlayLinear = view.findViewById(R.id.video_play_linear);
+        videoPlayLinear.setOnClickListener(this);
         mButton.setOnTouchListener(this);
         mOffsetLimit = 70 * getContext().getResources().getDisplayMetrics().density;
 
@@ -109,11 +117,43 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.video_play_linear:
+                if (TextUtils.isEmpty(videoUrl)) {
+                    return;
+                }
+                Uri audioPath = Uri.parse(videoUrl);
+                if (AudioPlayManager.getInstance().isPlaying()) {
+                    if (AudioPlayManager.getInstance().getPlayingUri().equals(audioPath)) {
+                        AudioPlayManager.getInstance().stopPlay();
+                        return;
+                    }
+                    AudioPlayManager.getInstance().stopPlay();
+                }
+                if (!AudioPlayManager.getInstance().isInNormalMode(view.getContext()) && AudioPlayManager.getInstance().isInVOIPMode(view.getContext())) {
+                    Toast.makeText(getContext(), "声音通道被占用，请稍后再试", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                AudioPlayManager.getInstance().startPlay(getContext(), audioPath, new IAudioPlayListener() {
+                    @Override
+                    public void onStart(Uri uri) {
+                        contentEd.setText("播放中...");
+                    }
+
+                    @Override
+                    public void onStop(Uri uri) {
+                        contentEd.setText("录制完成，点击播放");
+                    }
+
+                    @Override
+                    public void onComplete(Uri uri) {
+                        contentEd.setText("录制完成，点击播放");
+                    }
+                });
+                break;
             case R.id.dialog_input_sure:
-                String content = contentEd.getText().toString();
                 String purpose = purposeEd.getText().toString();
-                if (TextUtils.isEmpty(content)) {
-                    Toast.makeText(getContext(), "请输入素材内容", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(videoUrl)) {
+                    Toast.makeText(getContext(), "请先录音", Toast.LENGTH_SHORT).show();
                     contentEd.requestFocus();
                 } else if (TextUtils.isEmpty(purpose)) {
                     Toast.makeText(getContext(), "请输入素材用途", Toast.LENGTH_SHORT).show();
@@ -123,7 +163,7 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
                     int serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
                     AddKnowledgeInput input = new AddKnowledgeInput();
                     input.setServiceId(serviceId);
-                    input.setMediaContent(content);
+                    input.setMediaContent(videoUrl);
                     input.setMediaPurpose(purpose);
                     if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
                         input.setMediaType(1);
@@ -210,7 +250,8 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
                         public void run() {
                             Gson gson = new Gson();
                             FileUploadBean uploadBean = gson.fromJson(str, FileUploadBean.class);
-                            contentEd.setText(uploadBean.getData());
+                            videoUrl = uploadBean.getData();
+                            videoPlayLinear.setVisibility(View.VISIBLE);
                             videoFlag = false;
                         }
                     });
@@ -229,13 +270,19 @@ public class AddYuYingDialog extends DialogFragment implements View.OnClickListe
     }
 
     @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        AudioRecordManager.getInstance().destroyRecord();
+        super.onDismiss(dialog);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null && dialog.getWindow() != null) {
             Window window = dialog.getWindow();
             window.setGravity(Gravity.BOTTOM);
-            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.setWindowAnimations(R.style.animate_dialog);
             setCancelable(true);

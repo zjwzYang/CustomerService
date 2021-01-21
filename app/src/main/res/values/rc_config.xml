@@ -7,7 +7,7 @@
     <integer name="rc_audio_wb_encoding_bit_rate">12650</integer>
 
     <!--设置 AAC 语音消息的码率 (单位 bps)-->
-    <integer name="rc_audio_aac_encoding_bit_rate">16000</integer>
+    <integer name="rc_audio_aac_encoding_bit_rate">32000</integer>
 
     <!-- 设置聊天室一次拉取消息数目 -->
     <integer name="rc_chatroom_first_pull_message_count">10</integer>

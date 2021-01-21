@@ -40,6 +40,7 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
     private TextView mWxFlag;
     private TextView mTags;
     private boolean addedWx;
+    private View wxChangeV;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +48,8 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_customer_info);
         mWxFlag = findViewById(R.id.customer_info_wx);
         mTags = findViewById(R.id.customer_tags);
-        findViewById(R.id.customer_info_wx_change).setOnClickListener(this);
+        wxChangeV = findViewById(R.id.customer_info_wx_change);
+        wxChangeV.setOnClickListener(this);
         findViewById(R.id.customer_info_tag_change).setOnClickListener(this);
 
         ActionBar actionBar = getSupportActionBar();
@@ -63,8 +65,10 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
 
         if (addedWx) {
             mWxFlag.setText("是否已经添加微信：是");
+            wxChangeV.setVisibility(View.GONE);
         } else {
             mWxFlag.setText("是否已经添加微信：否");
+            wxChangeV.setVisibility(View.VISIBLE);
         }
 
         initData();
@@ -129,8 +133,10 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
                                             addedWx = !addedWx;
                                             if (addedWx) {
                                                 mWxFlag.setText("是否已经添加微信：是");
+                                                wxChangeV.setVisibility(View.GONE);
                                             } else {
                                                 mWxFlag.setText("是否已经添加微信：否");
+                                                wxChangeV.setVisibility(View.GONE);
                                             }
                                         }
                                     }

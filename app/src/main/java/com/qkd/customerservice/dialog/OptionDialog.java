@@ -29,6 +29,7 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
     private String userId;
     private String conversationID;
     private int clickPosition;
+    private boolean topFlag;
 
     @Nullable
     @Override
@@ -38,7 +39,14 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
         userId = bundle.getString("userId");
         conversationID = bundle.getString("conversationID");
         clickPosition = bundle.getInt("clickPosition", -1);
-        view.findViewById(R.id.option_one).setOnClickListener(this);
+        topFlag = bundle.getBoolean("topFlag", false);
+        View optionOneV = view.findViewById(R.id.option_one);
+        optionOneV.setOnClickListener(this);
+        if (topFlag) {
+            optionOneV.setVisibility(View.GONE);
+        } else {
+            optionOneV.setVisibility(View.VISIBLE);
+        }
         view.findViewById(R.id.option_two).setOnClickListener(this);
         view.findViewById(R.id.option_three).setOnClickListener(this);
         return view;

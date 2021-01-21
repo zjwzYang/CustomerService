@@ -42,6 +42,7 @@ import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.net.BaseOutput;
 import com.tencent.imsdk.v2.V2TIMAdvancedMsgListener;
 import com.tencent.imsdk.v2.V2TIMCallback;
+import com.tencent.imsdk.v2.V2TIMCustomElem;
 import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMMessage;
@@ -59,6 +60,7 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_CUSTOM;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_SOUND;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
@@ -84,11 +86,16 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     private Fragment currFragment;
     private SharedPreferences sp;
     private V2TIMAdvancedMsgListener mListener;
+    private String identifier;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+
+        SharedPreferences sp = getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        identifier = sp.getString(Constant.USER_IDENTIFIER, "");
+
         EventBus.getDefault().register(this);
         mMsgImg = findViewById(R.id.index_msg_img);
         mMsgText = findViewById(R.id.index_msg_text);
@@ -172,7 +179,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 // 当删除的用户发信消息过来，在删除表中删除
                 String userID = message.getUserID();
                 SharedPreferences sp = getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
-                String deletes = sp.getString(Constant.DELETE_USERID, "");
+                String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
 //                String[] deleteA = deletes.split("/");
 //                if (Arrays.asList(deleteA).contains(userID)) {
 //                    return;
@@ -180,7 +187,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 if (deletes.contains(userID)) {
                     String replace = deletes.replace("/" + userID, "");
                     //Log.i("deletes", "deletes: " + deletes + "  replace:" + replace);
-                    sp.edit().putString(Constant.DELETE_USERID, replace).apply();
+                    sp.edit().putString(Constant.DELETE_USERID + "_" + identifier, replace).apply();
                 }
 
                 super.onRecvNewMessage(message);
@@ -254,6 +261,12 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                             }
                         }
                     });
+                } else if (type == V2TIM_ELEM_TYPE_CUSTOM) {
+                    V2TIMCustomElem customElem = message.getCustomElem();
+                    byte[] data = customElem.getData();
+                    String string = data.toString();
+                    String s = new String(data);
+                    Log.i("Http请求参数", "onRecvNewMessage: " + customElem.toString());
                 }
             }
 

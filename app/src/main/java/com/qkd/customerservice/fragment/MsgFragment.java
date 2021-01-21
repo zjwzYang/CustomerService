@@ -54,6 +54,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
     private RecyclerView mRecyclerView;
     private CustomerAdapter mAdapter;
+    private String identifier;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -76,6 +77,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 bundle.putString("userId", conversation.getUserId());
                 bundle.putString("conversationID", conversation.getConversationID());
                 bundle.putInt("clickPosition", position);
+                bundle.putBoolean("topFlag", conversation.isTopFlag());
                 OptionDialog optionDialog = new OptionDialog();
                 optionDialog.setArguments(bundle);
                 optionDialog.setOnClickOptionsListener(MsgFragment.this);
@@ -86,6 +88,9 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
+        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
+        identifier = sp.getString(Constant.USER_IDENTIFIER, "");
         return view;
     }
 
@@ -127,23 +132,25 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
                 }
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
-                String tops = sp.getString(Constant.SORT_TOP, "");
-                String deletes = sp.getString(Constant.DELETE_USERID, "");
+                String tops = sp.getString(Constant.SORT_TOP + "_" + identifier, "");
+                String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
                 if (!TextUtils.isEmpty(tops) || !TextUtils.isEmpty(deletes)) {
-                    String[] split = tops.split("/");
+                    String[] topList = tops.split("/");
                     String[] deleteA = deletes.split("/");
                     for (int i = 0; i < conversationBeans.size(); i++) {
                         ConversationBean bean = conversationBeans.get(i);
                         if (Arrays.asList(deleteA).contains(bean.getUserId())) {
                             conversationBeans.remove(i);
+                            continue;
                         }
-                        if (Arrays.asList(split).contains(bean.getUserId())) {
+                        if (Arrays.asList(topList).contains(bean.getUserId())) {
+                            bean.setTopFlag(true);
                             conversationBeans.remove(i);
                             conversationBeans.add(0, bean);
                         }
                     }
-//                    for (int i = 0; i < split.length; i++) {
-//                        String top = split[i];
+//                    for (int i = 0; i < topList.length; i++) {
+//                        String top = topList[i];
 //                        if (!TextUtils.isEmpty(top)) {
 //                            for (int j = 0; j < conversationBeans.size(); j++) {
 //                                ConversationBean bean = conversationBeans.get(j);
@@ -186,8 +193,6 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
     }
 
     private void initWx() {
-        SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
-        String identifier = sp.getString(Constant.USER_IDENTIFIER, "");
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getAddWechat(identifier), new BaseHttp.HttpObserver<WxchatListOutput>() {
             @Override
             public void onSuccess(WxchatListOutput output) {
@@ -234,10 +239,9 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
         }
         mAdapter.refreshTop(clickPosition);
         SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
-        String tops = sp.getString(Constant.SORT_TOP, "");
+        String tops = sp.getString(Constant.SORT_TOP + "_" + identifier, "");
         tops = tops + "/" + userId;
-        sp.edit().putString(Constant.SORT_TOP, tops).apply();
-        Log.i("12345678", "tops: " + tops);
+        sp.edit().putString(Constant.SORT_TOP + "_" + identifier, tops).apply();
     }
 
     @Override
@@ -257,9 +261,9 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
         }
         mAdapter.remove(clickPosition);
         SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
-        String deletes = sp.getString(Constant.DELETE_USERID, "");
+        String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
         deletes = deletes + "/" + userId;
-        sp.edit().putString(Constant.DELETE_USERID, deletes).apply();
+        sp.edit().putString(Constant.DELETE_USERID + "_" + identifier, deletes).apply();
     }
 
 //    @Subscribe(threadMode = ThreadMode.MAIN)
