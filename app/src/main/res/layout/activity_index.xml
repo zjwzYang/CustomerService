@@ -16,31 +16,50 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/msg_linear"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:paddingTop="6dp"
             android:paddingBottom="6dp">
 
-            <ImageView
-                android:id="@+id/index_msg_img"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@mipmap/index_msg" />
-
-            <TextView
-                android:id="@+id/index_msg_text"
+            <LinearLayout
+                android:id="@+id/msg_linear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="消息"
-                android:textColor="#cdcdcd"
-                android:textSize="14sp" />
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/index_msg_img"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@mipmap/index_msg" />
+
+                <TextView
+                    android:id="@+id/index_msg_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="消息"
+                    android:textColor="#cdcdcd"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/index_unread_count"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_toRightOf="@id/msg_linear"
+                android:background="@drawable/unread_count_bg"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/mail_linear"

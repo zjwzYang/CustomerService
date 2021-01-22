@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.UpdateRemarkInput;
+import com.qkd.customerservice.bean.UpdateRemarkOutput;
 import com.qkd.customerservice.bean.UpdateUserTagInput;
 import com.qkd.customerservice.bean.UpdateWechatInput;
 import com.qkd.customerservice.bean.UserTagOutput;
@@ -41,6 +44,7 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
     private TextView mTags;
     private boolean addedWx;
     private View wxChangeV;
+    private EditText mEditText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +55,8 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
         wxChangeV = findViewById(R.id.customer_info_wx_change);
         wxChangeV.setOnClickListener(this);
         findViewById(R.id.customer_info_tag_change).setOnClickListener(this);
+        mEditText = findViewById(R.id.customer_edit);
+        findViewById(R.id.customer_save_remark).setOnClickListener(this);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -87,6 +93,19 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
                     if (!TextUtils.isEmpty(tags)) {
                         mTags.setText(tags.substring(0, tags.length() - 1));
                     }
+                }
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getRemark(openId), new BaseHttp.HttpObserver<UpdateRemarkOutput>() {
+            @Override
+            public void onSuccess(UpdateRemarkOutput output) {
+                if (output.isSuccess()) {
+                    mEditText.setText(output.getData());
                 }
             }
 
@@ -153,6 +172,31 @@ public class CustomerInfoActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.customer_info_tag_change:
                 getUserTags();
+                break;
+
+            case R.id.customer_save_remark:
+                String remark = mEditText.getText().toString();
+                if (TextUtils.isEmpty(remark)) {
+                    Toast.makeText(this, "请输入备注", Toast.LENGTH_SHORT).show();
+                } else {
+                    UpdateRemarkInput input = new UpdateRemarkInput();
+                    input.setOpenId(openId);
+                    input.setRemark(remark);
+                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).updateRemark(input), new BaseHttp.HttpObserver<UpdateRemarkOutput>() {
+                        @Override
+                        public void onSuccess(UpdateRemarkOutput output) {
+                            if (output.isSuccess()) {
+                                Toast.makeText(CustomerInfoActivity.this, output.getData(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                }
+
                 break;
         }
     }

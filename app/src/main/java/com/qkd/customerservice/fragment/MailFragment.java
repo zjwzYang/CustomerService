@@ -55,19 +55,25 @@ public class MailFragment extends Fragment {
         bundle1.putInt("userStatus", 1);
         fragment1.setArguments(bundle1);
 
-        MailIndexFragment fragment2 = new MailIndexFragment();
-        Bundle bundle2 = new Bundle();
-        bundle2.putInt("userStatus", 2);
-        fragment2.setArguments(bundle2);
+//        MailIndexFragment fragment2 = new MailIndexFragment();
+//        Bundle bundle2 = new Bundle();
+//        bundle2.putInt("userStatus", 2);
+//        fragment2.setArguments(bundle2);
 
         MailIndexFragment fragment3 = new MailIndexFragment();
         Bundle bundle3 = new Bundle();
         bundle3.putInt("userStatus", 3);
         fragment3.setArguments(bundle3);
 
+        MailIndexFragment fragment4 = new MailIndexFragment();
+        Bundle bundle4 = new Bundle();
+        bundle4.putInt("userStatus", 4);
+        fragment4.setArguments(bundle4);
+
         fragments.add(fragment1);
-        fragments.add(fragment2);
+//        fragments.add(fragment2);
         fragments.add(fragment3);
+        fragments.add(fragment4);
         MailFAdapter adapter = new MailFAdapter(getChildFragmentManager(), fragments);
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(adapter);

@@ -26,6 +26,7 @@ import com.qkd.customerservice.adapter.CustomerAdapter;
 import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
+import com.qkd.customerservice.bean.TotalUnreadBean;
 import com.qkd.customerservice.bean.VoiceMsg;
 import com.qkd.customerservice.bean.WxchatListOutput;
 import com.qkd.customerservice.dialog.OptionDialog;
@@ -83,6 +84,18 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 optionDialog.setOnClickOptionsListener(MsgFragment.this);
                 optionDialog.show(getChildFragmentManager(), "optionDialog");
             }
+
+            @Override
+            public void onDelete(ConversationBean conversation, int position) {
+                if (position < 0) {
+                    return;
+                }
+                mAdapter.remove(position);
+                SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
+                String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
+                deletes = deletes + "/" + conversation.getUserId();
+                sp.edit().putString(Constant.DELETE_USERID + "_" + identifier, deletes).apply();
+            }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -118,9 +131,12 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 List<V2TIMConversation> conversationList = v2TIMConversationResult.getConversationList();
                 List<ConversationBean> conversationBeans = new ArrayList<>();
                 int unreadNum = 0;
+                int unreadTotalCount = 0;
                 List<String> userIDList = new ArrayList<>();
                 for (V2TIMConversation conversation : conversationList) {
-                    if (conversation.getUnreadCount() > 0) {
+                    int unreadCount = conversation.getUnreadCount();
+                    unreadTotalCount += unreadCount;
+                    if (unreadCount > 0) {
                         unreadNum++;
                     }
                     userIDList.add(conversation.getUserID());
@@ -131,6 +147,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 if (unreadNum >= 3) {
                     EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
                 }
+                EventBus.getDefault().post(new TotalUnreadBean(unreadTotalCount));
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String tops = sp.getString(Constant.SORT_TOP + "_" + identifier, "");
                 String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");

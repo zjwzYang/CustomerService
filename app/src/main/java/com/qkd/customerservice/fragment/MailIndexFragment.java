@@ -57,11 +57,14 @@ public class MailIndexFragment extends Fragment {
     private void initView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
-        if (userStatus != 3) {
+        if (userStatus == 1) {
             mAdapter = new MailCustomerAdapter(getContext());
             mRecyclerView.setAdapter(mAdapter);
-        } else {
-            mCustomizeAdapter = new CustomizeAdapter(getContext());
+        } else if (userStatus == 3) {
+            mCustomizeAdapter = new CustomizeAdapter(getContext(), userStatus);
+            mRecyclerView.setAdapter(mCustomizeAdapter);
+        } else if (userStatus == 4) {
+            mCustomizeAdapter = new CustomizeAdapter(getContext(), userStatus);
             mRecyclerView.setAdapter(mCustomizeAdapter);
         }
     }
@@ -77,8 +80,8 @@ public class MailIndexFragment extends Fragment {
         SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         String userId = sp.getString(Constant.USER_IDENTIFIER, "");
         int serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
-        if (userStatus != 3) {
-            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getCustomerBook(userId, userStatus), new BaseHttp.HttpObserver<CustomerBookOutput>() {
+        if (userStatus == 1) {
+            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).getCustomerBook(userId), new BaseHttp.HttpObserver<CustomerBookOutput>() {
                 @Override
                 public void onSuccess(CustomerBookOutput customerBookOutput) {
                     mAdapter.addAll(customerBookOutput.getData());
@@ -89,8 +92,22 @@ public class MailIndexFragment extends Fragment {
 
                 }
             });
-        } else {
+        } else if (userStatus == 3) {
             BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, 1, 1), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
+                @Override
+                public void onSuccess(QueryCustomizeOutput output) {
+                    if (output.isSuccess()) {
+                        mCustomizeAdapter.addAll(output.getData().getList());
+                    }
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        } else if (userStatus == 4) {
+            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, 1, 3), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
                 @Override
                 public void onSuccess(QueryCustomizeOutput output) {
                     if (output.isSuccess()) {

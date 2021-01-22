@@ -48,6 +48,7 @@ import com.qkd.customerservice.widget.CInputPanel;
 import com.qkd.customerservice.widget.CMorePanel;
 import com.qkd.customerservice.widget.GlideSimpleLoader;
 import com.qkd.customerservice.widget.PaddingDecoration;
+import com.tencent.imsdk.v2.V2TIMCustomElem;
 import com.tencent.imsdk.v2.V2TIMImageElem;
 import com.tencent.imsdk.v2.V2TIMManager;
 import com.tencent.imsdk.v2.V2TIMMessage;
@@ -68,6 +69,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_CUSTOM;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_SOUND;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
@@ -236,6 +238,22 @@ public class ChatActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                    } else if (type == V2TIM_ELEM_TYPE_CUSTOM) {
+                        V2TIMCustomElem customElem = message.getCustomElem();
+                        byte[] data = customElem.getData();
+                        String url = new String(data);
+                        ArticleMsg articleMsg = new ArticleMsg();
+                        articleMsg.setTitle("测试标题");
+                        articleMsg.setDescription("测试内容");
+                        articleMsg.setUrl(url);
+                        articleMsg.setPicUrl("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fs9.sinaimg.cn%2Fbmiddle%2F5ceba31bg5d6503750788&refer=http%3A%2F%2Fs9.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613876881&t=de4228f0b81e77da48ce399e54f321fc");
+                        articleMsg.setSendTime(timeString);
+                        articleMsg.setType(1);
+                        articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                        articleMsg.setSenderId(message.getSender());
+                        EventBus.getDefault().post(articleMsg);
+
+                        Log.i("Http请求参数", "onRecvNewMessage: " + customElem.toString());
                     }
                 }
             }
@@ -439,6 +457,9 @@ public class ChatActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetArticletMsg(ArticleMsg articleMsg) {
         adapter.addMsgTop(articleMsg);
+        if (!TextUtils.isEmpty(articleMsg.getSenderId())) {
+            return;
+        }
         String picUrl = articleMsg.getPicUrl();
         String title = articleMsg.getTitle();
         String description = articleMsg.getDescription();

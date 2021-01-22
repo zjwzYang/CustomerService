@@ -1,5 +1,7 @@
 package com.qkd.customerservice.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,9 +36,11 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
     private Context context;
     private List<QueryCustomizeOutput.DataBean.ListBean> dataList;
     private RequestOptions options;
+    private int userStatus;
 
-    public CustomizeAdapter(Context context) {
+    public CustomizeAdapter(Context context, int userStatus) {
         this.context = context;
+        this.userStatus = userStatus;
         this.dataList = new ArrayList<>();
         RoundedCorners roundedCorners = new RoundedCorners(4);
         options = new RequestOptions()
@@ -64,9 +69,33 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
             public void onClick(View view) {
                 Intent intent = new Intent(context, CustomizedActivity.class);
                 intent.putExtra("orderNumber", bean.getOrderNumber());
+                intent.putExtra("userId", bean.getUserId());
+                intent.putExtra("userStatus", userStatus);
                 context.startActivity(intent);
             }
         });
+        if (userStatus == 3) {
+            holder.mCopyV.setVisibility(View.GONE);
+        } else {
+            if (holder.mCopyV.getVisibility() == View.GONE) {
+                holder.mCopyV.setVisibility(View.VISIBLE);
+            }
+            holder.mCopyV.setText("复制链接");
+            holder.mCopyV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String url = "http://qkbdev.qukandian573.com/programme?orderNumber="
+                            + bean.getOrderNumber() + "&userId=" + bean.getUserId();
+                    //获取剪贴板管理器：
+                    ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    // 创建普通字符型ClipData
+                    ClipData mClipData = ClipData.newPlainText("Label", url);
+                    // 将ClipData内容放到系统剪贴板里。
+                    cm.setPrimaryClip(mClipData);
+                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -82,11 +111,13 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
     static class CustomizeViewHolder extends RecyclerView.ViewHolder {
         private ImageView mImageView;
         private TextView mTextView;
+        private TextView mCopyV;
 
         public CustomizeViewHolder(@NonNull View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.mail_customer_head);
             mTextView = itemView.findViewById(R.id.mail_customer_name);
+            mCopyV = itemView.findViewById(R.id.mail_customer_status);
         }
     }
 }

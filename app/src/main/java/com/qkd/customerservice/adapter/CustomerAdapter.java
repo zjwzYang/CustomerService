@@ -3,10 +3,12 @@ package com.qkd.customerservice.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ import com.tencent.imsdk.v2.V2TIMTextElem;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_CUSTOM;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_IMAGE;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_SOUND;
 import static com.tencent.imsdk.v2.V2TIMMessage.V2TIM_ELEM_TYPE_TEXT;
@@ -74,7 +77,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
         holder.mNameV.setText(conversation.getShowName());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.customer_item_rela.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ChatActivity.class);
@@ -88,13 +91,22 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             }
         });
         // 长按
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.customer_item_rela.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if (onLongClickListener != null) {
                     onLongClickListener.onLongClick(conversation, position);
                 }
                 return true;
+            }
+        });
+
+        holder.customer_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onLongClickListener != null) {
+                    onLongClickListener.onDelete(conversation, position);
+                }
             }
         });
 
@@ -127,6 +139,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             holder.lastMsg.setVisibility(View.VISIBLE);
             holder.lastTime.setVisibility(View.VISIBLE);
             int type = lastMessage.getElemType();
+            Log.i("Http请求参数", "onBindViewHolder: type:" + type);
             long timestamp = lastMessage.getTimestamp();
             String timeString = AppUtil.getTimeString(timestamp * 1000L);
             holder.lastTime.setText(timeString);
@@ -147,6 +160,8 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
                 holder.lastMsg.setText("[图片]");
             } else if (type == V2TIM_ELEM_TYPE_SOUND) {
                 holder.lastMsg.setText("[语音]");
+            } else if (type == V2TIM_ELEM_TYPE_CUSTOM) {
+                holder.lastMsg.setText("[链接]");
             } else {
                 holder.lastTime.setVisibility(View.GONE);
                 holder.lastMsg.setVisibility(View.GONE);
@@ -216,6 +231,8 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         private TextView lastMsg;
         private TextView lastTime;
         private ImageView wxAddFlag;
+        private TextView customer_delete;
+        private RelativeLayout customer_item_rela;
 
         public CustomerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -225,6 +242,8 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             lastMsg = itemView.findViewById(R.id.customer_last_msg);
             lastTime = itemView.findViewById(R.id.customer_last_time);
             wxAddFlag = itemView.findViewById(R.id.customer_wx_added);
+            customer_delete = itemView.findViewById(R.id.customer_delete);
+            customer_item_rela = itemView.findViewById(R.id.customer_item_rela);
         }
     }
 
@@ -234,5 +253,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
 
     public interface OnLongClickListener {
         void onLongClick(ConversationBean conversation, int position);
+
+        void onDelete(ConversationBean conversation, int position);
     }
 }

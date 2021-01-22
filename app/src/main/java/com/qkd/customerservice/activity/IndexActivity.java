@@ -31,9 +31,11 @@ import com.huawei.hms.common.ApiException;
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.TextMsg;
+import com.qkd.customerservice.bean.TotalUnreadBean;
 import com.qkd.customerservice.bean.VoiceMsg;
 import com.qkd.customerservice.fragment.MailFragment;
 import com.qkd.customerservice.fragment.MineFragment;
@@ -80,6 +82,8 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     private ImageView mMineImg;
     private TextView mMineText;
 
+    private TextView mUnreadCount;
+
     private MsgFragment mMsgFragment;
     private MailFragment mMailFragment;
     private MineFragment mMineFragment;
@@ -103,6 +107,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         mMailText = findViewById(R.id.index_mail_text);
         mMineImg = findViewById(R.id.index_mine_img);
         mMineText = findViewById(R.id.index_mine_text);
+        mUnreadCount = findViewById(R.id.index_unread_count);
 
         findViewById(R.id.msg_linear).setOnClickListener(this);
         findViewById(R.id.mail_linear).setOnClickListener(this);
@@ -264,8 +269,18 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                 } else if (type == V2TIM_ELEM_TYPE_CUSTOM) {
                     V2TIMCustomElem customElem = message.getCustomElem();
                     byte[] data = customElem.getData();
-                    String string = data.toString();
-                    String s = new String(data);
+                    String url = new String(data);
+                    ArticleMsg articleMsg = new ArticleMsg();
+                    articleMsg.setTitle("测试标题");
+                    articleMsg.setDescription("测试内容");
+                    articleMsg.setUrl(url);
+                    articleMsg.setPicUrl("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fs9.sinaimg.cn%2Fbmiddle%2F5ceba31bg5d6503750788&refer=http%3A%2F%2Fs9.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613876881&t=de4228f0b81e77da48ce399e54f321fc");
+                    articleMsg.setSendTime(timeString);
+                    articleMsg.setType(1);
+                    articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                    articleMsg.setSenderId(message.getSender());
+                    EventBus.getDefault().post(articleMsg);
+
                     Log.i("Http请求参数", "onRecvNewMessage: " + customElem.toString());
                 }
             }
@@ -421,6 +436,20 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     public void onGettMsg(String msg) {
         if (Constant.UPDATE_USER_STATUS.equals(msg)) {
             updateStatus(2);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetUnreadCount(TotalUnreadBean totalUnreadBean) {
+        int unreadTotalCount = totalUnreadBean.getUnreadTotalCount();
+        if (unreadTotalCount <= 0) {
+            mUnreadCount.setVisibility(View.GONE);
+        } else if (unreadTotalCount > 99) {
+            mUnreadCount.setText("~");
+            mUnreadCount.setVisibility(View.VISIBLE);
+        } else {
+            mUnreadCount.setText(String.valueOf(unreadTotalCount));
+            mUnreadCount.setVisibility(View.VISIBLE);
         }
     }
 

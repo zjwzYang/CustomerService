@@ -65,6 +65,7 @@ public class BaseHttp {
                     @Override
                     public void onError(Throwable e) {
                         httpObserver.onError();
+                        Toast.makeText(MyApp.getInstance(), "请求出错", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

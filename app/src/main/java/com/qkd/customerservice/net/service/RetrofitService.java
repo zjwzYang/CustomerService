@@ -11,6 +11,7 @@ import com.qkd.customerservice.bean.CustomizedListBean;
 import com.qkd.customerservice.bean.DeleteKnowledgeOutput;
 import com.qkd.customerservice.bean.KnowledgeOutput;
 import com.qkd.customerservice.bean.LoginOutput;
+import com.qkd.customerservice.bean.MySchemeDetailOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
 import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.PlannerOutput;
@@ -23,6 +24,8 @@ import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TransferOutput;
+import com.qkd.customerservice.bean.UpdateRemarkInput;
+import com.qkd.customerservice.bean.UpdateRemarkOutput;
 import com.qkd.customerservice.bean.UpdateUserTagInput;
 import com.qkd.customerservice.bean.UpdateWechatInput;
 import com.qkd.customerservice.bean.UserTagOutput;
@@ -73,7 +76,7 @@ public interface RetrofitService {
 
     // 规划师-获取客户通讯录
     @GET("planner/getCustomerBook")
-    Observable<CustomerBookOutput> getCustomerBook(@Query("identifier") String identifier, @Query("userStatus") int userStatus);
+    Observable<CustomerBookOutput> getCustomerBook(@Query("identifier") String identifier);
 
     // app登录
     @Multipart
@@ -166,4 +169,13 @@ public interface RetrofitService {
 
     @GET("knowledge/getQrCode")
     Observable<QrCodeOutput> getQrCode(@Query("identifier") String identifier);
+
+    @POST("planner/updateRemark")
+    Observable<UpdateRemarkOutput> updateRemark(@Body UpdateRemarkInput input);
+
+    @GET("planner/getRemark")
+    Observable<UpdateRemarkOutput> getRemark(@Query("openId") String openId);
+
+    @GET("scheme/getMySchemeDetail")
+    Observable<MySchemeDetailOutput> getMySchemeDetail(@Query("orderNumber") String orderNumber, @Query("userId") String userId);
 }

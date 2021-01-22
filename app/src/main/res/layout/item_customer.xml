@@ -1,90 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mcxtzhang.swipemenulib.SwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/customer_head"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="7dp"
-        android:src="@mipmap/ic_launcher" />
-
-    <TextView
-        android:id="@+id/customer_read"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_alignRight="@id/customer_head"
-        android:layout_marginRight="-7dp"
-        android:background="@drawable/unread_count_bg"
-        android:gravity="center"
-        android:text="11"
-        android:textColor="@color/white"
-        android:textSize="8sp" />
-
-    <LinearLayout
-        android:id="@+id/msg_linear"
+    <RelativeLayout
+        android:id="@+id/customer_item_rela"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@+id/customer_right_linear"
-        android:layout_toRightOf="@id/customer_head"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/customer_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="姓名"
-            android:textColor="@color/text_black"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/customer_last_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:text="最新的消息"
-            android:textColor="@color/c_666666"
-            android:textSize="12sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/customer_right_linear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="12dp"
-        android:orientation="vertical">
+        android:background="@color/white"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
         <ImageView
-            android:id="@+id/customer_wx_added"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="right"
-            android:src="@drawable/ic_wx_added" />
+            android:id="@+id/customer_head"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/customer_last_time"
+            android:id="@+id/customer_read"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_alignRight="@id/customer_head"
+            android:layout_marginRight="-7dp"
+            android:background="@drawable/unread_count_bg"
+            android:gravity="center"
+            android:text="11"
+            android:textColor="@color/white"
+            android:textSize="8sp" />
+
+        <LinearLayout
+            android:id="@+id/msg_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/customer_right_linear"
+            android:layout_toRightOf="@id/customer_head"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customer_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="姓名"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/customer_last_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="最新的消息"
+                android:textColor="@color/c_666666"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/customer_right_linear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="时间"
-            android:textColor="@color/c_666666"
-            android:textSize="12sp" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/customer_wx_added"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_wx_added" />
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/customer_last_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="时间"
+                android:textColor="@color/c_666666"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/customer_delete"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:background="#ff0000"
+        android:gravity="center"
+        android:text="删除"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+</com.mcxtzhang.swipemenulib.SwipeMenuLayout>
