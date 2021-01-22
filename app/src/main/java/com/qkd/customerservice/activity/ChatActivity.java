@@ -251,9 +251,7 @@ public class ChatActivity extends AppCompatActivity {
                         articleMsg.setType(1);
                         articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
                         articleMsg.setSenderId(message.getSender());
-                        EventBus.getDefault().post(articleMsg);
-
-                        Log.i("Http请求参数", "onRecvNewMessage: " + customElem.toString());
+                        adapter.addMsg(articleMsg);
                     }
                 }
             }

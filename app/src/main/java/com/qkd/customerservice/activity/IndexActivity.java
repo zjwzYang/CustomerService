@@ -280,8 +280,6 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
                     articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
                     articleMsg.setSenderId(message.getSender());
                     EventBus.getDefault().post(articleMsg);
-
-                    Log.i("Http请求参数", "onRecvNewMessage: " + customElem.toString());
                 }
             }
 

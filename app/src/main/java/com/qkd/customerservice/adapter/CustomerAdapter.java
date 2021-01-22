@@ -3,7 +3,6 @@ package com.qkd.customerservice.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,7 +138,6 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
             holder.lastMsg.setVisibility(View.VISIBLE);
             holder.lastTime.setVisibility(View.VISIBLE);
             int type = lastMessage.getElemType();
-            Log.i("Http请求参数", "onBindViewHolder: type:" + type);
             long timestamp = lastMessage.getTimestamp();
             String timeString = AppUtil.getTimeString(timestamp * 1000L);
             holder.lastTime.setText(timeString);

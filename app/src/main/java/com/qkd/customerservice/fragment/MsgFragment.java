@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CustomerAdapter;
+import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
@@ -246,6 +247,11 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
+        mHandler.sendMessageDelayed(Message.obtain(), 500);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetArticleMsg(ArticleMsg articleMsg) {
         mHandler.sendMessageDelayed(Message.obtain(), 500);
     }
 
