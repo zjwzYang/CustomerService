@@ -33,6 +33,9 @@ import com.qkd.customerservice.bean.WxchatListOutput;
 import com.qkd.customerservice.dialog.OptionDialog;
 import com.qkd.customerservice.dialog.PlannerDialog;
 import com.qkd.customerservice.net.BaseHttp;
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.imsdk.v2.V2TIMConversationResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -54,13 +57,19 @@ import java.util.List;
  */
 public class MsgFragment extends Fragment implements OptionDialog.OnClickOptionsListener {
 
+    private SmartRefreshLayout mSmartRefreshLayout;
     private RecyclerView mRecyclerView;
     private CustomerAdapter mAdapter;
     private String identifier;
 
+    private long nextSeq = 0;
+    private int count = 30;
+    private boolean isLoadMore = false;
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
+            nextSeq = 0;
             getConversation();
         }
     };
@@ -71,6 +80,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
         View view = inflater.inflate(R.layout.fragment_msg, container, false);
         EventBus.getDefault().register(this);
         mRecyclerView = view.findViewById(R.id.msg_recy);
+        mSmartRefreshLayout = view.findViewById(R.id.msg_refresh);
         mAdapter = new CustomerAdapter(getContext());
         mAdapter.setOnLongClickListener(new CustomerAdapter.OnLongClickListener() {
             @Override
@@ -105,12 +115,22 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
         SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         identifier = sp.getString(Constant.USER_IDENTIFIER, "");
+
+        mSmartRefreshLayout.setEnableRefresh(false);
+        mSmartRefreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                isLoadMore = true;
+                getConversation();
+            }
+        });
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        nextSeq = 0;
         getConversation();
     }
 
@@ -121,15 +141,23 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
     }
 
     private void getConversation() {
-        V2TIMManager.getConversationManager().getConversationList(0, 100, new V2TIMValueCallback<V2TIMConversationResult>() {
+        V2TIMManager.getConversationManager().getConversationList(nextSeq, count, new V2TIMValueCallback<V2TIMConversationResult>() {
             @Override
             public void onError(int code, String desc) {
                 Log.i("12345678", "拉取会话列表出错: " + code + "  " + desc);
+                mSmartRefreshLayout.finishLoadMore();
             }
 
             @Override
             public void onSuccess(V2TIMConversationResult v2TIMConversationResult) {
+                mSmartRefreshLayout.finishLoadMore();
                 List<V2TIMConversation> conversationList = v2TIMConversationResult.getConversationList();
+                nextSeq += conversationList.size();
+                if (conversationList.size() < 20) {
+                    mSmartRefreshLayout.setNoMoreData(true);
+                } else {
+                    mSmartRefreshLayout.setNoMoreData(false);
+                }
                 List<ConversationBean> conversationBeans = new ArrayList<>();
                 int unreadNum = 0;
                 int unreadTotalCount = 0;
@@ -167,44 +195,14 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                             conversationBeans.add(0, bean);
                         }
                     }
-//                    for (int i = 0; i < topList.length; i++) {
-//                        String top = topList[i];
-//                        if (!TextUtils.isEmpty(top)) {
-//                            for (int j = 0; j < conversationBeans.size(); j++) {
-//                                ConversationBean bean = conversationBeans.get(j);
-//                                if (top.equals(bean.getUserId())) {
-//                                    conversationBeans.remove(j);
-//                                    conversationBeans.add(0, bean);
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                    }
+                }
+                if (isLoadMore) {
+                    isLoadMore = false;
+                } else {
+                    mAdapter.clear();
                 }
                 mAdapter.addAll(conversationBeans);
 
-//                V2TIMManager.getInstance().getUsersInfo(userIDList, new V2TIMValueCallback<List<V2TIMUserFullInfo>>() {
-//                    @Override
-//                    public void onError(int code, String desc) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(List<V2TIMUserFullInfo> v2TIMUserFullInfos) {
-//                        for (V2TIMUserFullInfo info : v2TIMUserFullInfos) {
-//                            String userID = info.getUserID();
-//                            HashMap<String, byte[]> customInfo = info.getCustomInfo();
-//                            Set<Map.Entry<String, byte[]>> entries = customInfo.entrySet();
-//                            for (Map.Entry<String, byte[]> entry : entries) {
-//                                byte[] value = entry.getValue();
-//                                String wxFlag = new String(value);
-//                                if ("1".equals(wxFlag)) {
-//                                    mAdapter.setWxAdd(userID);
-//                                }
-//                            }
-//                        }
-//                    }
-//                });
                 initWx();
             }
         });
@@ -231,6 +229,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefreshMsg(String msg) {
         if (Constant.REFRESH_CONVERSATION.equals(msg)) {
+            nextSeq = 0;
             getConversation();
         }
     }

@@ -367,7 +367,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetVoiceMsg(VoiceMsg voiceMsg) {
+    public void onGetVoiceMsg(final VoiceMsg voiceMsg) {
         if (!TextUtils.isEmpty(voiceMsg.getSenderId())) {
             if (UserID.equals(voiceMsg.getSenderId())) {
                 adapter.addMsgTop(voiceMsg);
@@ -379,27 +379,48 @@ public class ChatActivity extends AppCompatActivity {
             HashMap<String, Object> map = new HashMap<>();
             map.put("msgType", String.valueOf(5));
             map.put("openId", UserID);
-            NetUtil.upLoadFile(map, new File(voiceMsg.getAudioPath().getPath()));
+            NetUtil.upLoadFile(map, new File(voiceMsg.getAudioPath().getPath()), new NetUtil.OnMsgCallBack() {
+                @Override
+                public void onSendSuccess() {
+                    // 腾讯云发送语音
+                    V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(voiceMsg.getAudioPath().getPath(), voiceMsg.getDuration());
+                    V2TIMManager.getMessageManager().sendMessage(soundMessage, UserID
+                            , null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                                @Override
+                                public void onProgress(int progress) {
+                                    Log.i("12345678", "onProgress: " + progress);
+                                }
 
-            // 腾讯云发送语音
-            V2TIMMessage soundMessage = V2TIMManager.getMessageManager().createSoundMessage(voiceMsg.getAudioPath().getPath(), voiceMsg.getDuration());
-            V2TIMManager.getMessageManager().sendMessage(soundMessage, UserID
-                    , null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                        @Override
-                        public void onProgress(int progress) {
-                            Log.i("12345678", "onProgress: " + progress);
-                        }
+                                @Override
+                                public void onError(int code, String desc) {
+                                    Log.i("12345678", "发送出错: " + code + "  " + desc);
+                                }
 
-                        @Override
-                        public void onError(int code, String desc) {
-                            Log.i("12345678", "发送出错: " + code + "  " + desc);
-                        }
+                                @Override
+                                public void onSuccess(V2TIMMessage v2TIMMessage) {
+                                    Log.i("12345678", "onSuccess: " + v2TIMMessage.getSoundElem().toString());
+                                }
+                            });
+                }
 
+                @Override
+                public void onSendFail(final String msg) {
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void onSuccess(V2TIMMessage v2TIMMessage) {
-                            Log.i("12345678", "onSuccess: " + v2TIMMessage.getSoundElem().toString());
+                        public void run() {
+                            adapter.removeTop();
+                            TextMsg textMsg = new TextMsg();
+                            textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                            textMsg.setContent(msg + Constant.TEXT_END_FLAG);
+                            textMsg.setType(2);
+                            textMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                            textMsg.setNickName("我");
+                            adapter.addMsgTop(textMsg);
+                            sendTextToIm(msg + Constant.TEXT_END_FLAG);
                         }
                     });
+                }
+            });
         }
     }
 
@@ -421,33 +442,54 @@ public class ChatActivity extends AppCompatActivity {
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("msgType", String.valueOf(6));
                     map.put("openId", UserID);
-                    NetUtil.upLoadFile(map, file);
+                    NetUtil.upLoadFile(map, file, new NetUtil.OnMsgCallBack() {
+                        @Override
+                        public void onSendSuccess() {
+                            // 创建图片消息
+                            V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(file.getAbsolutePath());
+                            // 发送图片消息
+                            V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
+                                    null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                                        @Override
+                                        public void onProgress(int progress) {
+                                            Log.i("12345678", "onProgress: " + progress);
+                                        }
 
-                    // 创建图片消息
-                    V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(file.getAbsolutePath());
-                    // 发送图片消息
-                    V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
-                            null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                                @Override
-                                public void onProgress(int progress) {
-                                    Log.i("12345678", "onProgress: " + progress);
-                                }
+                                        @Override
+                                        public void onError(int code, String desc) {
+                                            Log.i("12345678", "发送出错: " + code + "  " + desc);
+                                        }
 
-                                @Override
-                                public void onError(int code, String desc) {
-                                    Log.i("12345678", "发送出错: " + code + "  " + desc);
-                                }
+                                        @Override
+                                        public void onSuccess(V2TIMMessage v2TIMMessage) {
+                                            List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
+                                            for (V2TIMImageElem.V2TIMImage image : imageList) {
+                                                String url = image.getUrl();
+                                                adapter.notifyImageItem(file.getAbsolutePath(), url);
+                                            }
+                                            Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                                        }
+                                    });
+                        }
 
+                        @Override
+                        public void onSendFail(final String msg) {
+                            runOnUiThread(new Runnable() {
                                 @Override
-                                public void onSuccess(V2TIMMessage v2TIMMessage) {
-                                    List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
-                                    for (V2TIMImageElem.V2TIMImage image : imageList) {
-                                        String url = image.getUrl();
-                                        adapter.notifyImageItem(file.getAbsolutePath(), url);
-                                    }
-                                    Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                                public void run() {
+                                    adapter.removeTop();
+                                    TextMsg textMsg = new TextMsg();
+                                    textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                                    textMsg.setContent(msg + Constant.TEXT_END_FLAG);
+                                    textMsg.setType(2);
+                                    textMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                                    textMsg.setNickName("我");
+                                    adapter.addMsgTop(textMsg);
+                                    sendTextToIm(msg + Constant.TEXT_END_FLAG);
                                 }
                             });
+                        }
+                    });
                 }
 
                 @Override
@@ -507,7 +549,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetTextMsg(TextMsg textMsg) {
+    public void onGetTextMsg(final TextMsg textMsg) {
         Log.i("12345678", "onGetTextMsg: " + textMsg.getContent());
         if (!TextUtils.isEmpty(textMsg.getSenderId())) {
             if (UserID.equals(textMsg.getSenderId())) {
@@ -521,21 +563,47 @@ public class ChatActivity extends AppCompatActivity {
             map.put("message", textMsg.getContent());
             map.put("msgType", String.valueOf(1));
             map.put("openId", UserID);
-            NetUtil.upLoadFile(map, null);
-
-            // 腾讯云发送文字
-            V2TIMManager.getInstance().sendC2CTextMessage(textMsg.getContent(), UserID, new V2TIMValueCallback<V2TIMMessage>() {
+            NetUtil.upLoadFile(map, null, new NetUtil.OnMsgCallBack() {
                 @Override
-                public void onError(int code, String desc) {
-                    Log.i("12345678", "发送出错: " + code + "  " + desc);
+                public void onSendSuccess() {
+                    // 腾讯云发送文字
+                    sendTextToIm(textMsg.getContent());
                 }
 
                 @Override
-                public void onSuccess(V2TIMMessage v2TIMMessage) {
-                    Log.i("12345678", "发送成功");
+                public void onSendFail(final String msg) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.removeTop();
+                            TextMsg textMsg = new TextMsg();
+                            textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                            textMsg.setContent(msg + Constant.TEXT_END_FLAG);
+                            textMsg.setType(2);
+                            textMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                            textMsg.setNickName("我");
+                            adapter.addMsgTop(textMsg);
+                            sendTextToIm(msg + Constant.TEXT_END_FLAG);
+                        }
+                    });
                 }
             });
         }
+    }
+
+    private void sendTextToIm(String text) {
+        // 腾讯云发送文字
+        V2TIMManager.getInstance().sendC2CTextMessage(text, UserID, new V2TIMValueCallback<V2TIMMessage>() {
+            @Override
+            public void onError(int code, String desc) {
+                Log.i("12345678", "发送出错: " + code + "  " + desc);
+            }
+
+            @Override
+            public void onSuccess(V2TIMMessage v2TIMMessage) {
+                Log.i("12345678", "发送成功");
+            }
+        });
     }
 
     @Override
@@ -557,33 +625,54 @@ public class ChatActivity extends AppCompatActivity {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("msgType", String.valueOf(6));
                 map.put("openId", UserID);
-                NetUtil.upLoadFile(map, new File(path));
+                NetUtil.upLoadFile(map, new File(path), new NetUtil.OnMsgCallBack() {
+                    @Override
+                    public void onSendSuccess() {
+                        // 创建图片消息
+                        V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
+                        // 发送图片消息
+                        V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
+                                null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
+                                    @Override
+                                    public void onProgress(int progress) {
+                                        Log.i("12345678", "onProgress: " + progress);
+                                    }
 
-                // 创建图片消息
-                V2TIMMessage v2TIMMessage = V2TIMManager.getMessageManager().createImageMessage(path);
-                // 发送图片消息
-                V2TIMManager.getMessageManager().sendMessage(v2TIMMessage, UserID,
-                        null, V2TIMMessage.V2TIM_PRIORITY_DEFAULT, false, null, new V2TIMSendCallback<V2TIMMessage>() {
-                            @Override
-                            public void onProgress(int progress) {
-                                Log.i("12345678", "onProgress: " + progress);
-                            }
+                                    @Override
+                                    public void onError(int code, String desc) {
+                                        Log.i("12345678", "发送出错: " + code + "  " + desc);
+                                    }
 
-                            @Override
-                            public void onError(int code, String desc) {
-                                Log.i("12345678", "发送出错: " + code + "  " + desc);
-                            }
+                                    @Override
+                                    public void onSuccess(V2TIMMessage v2TIMMessage) {
+                                        List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
+                                        for (V2TIMImageElem.V2TIMImage image : imageList) {
+                                            String url = image.getUrl();
+                                            adapter.notifyImageItem(path, url);
+                                        }
+                                        Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                                    }
+                                });
+                    }
 
+                    @Override
+                    public void onSendFail(final String msg) {
+                        runOnUiThread(new Runnable() {
                             @Override
-                            public void onSuccess(V2TIMMessage v2TIMMessage) {
-                                List<V2TIMImageElem.V2TIMImage> imageList = v2TIMMessage.getImageElem().getImageList();
-                                for (V2TIMImageElem.V2TIMImage image : imageList) {
-                                    String url = image.getUrl();
-                                    adapter.notifyImageItem(path, url);
-                                }
-                                Log.i("12345678", "onSuccess: " + v2TIMMessage.getImageElem().toString());
+                            public void run() {
+                                adapter.removeTop();
+                                TextMsg textMsg = new TextMsg();
+                                textMsg.setMsgType(MsgBean.MsgType.TEXT);
+                                textMsg.setContent(msg + Constant.TEXT_END_FLAG);
+                                textMsg.setType(2);
+                                textMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                                textMsg.setNickName("我");
+                                adapter.addMsgTop(textMsg);
+                                sendTextToIm(msg + Constant.TEXT_END_FLAG);
                             }
                         });
+                    }
+                });
             }
         } else if (requestCode == 1011 && resultCode == RESULT_OK) {
             addedWx = data.getBooleanExtra("addedWx", false);

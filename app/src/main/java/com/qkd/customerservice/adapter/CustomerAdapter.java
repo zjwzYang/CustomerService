@@ -179,9 +179,12 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     }
 
     public void addAll(List<ConversationBean> conversationList) {
-        this.conversationList.clear();
         this.conversationList.addAll(conversationList);
         notifyDataSetChanged();
+    }
+
+    public void clear() {
+        this.conversationList.clear();
     }
 
     public void refreshTop(int topIndex) {

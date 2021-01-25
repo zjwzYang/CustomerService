@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.qkd.customerservice.bean.MsgOutput;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -144,7 +147,7 @@ public class NetUtil {
     }
 
 
-    public static void upLoadFile(final Map<String, Object> map, File file) {
+    public static void upLoadFile(final Map<String, Object> map, File file, final OnMsgCallBack callback) {
         String url = "http://47.114.100.72:8081//im/forwardMessage";
         OkHttpClient client = new OkHttpClient();
         // form 表单形式上传
@@ -172,16 +175,23 @@ public class NetUtil {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String str = response.body().string();
-                    Log.e("12345678", str);
-
+                String string = response.body().string();
+                Gson gson = new Gson();
+                MsgOutput output = gson.fromJson(string, MsgOutput.class);
+                if (output.getCode() == 505) {
+                    callback.onSendFail(output.getMessage());
                 } else {
-                    Log.i("12345678", response.message() + " error : body " + response.body().string());
+                    callback.onSendSuccess();
                 }
             }
         });
 
+    }
+
+    public interface OnMsgCallBack {
+        void onSendSuccess();
+
+        void onSendFail(String msg);
     }
 
     public static void upLoadVideoFile(File file, Callback callback) {

@@ -391,6 +391,12 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void removeTop() {
+        this.msgList.remove(0);
+        notifyItemRemoved(0);
+        notifyItemRangeChanged(0, this.msgList.size());
+    }
+
 //    public boolean hasAddMsg(MsgBean msgBean) {
 //        boolean added = false;
 //        for (MsgBean bean : this.msgList) {

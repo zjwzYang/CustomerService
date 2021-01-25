@@ -2,7 +2,6 @@ package com.qkd.customerservice.activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -551,10 +550,11 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                                 @Override
                                 public void onSuccess(BaseOutput baseOutput) {
                                     if (baseOutput.isSuccess()) {
-                                        Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
-                                        intent.putExtra("orderNumber", data.getOrderNumber());
-                                        intent.putExtra("userId", data.getUserId());
-                                        startActivity(intent);
+//                                        Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
+//                                        intent.putExtra("orderNumber", data.getOrderNumber());
+//                                        intent.putExtra("userId", data.getUserId());
+//                                        startActivity(intent);
+                                        Toast.makeText(CustomizedActivity.this, "定制成功", Toast.LENGTH_SHORT).show();
                                         EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
                                         finish();
                                     }

@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
-import com.qkd.customerservice.adapter.CommonlyUsedAdapter;
+import com.qkd.customerservice.adapter.CommonlyUsedTitleAdapter;
 import com.qkd.customerservice.adapter.PhotoUsedAdapter;
 import com.qkd.customerservice.adapter.YuYinUsedAdapter;
 import com.qkd.customerservice.bean.ExpressionType;
@@ -40,7 +40,7 @@ import java.util.List;
 public class CommonlyUsedFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView mRecyclerView;
-    private CommonlyUsedAdapter adapter;
+    private CommonlyUsedTitleAdapter adapter;
     private PhotoUsedAdapter mPhotoUsedAdapter;
     private YuYinUsedAdapter mYinUsedAdapter;
     private String type;
@@ -76,7 +76,7 @@ public class CommonlyUsedFragment extends Fragment implements View.OnClickListen
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
         if (ExpressionType.EXPRESSION_KNOWLEDGE_TEXT.equals(type)) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            adapter = new CommonlyUsedAdapter(getContext());
+            adapter = new CommonlyUsedTitleAdapter(getContext());
             mRecyclerView.setAdapter(adapter);
         } else if (ExpressionType.EXPRESSION_KNOWLEDGE_PHOTO.equals(type)) {
             mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
