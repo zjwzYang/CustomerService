@@ -27,6 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.github.ielse.imagewatcher.ImageWatcherHelper;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.MyApp;
@@ -34,6 +36,7 @@ import com.qkd.customerservice.NetUtil;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MsgAdapter;
 import com.qkd.customerservice.bean.ArticleMsg;
+import com.qkd.customerservice.bean.CustomMessageBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MsgBean;
 import com.qkd.customerservice.bean.NewMessageInput;
@@ -242,11 +245,19 @@ public class ChatActivity extends AppCompatActivity {
                         V2TIMCustomElem customElem = message.getCustomElem();
                         byte[] data = customElem.getData();
                         String url = new String(data);
+                        Gson gson = new Gson();
+                        CustomMessageBean bean;
+                        try {
+                            bean = gson.fromJson(url, CustomMessageBean.class);
+                        } catch (JsonSyntaxException e) {
+                            bean = new CustomMessageBean();
+                        }
+
                         ArticleMsg articleMsg = new ArticleMsg();
-                        articleMsg.setTitle("测试标题");
-                        articleMsg.setDescription("测试内容");
-                        articleMsg.setUrl(url);
-                        articleMsg.setPicUrl("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fs9.sinaimg.cn%2Fbmiddle%2F5ceba31bg5d6503750788&refer=http%3A%2F%2Fs9.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613876881&t=de4228f0b81e77da48ce399e54f321fc");
+                        articleMsg.setTitle(bean.getNickname() + "的专属方案");
+                        articleMsg.setDescription("趣看保，守护您的一生平安");
+                        articleMsg.setUrl(bean.getUrl());
+                        articleMsg.setPicUrl("http://47.114.100.72/files/pic/1611294989682a2e3219f-5a76-4bd2-a9c4-d286ebc62052.jpg");
                         articleMsg.setSendTime(timeString);
                         articleMsg.setType(1);
                         articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
