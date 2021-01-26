@@ -60,8 +60,6 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
     public void onBindViewHolder(@NonNull final ExchangeTextViewHolder holder, final int position) {
         final KnowledgeOutput.DataBean.ListBean bean = dataList.get(position);
         final String text = bean.getMediaContent();
-        holder.mTextView.setText(text);
-        holder.used_purpose.setText(bean.getMediaPurpose());
         holder.mDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +79,8 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
             }
         });
         if (mediaType == 3) {
+            holder.mTextView.setText(bean.getMediaPurpose());
+            holder.used_purpose.setVisibility(View.GONE);
             holder.mYuYinLinear.setVisibility(View.VISIBLE);
             holder.mYuyinLength.setText(getDuring(text) + "秒");
             holder.mYuYinLinear.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +118,9 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
             });
         } else {
             holder.mYuYinLinear.setVisibility(View.GONE);
+            holder.mTextView.setText(text);
+            holder.used_purpose.setText(bean.getMediaPurpose());
+            holder.used_purpose.setVisibility(View.VISIBLE);
         }
     }
 

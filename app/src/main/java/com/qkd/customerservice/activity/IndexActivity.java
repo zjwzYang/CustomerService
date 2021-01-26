@@ -95,6 +95,8 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     private V2TIMAdvancedMsgListener mListener;
     private String identifier;
 
+    private int status;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +123,7 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         initListener();
 
         this.sp = getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
-        int status = sp.getInt(Constant.USER_STATUS, 1);
+        status = sp.getInt(Constant.USER_STATUS, 1);
         switch (status) {
             case 1:
                 setTitle("在线");
@@ -426,7 +428,11 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        if (itemId == status) {
+            return true;
+        }
+        switch (itemId) {
             case 1:
                 updateStatus(1);
                 break;
@@ -461,14 +467,15 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void updateStatus(final int status) {
+    private void updateStatus(final int statusInt) {
         String userId = sp.getString(Constant.USER_IDENTIFIER, "");
-        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).updateStatus(userId, status), new BaseHttp.HttpObserver<BaseOutput>() {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).updateStatus(userId, statusInt), new BaseHttp.HttpObserver<BaseOutput>() {
             @Override
             public void onSuccess(BaseOutput baseOutput) {
                 if (baseOutput.isSuccess()) {
-                    sp.edit().putInt(Constant.USER_STATUS, status).apply();
-                    switch (status) {
+                    sp.edit().putInt(Constant.USER_STATUS, statusInt).apply();
+                    status = statusInt;
+                    switch (statusInt) {
                         case 1:
                             setTitle("在线");
                             break;

@@ -57,6 +57,10 @@ import java.util.List;
  */
 public class MsgFragment extends Fragment implements OptionDialog.OnClickOptionsListener {
 
+    private static final int MESSAGE_REFRESH = 1;
+    private static final int MESSAGE_UNREAD_NUM = 2;
+    private static final int MESSAGE_UNREAD_TOTAL_COUNT = 3;
+
     private SmartRefreshLayout mSmartRefreshLayout;
     private RecyclerView mRecyclerView;
     private CustomerAdapter mAdapter;
@@ -69,8 +73,19 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
-            nextSeq = 0;
-            getConversation();
+            switch (msg.what) {
+                case MESSAGE_REFRESH:
+                    nextSeq = 0;
+                    getConversation();
+                    break;
+                case MESSAGE_UNREAD_NUM:
+                    EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
+                    break;
+                case MESSAGE_UNREAD_TOTAL_COUNT:
+                    int unreadTotalCount = (int) msg.obj;
+                    EventBus.getDefault().post(new TotalUnreadBean(unreadTotalCount));
+                    break;
+            }
         }
     };
 
@@ -102,6 +117,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     return;
                 }
                 mAdapter.remove(position);
+                getUnreadTotalCount();
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
                 deletes = deletes + "/" + conversation.getUserId();
@@ -159,24 +175,15 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     mSmartRefreshLayout.setNoMoreData(false);
                 }
                 List<ConversationBean> conversationBeans = new ArrayList<>();
-                int unreadNum = 0;
-                int unreadTotalCount = 0;
+//                int unreadNum = 0;
+//                int unreadTotalCount = 0;
                 List<String> userIDList = new ArrayList<>();
                 for (V2TIMConversation conversation : conversationList) {
-                    int unreadCount = conversation.getUnreadCount();
-                    unreadTotalCount += unreadCount;
-                    if (unreadCount > 0) {
-                        unreadNum++;
-                    }
                     userIDList.add(conversation.getUserID());
                     //Log.i("12345678", "会话: " + conversation.getShowName() + "  " + conversation.getUserID());
                     ConversationBean conversationBean = new ConversationBean(conversation);
                     conversationBeans.add(conversationBean);
                 }
-                if (unreadNum >= 3) {
-                    EventBus.getDefault().post(Constant.UPDATE_USER_STATUS);
-                }
-                EventBus.getDefault().post(new TotalUnreadBean(unreadTotalCount));
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String tops = sp.getString(Constant.SORT_TOP + "_" + identifier, "");
                 String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
@@ -205,10 +212,52 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                     mAdapter.clear();
                 }
                 mAdapter.addAll(conversationBeans);
+                getUnreadNum();
+                getUnreadTotalCount();
 
                 initWx();
             }
         });
+    }
+
+    private void getUnreadNum() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<ConversationBean> list = mAdapter.getConversationList();
+                int unreadNum = 0;
+                for (ConversationBean bean : list) {
+                    int unreadCount = bean.getUnreadCount();
+                    if (unreadCount > 0) {
+                        unreadNum++;
+                    }
+                    if (unreadNum >= 3) {
+                        break;
+                    }
+                }
+                if (unreadNum >= 3) {
+                    mHandler.sendEmptyMessage(MESSAGE_UNREAD_NUM);
+                }
+            }
+        }).start();
+    }
+
+    private void getUnreadTotalCount() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<ConversationBean> list = mAdapter.getConversationList();
+                int unreadTotalCount = 0;
+                for (ConversationBean bean : list) {
+                    int unreadCount = bean.getUnreadCount();
+                    unreadTotalCount += unreadCount;
+                }
+                Message message = Message.obtain();
+                message.what = MESSAGE_UNREAD_TOTAL_COUNT;
+                message.obj = unreadTotalCount;
+                mHandler.sendMessage(message);
+            }
+        }).start();
     }
 
     private void initWx() {
@@ -239,22 +288,22 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetVoiceMsg(VoiceMsg voiceMsg) {
-        mHandler.sendMessageDelayed(Message.obtain(), 500);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, 500);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetImageMsg(ImageMsg imageMsg) {
-        mHandler.sendMessageDelayed(Message.obtain(), 500);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, 500);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTextMsg(TextMsg textMsg) {
-        mHandler.sendMessageDelayed(Message.obtain(), 500);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, 500);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetArticleMsg(ArticleMsg articleMsg) {
-        mHandler.sendMessageDelayed(Message.obtain(), 500);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, 500);
     }
 
     @Override
@@ -285,6 +334,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
             return;
         }
         mAdapter.remove(clickPosition);
+        getUnreadTotalCount();
         SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
         String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
         deletes = deletes + "/" + userId;
