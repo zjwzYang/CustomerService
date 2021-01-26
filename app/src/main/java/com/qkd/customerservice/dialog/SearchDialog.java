@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.ArticleAdapter;
-import com.qkd.customerservice.adapter.CommonlyUsedAdapter;
+import com.qkd.customerservice.adapter.CommonlyUsedTitleAdapter;
 import com.qkd.customerservice.adapter.PhotoUsedAdapter;
 import com.qkd.customerservice.adapter.ProductAdapter;
 import com.qkd.customerservice.adapter.YuYinUsedAdapter;
@@ -74,7 +74,7 @@ public class SearchDialog extends DialogFragment implements View.OnClickListener
     private int searchType;
     private int serviceId;
 
-    private CommonlyUsedAdapter changAdapter;
+    private CommonlyUsedTitleAdapter changAdapter;
     private YuYinUsedAdapter yuyinAdapter;
     private ArticleAdapter wenzhangAdapter;
     private ProductAdapter caipingAdapter;
@@ -120,7 +120,7 @@ public class SearchDialog extends DialogFragment implements View.OnClickListener
         SharedPreferences sp = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         serviceId = sp.getInt(Constant.USER_SERVICE_ID, 0);
         searchType = search_chang;
-        changAdapter = new CommonlyUsedAdapter(getContext());
+        changAdapter = new CommonlyUsedTitleAdapter(getContext());
         mRecyclerView.setAdapter(changAdapter);
 
         mTextView.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +194,7 @@ public class SearchDialog extends DialogFragment implements View.OnClickListener
                         mTypeOne.setBackgroundResource(R.drawable.search_text_blue_bg);
                         searchType = search_chang;
                         if (changAdapter == null) {
-                            changAdapter = new CommonlyUsedAdapter(getContext());
+                            changAdapter = new CommonlyUsedTitleAdapter(getContext());
                         }
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         mTypesLinear.setVisibility(View.VISIBLE);
@@ -275,6 +275,16 @@ public class SearchDialog extends DialogFragment implements View.OnClickListener
             public void onSuccess(KnowledgeOutput baseOutput) {
                 if (baseOutput.isSuccess()) {
                     List<KnowledgeOutput.DataBean.ListBean> list = baseOutput.getData().getList();
+                    if (mediaType == 1) {
+                        changAdapter.clear();
+                        changAdapter.notifyDataSetChanged();
+                    } else if (mediaType == 3) {
+                        yuyinAdapter.clear();
+                        yuyinAdapter.notifyDataSetChanged();
+                    } else if (mediaType == 2) {
+                        imgAdapter.clear();
+                        imgAdapter.notifyDataSetChanged();
+                    }
                     if (list == null || list.size() == 0) {
                         Toast.makeText(getContext(), "无数据", Toast.LENGTH_SHORT).show();
                         if (mediaType == 1) {

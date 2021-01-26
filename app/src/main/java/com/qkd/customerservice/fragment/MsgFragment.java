@@ -183,12 +183,15 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 if (!TextUtils.isEmpty(tops) || !TextUtils.isEmpty(deletes)) {
                     String[] topList = tops.split("/");
                     String[] deleteA = deletes.split("/");
-                    for (int i = 0; i < conversationBeans.size(); i++) {
+                    for (int i = conversationBeans.size() - 1; i >= 0; i--) {
                         ConversationBean bean = conversationBeans.get(i);
                         if (Arrays.asList(deleteA).contains(bean.getUserId())) {
                             conversationBeans.remove(i);
                             continue;
                         }
+                    }
+                    for (int i = 0; i < conversationBeans.size(); i++) {
+                        ConversationBean bean = conversationBeans.get(i);
                         if (Arrays.asList(topList).contains(bean.getUserId())) {
                             bean.setTopFlag(true);
                             conversationBeans.remove(i);

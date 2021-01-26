@@ -167,7 +167,7 @@ public class NetUtil {
         }
         Request request = new Request.Builder().url(url).post(requestBody.build()).build();
         // readTimeout("请求超时时间" , 时间单位);
-        client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new Callback() {
+        client.newBuilder().readTimeout(60000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("12345678", "onFailure" + e.getMessage());
@@ -176,6 +176,7 @@ public class NetUtil {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String string = response.body().string();
+                Log.i("12345678", "onResponse:发送消息返回值 " + string);
                 Gson gson = new Gson();
                 MsgOutput output = gson.fromJson(string, MsgOutput.class);
                 if (output.getCode() == 505) {
