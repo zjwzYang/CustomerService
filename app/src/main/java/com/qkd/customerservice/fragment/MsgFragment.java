@@ -187,8 +187,7 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                 SharedPreferences sp = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE);
                 String tops = sp.getString(Constant.SORT_TOP + "_" + identifier, "");
                 String deletes = sp.getString(Constant.DELETE_USERID + "_" + identifier, "");
-                if (!TextUtils.isEmpty(tops) || !TextUtils.isEmpty(deletes)) {
-                    String[] topList = tops.split("/");
+                if (!TextUtils.isEmpty(deletes)) {
                     String[] deleteA = deletes.split("/");
                     for (int i = conversationBeans.size() - 1; i >= 0; i--) {
                         ConversationBean bean = conversationBeans.get(i);
@@ -197,15 +196,31 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
                             continue;
                         }
                     }
-                    for (int i = 0; i < conversationBeans.size(); i++) {
-                        ConversationBean bean = conversationBeans.get(i);
-                        if (Arrays.asList(topList).contains(bean.getUserId())) {
-                            bean.setTopFlag(true);
-                            conversationBeans.remove(i);
-                            conversationBeans.add(0, bean);
+                }
+                if (!TextUtils.isEmpty(tops)) {
+                    String[] topList = tops.split("/");
+                    for (int i = 0; i < topList.length; i++) {
+                        String topS = topList[i];
+                        for (int j = 0; j < conversationBeans.size(); j++) {
+                            ConversationBean bean = conversationBeans.get(j);
+                            if (bean.getUserId().equals(topS)) {
+                                bean.setTopFlag(true);
+                                conversationBeans.remove(j);
+                                conversationBeans.add(0, bean);
+                                break;
+                            }
                         }
                     }
+//                    for (int i = 0; i < conversationBeans.size(); i++) {
+//                        ConversationBean bean = conversationBeans.get(i);
+//                        if (Arrays.asList(topList).contains(bean.getUserId())) {
+//                            bean.setTopFlag(true);
+//                            conversationBeans.remove(i);
+//                            conversationBeans.add(0, bean);
+//                        }
+//                    }
                 }
+
                 if (isLoadMore) {
                     isLoadMore = false;
                 } else {

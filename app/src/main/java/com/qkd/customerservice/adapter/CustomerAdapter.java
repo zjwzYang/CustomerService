@@ -71,9 +71,9 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     public void onBindViewHolder(@NonNull CustomerViewHolder holder, final int position) {
         final ConversationBean conversation = conversationList.get(position);
         if (conversation.isTopFlag()) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.app_backgroud));
+            holder.customer_item_rela.setBackgroundColor(ContextCompat.getColor(context, R.color.app_backgroud));
         } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+            holder.customer_item_rela.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
         holder.mNameV.setText(conversation.getShowName());
         holder.customer_item_rela.setOnClickListener(new View.OnClickListener() {

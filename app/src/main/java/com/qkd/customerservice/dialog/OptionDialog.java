@@ -42,11 +42,11 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
         topFlag = bundle.getBoolean("topFlag", false);
         View optionOneV = view.findViewById(R.id.option_one);
         optionOneV.setOnClickListener(this);
-        if (topFlag) {
-            optionOneV.setVisibility(View.GONE);
-        } else {
-            optionOneV.setVisibility(View.VISIBLE);
-        }
+//        if (topFlag) {
+//            optionOneV.setVisibility(View.GONE);
+//        } else {
+//            optionOneV.setVisibility(View.VISIBLE);
+//        }
         view.findViewById(R.id.option_two).setOnClickListener(this);
         view.findViewById(R.id.option_three).setOnClickListener(this);
         return view;

@@ -82,7 +82,12 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
             holder.mTextView.setText(bean.getMediaPurpose());
             holder.used_purpose.setVisibility(View.GONE);
             holder.mYuYinLinear.setVisibility(View.VISIBLE);
-            holder.mYuyinLength.setText(getDuring(text) + "秒");
+            int duraing = bean.getDuraing();
+            if (duraing == 0) {
+                duraing = getDuring(text);
+                bean.setDuraing(duraing);
+            }
+            holder.mYuyinLength.setText(duraing + "秒");
             holder.mYuYinLinear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

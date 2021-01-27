@@ -243,6 +243,15 @@ public class KnowledgeOutput extends BaseOutput {
             private int id;
             private String mediaContent;
             private String mediaPurpose;
+            private int duraing;
+
+            public int getDuraing() {
+                return duraing;
+            }
+
+            public void setDuraing(int duraing) {
+                this.duraing = duraing;
+            }
 
             public int getId() {
                 return id;
