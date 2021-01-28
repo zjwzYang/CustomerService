@@ -31,6 +31,7 @@ import com.qkd.customerservice.adapter.ExchangePhotoAdapter;
 import com.qkd.customerservice.adapter.ExchangeTextAdapter;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
+import com.qkd.customerservice.bean.AudioDuraingBean;
 import com.qkd.customerservice.bean.DeleteKnowledgeOutput;
 import com.qkd.customerservice.bean.ExpressionType;
 import com.qkd.customerservice.bean.FileUploadBean;
@@ -43,6 +44,9 @@ import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.zhihu.matisse.Matisse;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -84,6 +88,7 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exchange_knoledge);
+        EventBus.getDefault().register(this);
         setTitle("编辑个人知识库");
 
         ActionBar actionBar = getSupportActionBar();
@@ -281,6 +286,13 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetPositionDuraing(AudioDuraingBean bean) {
+        if (ExpressionType.EXPRESSION_KNOWLEDGE_YUYING.equals(type)) {
+            adapter.refreshPosition(bean);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.exchange_menu, menu);
@@ -360,6 +372,7 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
     protected void onDestroy() {
         AudioRecordManager.getInstance().destroyRecord();
         AudioPlayManager.getInstance().stopPlay();
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 }

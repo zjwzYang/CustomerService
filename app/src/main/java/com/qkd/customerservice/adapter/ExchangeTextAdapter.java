@@ -19,7 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.IAudioPlayListener;
+import com.qkd.customerservice.bean.AudioDuraingBean;
 import com.qkd.customerservice.bean.KnowledgeOutput;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,8 +87,9 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
             holder.mYuYinLinear.setVisibility(View.VISIBLE);
             int duraing = bean.getDuraing();
             if (duraing == 0) {
-                duraing = getDuring(text);
-                bean.setDuraing(duraing);
+//                duraing = getDuring(text);
+//                bean.setDuraing(duraing);
+                getDuring(text, position);
             }
             holder.mYuyinLength.setText(duraing + "秒");
             holder.mYuYinLinear.setOnClickListener(new View.OnClickListener() {
@@ -135,19 +139,27 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
     }
 
     // 获得音频长度
-    private int getDuring(String audioUrl) {
-        int during = 0;
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(audioUrl);
-            mediaPlayer.prepare();
-            during = mediaPlayer.getDuration() / 1000;
-            //记得释放资源
-            mediaPlayer.release();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return during;
+    private void getDuring(final String audioUrl, final int position) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int during = 0;
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(audioUrl);
+                    mediaPlayer.prepare();
+                    during = mediaPlayer.getDuration() / 1000;
+                    //记得释放资源
+                    mediaPlayer.release();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                AudioDuraingBean bean = new AudioDuraingBean();
+                bean.setDuraing(during);
+                bean.setPosition(position);
+                EventBus.getDefault().post(bean);
+            }
+        }).start();
     }
 
     public void addAll(List<KnowledgeOutput.DataBean.ListBean> dataList) {
@@ -164,6 +176,13 @@ public class ExchangeTextAdapter extends RecyclerView.Adapter<ExchangeTextAdapte
         notifyItemRemoved(position);
         if (position != dataList.size()) {
             notifyItemRangeChanged(position, dataList.size() - position);
+        }
+    }
+
+    public void refreshPosition(AudioDuraingBean bean) {
+        if (bean.getDuraing() != 0) {
+            this.dataList.get(bean.getPosition()).setDuraing(bean.getDuraing());
+            notifyItemChanged(bean.getPosition());
         }
     }
 
