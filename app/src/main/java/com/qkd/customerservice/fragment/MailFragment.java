@@ -11,8 +11,13 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.MailFAdapter;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +39,7 @@ public class MailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mail, container, false);
+        EventBus.getDefault().register(this);
         mTabLayout = view.findViewById(R.id.mail_tab);
         mViewPager = view.findViewById(R.id.mail_page);
         initView();
@@ -44,6 +50,13 @@ public class MailFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden && fragments != null) {
+            ((MailIndexFragment) fragments.get(currIndex)).refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMsg(String msg) {
+        if (Constant.REFRESH_CUSTOMIZED_LIST.equals(msg)) {
             ((MailIndexFragment) fragments.get(currIndex)).refresh();
         }
     }
@@ -65,6 +78,11 @@ public class MailFragment extends Fragment {
         bundle3.putInt("userStatus", 3);
         fragment3.setArguments(bundle3);
 
+        MailIndexFragment fragment5 = new MailIndexFragment();
+        Bundle bundle5 = new Bundle();
+        bundle5.putInt("userStatus", 5);
+        fragment5.setArguments(bundle5);
+
         MailIndexFragment fragment4 = new MailIndexFragment();
         Bundle bundle4 = new Bundle();
         bundle4.putInt("userStatus", 4);
@@ -73,6 +91,7 @@ public class MailFragment extends Fragment {
         fragments.add(fragment1);
 //        fragments.add(fragment2);
         fragments.add(fragment3);
+        fragments.add(fragment5);
         fragments.add(fragment4);
         MailFAdapter adapter = new MailFAdapter(getChildFragmentManager(), fragments);
         mViewPager.setOffscreenPageLimit(3);
@@ -95,5 +114,11 @@ public class MailFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 }

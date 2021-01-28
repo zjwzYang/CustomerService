@@ -94,6 +94,7 @@ public interface RetrofitService {
                                                         @Query("pageNum") int pageNum,
                                                         @Query("orderStatus") int orderStatus);
 
+    // 待定制方案
     @GET("scheme/to-be-customized/list")
     Observable<CustomizedListBean> getList(@Query("start") String start, @Query("length") String length);
 
@@ -141,6 +142,12 @@ public interface RetrofitService {
     @PUT("scheme/to-be-customized/saveAsHasSend")
     Observable<BaseOutput> saveAsHasSend(@Field("orderNumber") long orderNumber,
                                          @Field("userId") String userId);
+
+    // 保存为待发送
+    @FormUrlEncoded
+    @PUT("scheme/to-be-customized/saveAsToBeSend")
+    Observable<BaseOutput> saveAsToBeSend(@Field("orderNumber") long orderNumber,
+                                          @Field("userId") String userId);
 
     // 删除素材
     @HTTP(method = "DELETE", path = "knowledge/deleteKnowledge", hasBody = true)

@@ -22,10 +22,12 @@ import com.qkd.customerservice.adapter.MailCustomerAdapter;
 import com.qkd.customerservice.bean.CustomerBookOutput;
 import com.qkd.customerservice.bean.QueryCustomizeOutput;
 import com.qkd.customerservice.net.BaseHttp;
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created on 12/16/20 16:28
@@ -36,21 +38,24 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public class MailIndexFragment extends Fragment {
 
+    private SmartRefreshLayout mSmartRefreshLayout;
     private RecyclerView mRecyclerView;
     private MailCustomerAdapter mAdapter;
 
     private CustomizeAdapter mCustomizeAdapter;
     private int userStatus;
 
+    private int page = 1;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mail_index, container, false);
-        EventBus.getDefault().register(this);
         mRecyclerView = view.findViewById(R.id.mail_index_recy);
+        mSmartRefreshLayout = view.findViewById(R.id.mail_index_refresh);
         userStatus = getArguments().getInt("userStatus", 1);
         initView();
-        initData();
+//        initData();
         return view;
     }
 
@@ -60,20 +65,26 @@ public class MailIndexFragment extends Fragment {
         if (userStatus == 1) {
             mAdapter = new MailCustomerAdapter(getContext());
             mRecyclerView.setAdapter(mAdapter);
-        } else if (userStatus == 3) {
-            mCustomizeAdapter = new CustomizeAdapter(getContext(), userStatus);
-            mRecyclerView.setAdapter(mCustomizeAdapter);
-        } else if (userStatus == 4) {
+            mSmartRefreshLayout.setEnableLoadMore(false);
+        } else {
             mCustomizeAdapter = new CustomizeAdapter(getContext(), userStatus);
             mRecyclerView.setAdapter(mCustomizeAdapter);
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetMsg(String msg) {
-        if (Constant.REFRESH_CUSTOMIZED_LIST.equals(msg) && userStatus == 3) {
-            initData();
-        }
+        mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                page = 1;
+                initData();
+            }
+        });
+        mSmartRefreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                page++;
+                initData();
+            }
+        });
+        mSmartRefreshLayout.autoRefresh();
     }
 
     private void initData() {
@@ -85,51 +96,84 @@ public class MailIndexFragment extends Fragment {
                 @Override
                 public void onSuccess(CustomerBookOutput customerBookOutput) {
                     mAdapter.addAll(customerBookOutput.getData());
+                    mSmartRefreshLayout.finishRefresh();
+                    mSmartRefreshLayout.finishLoadMore();
                 }
 
                 @Override
                 public void onError() {
-
+                    mSmartRefreshLayout.finishRefresh();
+                    mSmartRefreshLayout.finishLoadMore();
                 }
             });
-        } else if (userStatus == 3) {
-            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, 1, 1), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
+        } else { // 待定制方案
+            int orderStatus = 1;
+            if (userStatus == 3) {
+                orderStatus = 1;
+            } else if (userStatus == 4) {
+                orderStatus = 3;
+            } else if (userStatus == 5) {
+                orderStatus = 2;
+            }
+            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, page, orderStatus), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
                 @Override
                 public void onSuccess(QueryCustomizeOutput output) {
+                    mSmartRefreshLayout.finishRefresh();
+                    mSmartRefreshLayout.finishLoadMore();
+                    if (page == 1) {
+                        mCustomizeAdapter.clear();
+                    }
                     if (output.isSuccess()) {
                         mCustomizeAdapter.addAll(output.getData().getList());
+                    }
+                    if (page >= output.getData().getLastPage()) {
+                        mSmartRefreshLayout.setNoMoreData(true);
+                    } else {
+                        mSmartRefreshLayout.setNoMoreData(false);
                     }
                 }
 
                 @Override
                 public void onError() {
-
-                }
-            });
-        } else if (userStatus == 4) {
-            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, 1, 3), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
-                @Override
-                public void onSuccess(QueryCustomizeOutput output) {
-                    if (output.isSuccess()) {
-                        mCustomizeAdapter.addAll(output.getData().getList());
-                    }
-                }
-
-                @Override
-                public void onError() {
-
+                    mSmartRefreshLayout.finishRefresh();
+                    mSmartRefreshLayout.finishLoadMore();
                 }
             });
         }
+//        else if (userStatus == 4) { // 已完成方案
+//            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, page, 3), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
+//                @Override
+//                public void onSuccess(QueryCustomizeOutput output) {
+//                    if (output.isSuccess()) {
+//                        mCustomizeAdapter.addAll(output.getData().getList());
+//                    }
+//                }
+//
+//                @Override
+//                public void onError() {
+//
+//                }
+//            });
+//        } else if (userStatus == 5) { // -待发送方案
+//            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, page, 2), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
+//                @Override
+//                public void onSuccess(QueryCustomizeOutput output) {
+//                    if (output.isSuccess()) {
+//                        mCustomizeAdapter.addAll(output.getData().getList());
+//                    }
+//                }
+//
+//                @Override
+//                public void onError() {
+//
+//                }
+//            });
+//        }
     }
 
     public void refresh() {
+        page = 1;
         initData();
     }
 
-    @Override
-    public void onDestroy() {
-        EventBus.getDefault().unregister(this);
-        super.onDestroy();
-    }
 }

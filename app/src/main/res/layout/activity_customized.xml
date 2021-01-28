@@ -585,19 +585,34 @@
 
         </LinearLayout>
 
-
         <TextView
             android:id="@+id/generate_plan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="#C9C9C9"
+            android:background="@color/app_blue"
             android:gravity="center"
             android:paddingLeft="23dp"
             android:paddingTop="13dp"
             android:paddingRight="23dp"
             android:paddingBottom="13dp"
-            android:text="生成计划书"
+            android:text="保存发送"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/generate_save_dai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_toLeftOf="@id/generate_plan"
+            android:background="@color/app_blue"
+            android:gravity="center"
+            android:paddingLeft="23dp"
+            android:paddingTop="13dp"
+            android:paddingRight="23dp"
+            android:paddingBottom="13dp"
+            android:text="保存待发送"
             android:textColor="@color/white"
             android:textSize="17sp" />
 

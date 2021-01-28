@@ -18,7 +18,7 @@ import java.util.List;
 public class MailFAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> mFragments;
-    private String[] titles = {"通讯录", "方案定制", "已完成方案"};
+    private String[] titles = {"通讯录", "待定制方案","待发送方案", "已完成方案"};
 
     public MailFAdapter(@NonNull FragmentManager fm, List<Fragment> mFragments) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);

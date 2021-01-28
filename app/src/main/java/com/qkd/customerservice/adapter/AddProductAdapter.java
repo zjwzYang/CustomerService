@@ -41,6 +41,11 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
         inflate = LayoutInflater.from(context);
     }
 
+    public void setUserStatus(int userStatus) {
+        this.userStatus = userStatus;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public AddAdapter onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

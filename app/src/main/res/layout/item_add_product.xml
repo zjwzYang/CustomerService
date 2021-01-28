@@ -19,11 +19,11 @@
             android:id="@+id/add_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="5dp"
             android:layout_toLeftOf="@+id/add_delete"
             android:text="平安福20"
-            android:layout_centerVertical="true"
             android:textColor="#ff2d2d2d"
             android:textSize="17sp" />
 
@@ -35,7 +35,8 @@
             android:layout_centerVertical="true"
             android:text="修改"
             android:textColor="#ff597ef7"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:visibility="gone" />
 
         <View
             android:id="@+id/add_change_divi"
@@ -45,12 +46,14 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_toLeftOf="@id/add_change"
-            android:background="#C9C9C9" />
+            android:background="#C9C9C9"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/add_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/add_change_divi"
             android:text="删除"

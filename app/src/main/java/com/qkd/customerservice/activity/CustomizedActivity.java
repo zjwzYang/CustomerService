@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,11 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     private TextView benYear;
     private ImageView mHeadV;
     private TextView generatePlanV;
+    private TextView mSaveDaiV;
     private TextView mTotalMoney;
+    private View deleteV;
+    private View addProductV;
+
     private float totalMoney = 0f;
 
     private RecyclerView mAddRecy;
@@ -148,8 +153,8 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                         data.setUpdateTime(outData.getUpdateTime());
 
                         List<MySchemeDetailOutput.DataBean.ListBean> list = outData.getList();
+                        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = new ArrayList<>();
                         if (list != null && list.size() > 0) {
-                            List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = new ArrayList<>();
                             for (MySchemeDetailOutput.DataBean.ListBean listBean : list) {
                                 SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyBean = new SchemeCustomizeInfo.DataBean.ApplyPersonListBean();
                                 applyBean.setId(listBean.getId());
@@ -198,8 +203,8 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                                 applyPersonList.add(applyBean);
                             }
-                            data.setApplyPersonList(applyPersonList);
                         }
+                        data.setApplyPersonList(applyPersonList);
                         initData();
 
                     } else {
@@ -219,12 +224,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
     private void initView() {
         // 删除
-        View deleteV = findViewById(R.id.customize_delete);
-        if (userStatus == 3) {
-            deleteV.setVisibility(View.VISIBLE);
-        } else {
-            deleteV.setVisibility(View.GONE);
-        }
+        deleteV = findViewById(R.id.customize_delete);
         deleteV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -449,7 +449,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         });
         mHeadV = findViewById(R.id.head_img);
 
-        View addProductV = findViewById(R.id.add_product);
+        addProductV = findViewById(R.id.add_product);
         addProductV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -461,11 +461,6 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                 dialog.show(getSupportFragmentManager(), "SelectProductDialog");
             }
         });
-        if (userStatus == 3) {
-            addProductV.setVisibility(View.VISIBLE);
-        } else {
-            addProductV.setVisibility(View.GONE);
-        }
         mAddRecy = findViewById(R.id.add_product_recy);
         mAddRecy.setLayoutManager(new LinearLayoutManager(this));
         mAddRecy.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
@@ -473,7 +468,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mAddProductAdapter.setOnProductDeleteListener(new AddProductAdapter.OnProductDeleteListener() {
             @Override
             public void onProductDelete() {
-                checkData();
+                //checkData();
                 try {
                     totalMoney = 0f;
                     List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
@@ -508,74 +503,125 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         mAddRecy.setAdapter(mAddProductAdapter);
         mAddRecy.setNestedScrollingEnabled(false);
         generatePlanV = findViewById(R.id.generate_plan);
-        if (userStatus == 3) {
-            generatePlanV.setVisibility(View.VISIBLE);
-        } else {
-            generatePlanV.setVisibility(View.GONE);
-        }
+        mSaveDaiV = findViewById(R.id.generate_save_dai);
         generatePlanV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (userStatus != 3) {
-                    return;
-                }
-                if (checkData() && data != null) {
+//                if (userStatus != 3) {
+//                    return;
+//                }
+                nextAction(1);
+            }
+        });
+        mSaveDaiV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                if (userStatus != 3) {
+//                    return;
+//                }
+                nextAction(2);
+            }
+        });
+        mTotalMoney = findViewById(R.id.customized_total);
+        refreshView();
+    }
 
-                    SaveSchemeConfigInput input = new SaveSchemeConfigInput();
-                    input.setOrderNumber(orderNumber);
-                    input.setUserId(data.getUserId());
-                    input.setNickName(data.getNickName());
-                    List<SaveSchemeConfigInput.DataListBean> dataList = new ArrayList<>();
-                    for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean : data.getApplyPersonList()) {
-                        List<ProductListOutput.DataBean> productList = bean.getProductList();
-                        for (ProductListOutput.DataBean product : productList) {
-                            SaveSchemeConfigInput.DataListBean configBean = new SaveSchemeConfigInput.DataListBean();
-                            configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
-                            configBean.setProductId(String.valueOf(product.getId()));
-                            configBean.setProductName(product.getProductName());
-                            configBean.setProductType(product.getProductType());
-                            configBean.setInsuredAmount(product.getInsuredAmount());
-                            configBean.setFirstYearPremium(product.getPremiumNum());
-                            configBean.setPaymentPeriod(product.getPaymentPeriod());
-                            configBean.setGuaranteePeriod(product.getGuaranteePeriod());
-                            dataList.add(configBean);
-                        }
+    private void refreshView() {
+        if (userStatus == 3) {
+            deleteV.setVisibility(View.VISIBLE);
+            addProductV.setVisibility(View.VISIBLE);
+            generatePlanV.setVisibility(View.VISIBLE);
+            mSaveDaiV.setVisibility(View.VISIBLE);
+        } else if (userStatus == 4) {
+            deleteV.setVisibility(View.GONE);
+            addProductV.setVisibility(View.GONE);
+            generatePlanV.setVisibility(View.GONE);
+            mSaveDaiV.setVisibility(View.GONE);
+        } else {
+            deleteV.setVisibility(View.GONE);
+            addProductV.setVisibility(View.GONE);
+            generatePlanV.setVisibility(View.VISIBLE);
+            mSaveDaiV.setVisibility(View.GONE);
+        }
+    }
+
+    private void nextAction(final int type) {
+//        if (checkData() && data != null) {
+        if (data != null) {
+
+            SaveSchemeConfigInput input = new SaveSchemeConfigInput();
+            input.setOrderNumber(orderNumber);
+            input.setUserId(data.getUserId());
+            input.setNickName(data.getNickName());
+            List<SaveSchemeConfigInput.DataListBean> dataList = new ArrayList<>();
+            for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean : data.getApplyPersonList()) {
+                List<ProductListOutput.DataBean> productList = bean.getProductList();
+                if (productList != null && productList.size() != 0) {
+                    for (ProductListOutput.DataBean product : productList) {
+                        SaveSchemeConfigInput.DataListBean configBean = new SaveSchemeConfigInput.DataListBean();
+                        configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
+                        configBean.setProductId(String.valueOf(product.getId()));
+                        configBean.setProductName(product.getProductName());
+                        configBean.setProductType(product.getProductType());
+                        configBean.setInsuredAmount(product.getInsuredAmount());
+                        configBean.setFirstYearPremium(product.getPremiumNum());
+                        configBean.setPaymentPeriod(product.getPaymentPeriod());
+                        configBean.setGuaranteePeriod(product.getGuaranteePeriod());
+                        dataList.add(configBean);
                     }
-                    input.setDataList(dataList);
+                }
+            }
+            input.setDataList(dataList);
 
-                    BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<SchemeConfigOutput>() {
-                        @Override
-                        public void onSuccess(SchemeConfigOutput baseOutput) {
-                            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsHasSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
-                                @Override
-                                public void onSuccess(BaseOutput baseOutput) {
-                                    if (baseOutput.isSuccess()) {
+            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveSchemeConfig(input), new BaseHttp.HttpObserver<SchemeConfigOutput>() {
+                @Override
+                public void onSuccess(SchemeConfigOutput baseOutput) {
+                    if (type == 1) {
+                        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsHasSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
+                            @Override
+                            public void onSuccess(BaseOutput baseOutput) {
+                                if (baseOutput.isSuccess()) {
 //                                        Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
 //                                        intent.putExtra("orderNumber", data.getOrderNumber());
 //                                        intent.putExtra("userId", data.getUserId());
 //                                        startActivity(intent);
-                                        Toast.makeText(CustomizedActivity.this, "定制成功", Toast.LENGTH_SHORT).show();
-                                        EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
-                                        finish();
-                                    }
+                                    Toast.makeText(CustomizedActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+                                    EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
+                                    finish();
                                 }
+                            }
 
-                                @Override
-                                public void onError() {
+                            @Override
+                            public void onError() {
 
+                            }
+                        });
+                    } else {
+                        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsToBeSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
+                            @Override
+                            public void onSuccess(BaseOutput baseOutput) {
+                                if (baseOutput.isSuccess()) {
+                                    Toast.makeText(CustomizedActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                                    EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
+                                    EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
+                                    finish();
                                 }
-                            });
-                        }
+                            }
 
-                        @Override
-                        public void onError() {
+                            @Override
+                            public void onError() {
 
-                        }
-                    });
+                            }
+                        });
+                    }
                 }
-            }
-        });
-        mTotalMoney = findViewById(R.id.customized_total);
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }
     }
 
 
@@ -635,6 +681,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             }
         }
 
+        if (selectPerson == null) {
+            return;
+        }
         String insuredPerson = selectPerson.getInsuredPerson();
         benName.setText(insuredPerson);
         String gender = selectPerson.getGender();
@@ -797,8 +846,35 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             case android.R.id.home:
                 this.finish();
                 return true;
+            case R.id.menu_change:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("提示");
+                builder.setMessage("确定需要修改？");
+                builder.setNegativeButton("取消", null);
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        userStatus = 3;
+                        invalidateOptionsMenu();
+                        refreshView();
+                        mAddProductAdapter.setUserStatus(userStatus);
+                    }
+                });
+                builder.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (userStatus == 3) {
+            menu.clear();
+            return super.onCreateOptionsMenu(menu);
+        } else {
+            getMenuInflater().inflate(R.menu.exchange_xiugai, menu);
+            return true;
+        }
     }
 
     private ProductListOutput.DataBean currProduct;
@@ -974,7 +1050,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                     }
 
-                    checkData();
+                    //checkData();
 
                     //currProduct = null;
                 }
@@ -987,22 +1063,24 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         });
     }
 
-    private boolean checkData() {
-        boolean allHasSelect = true;
-        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
-        for (int i = 0; i < applyPersonList.size(); i++) {
-            SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean = applyPersonList.get(i);
-            List<ProductListOutput.DataBean> productList = bean.getProductList();
-            if (productList == null || productList.size() == 0) {
-                allHasSelect = false;
-                break;
-            }
-        }
-        if (allHasSelect) {
-            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
-        } else {
-            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
-        }
-        return allHasSelect;
-    }
+//    private boolean checkData() {
+//        boolean allHasSelect = true;
+//        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
+//        for (int i = 0; i < applyPersonList.size(); i++) {
+//            SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean = applyPersonList.get(i);
+//            List<ProductListOutput.DataBean> productList = bean.getProductList();
+//            if (productList == null || productList.size() == 0) {
+//                allHasSelect = false;
+//                break;
+//            }
+//        }
+//        if (allHasSelect) {
+//            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
+//            mSaveDaiV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
+//        } else {
+//            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
+//            mSaveDaiV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
+//        }
+//        return allHasSelect;
+//    }
 }

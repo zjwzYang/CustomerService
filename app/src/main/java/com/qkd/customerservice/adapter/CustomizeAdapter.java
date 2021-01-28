@@ -104,8 +104,12 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
     }
 
     public void addAll(List<QueryCustomizeOutput.DataBean.ListBean> dataList) {
-        this.dataList = dataList;
+        this.dataList.addAll(dataList);
         notifyDataSetChanged();
+    }
+
+    public void clear() {
+        this.dataList.clear();
     }
 
     static class CustomizeViewHolder extends RecyclerView.ViewHolder {
