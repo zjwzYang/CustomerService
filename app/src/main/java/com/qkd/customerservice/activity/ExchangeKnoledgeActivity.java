@@ -355,4 +355,11 @@ public class ExchangeKnoledgeActivity extends AppCompatActivity implements View.
         page = 1;
         initData();
     }
+
+    @Override
+    protected void onDestroy() {
+        AudioRecordManager.getInstance().destroyRecord();
+        AudioPlayManager.getInstance().stopPlay();
+        super.onDestroy();
+    }
 }
