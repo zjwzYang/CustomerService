@@ -244,6 +244,15 @@ public class QueryCustomizeOutput extends BaseOutput {
             private String userName;
             private String userAvatarUrl;
             private String orderNumber;
+            private int red;
+
+            public int getRed() {
+                return red;
+            }
+
+            public void setRed(int red) {
+                this.red = red;
+            }
 
             public String getOrderNumber() {
                 return orderNumber;

@@ -596,7 +596,7 @@
             android:paddingTop="13dp"
             android:paddingRight="23dp"
             android:paddingBottom="13dp"
-            android:text="保存发送"
+            android:text="发送"
             android:textColor="@color/white"
             android:textSize="17sp" />
 
@@ -612,7 +612,7 @@
             android:paddingTop="13dp"
             android:paddingRight="23dp"
             android:paddingBottom="13dp"
-            android:text="保存待发送"
+            android:text="待发送"
             android:textColor="@color/white"
             android:textSize="17sp" />
 

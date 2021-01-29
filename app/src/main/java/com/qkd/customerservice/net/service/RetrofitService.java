@@ -92,7 +92,8 @@ public interface RetrofitService {
     @GET("customize/queryCustomizeList")
     Observable<QueryCustomizeOutput> queryCustomizeList(@Query("serviceId") int serviceId,
                                                         @Query("pageNum") int pageNum,
-                                                        @Query("orderStatus") int orderStatus);
+                                                        @Query("orderStatus") int orderStatus,
+                                                        @Query("params") String params);
 
     // 待定制方案
     @GET("scheme/to-be-customized/list")

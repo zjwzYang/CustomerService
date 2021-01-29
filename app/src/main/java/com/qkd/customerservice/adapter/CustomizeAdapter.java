@@ -74,6 +74,12 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
                 context.startActivity(intent);
             }
         });
+        if (bean.getRed() == 1) {
+            holder.flagImg.setImageResource(R.drawable.ic_birthday);
+            holder.flagImg.setVisibility(View.VISIBLE);
+        } else {
+            holder.flagImg.setVisibility(View.GONE);
+        }
         if (userStatus == 3) {
             holder.mCopyV.setVisibility(View.GONE);
         } else {
@@ -116,12 +122,14 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
         private ImageView mImageView;
         private TextView mTextView;
         private TextView mCopyV;
+        private ImageView flagImg;
 
         public CustomizeViewHolder(@NonNull View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.mail_customer_head);
             mTextView = itemView.findViewById(R.id.mail_customer_name);
             mCopyV = itemView.findViewById(R.id.mail_customer_status);
+            flagImg = itemView.findViewById(R.id.mail_customer_wx_added);
         }
     }
 }

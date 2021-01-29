@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.activity.IndexActivity;
 import com.qkd.customerservice.adapter.MailFAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -107,6 +108,7 @@ public class MailFragment extends Fragment {
             public void onPageSelected(int position) {
                 currIndex = position;
                 ((MailIndexFragment) fragments.get(position)).refresh();
+                ((IndexActivity) getActivity()).setMailUserStatus(getUserStatus());
             }
 
             @Override
@@ -114,6 +116,10 @@ public class MailFragment extends Fragment {
 
             }
         });
+    }
+
+    private int getUserStatus() {
+        return ((MailIndexFragment) fragments.get(currIndex)).getUserStatus();
     }
 
     @Override

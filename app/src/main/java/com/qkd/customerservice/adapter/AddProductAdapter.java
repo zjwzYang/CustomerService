@@ -62,8 +62,8 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
 
         if (userStatus == 3) {
             holder.add_delete.setVisibility(View.VISIBLE);
-            holder.add_change.setVisibility(View.VISIBLE);
-            holder.add_change_divi.setVisibility(View.VISIBLE);
+//            holder.add_change.setVisibility(View.VISIBLE);
+//            holder.add_change_divi.setVisibility(View.VISIBLE);
             holder.add_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -86,27 +86,27 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
                     builder.show();
                 }
             });
-            holder.add_change.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("确定修改？")
-                            .setNegativeButton("取消", null)
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    if (onProductDeleteListener != null) {
-                                        onProductDeleteListener.onProductChange(dataBean);
-                                    }
-                                }
-                            });
-                    builder.show();
-                }
-            });
+//            holder.add_change.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                    builder.setMessage("确定修改？")
+//                            .setNegativeButton("取消", null)
+//                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    if (onProductDeleteListener != null) {
+//                                        onProductDeleteListener.onProductChange(dataBean);
+//                                    }
+//                                }
+//                            });
+//                    builder.show();
+//                }
+//            });
         } else {
             holder.add_delete.setVisibility(View.GONE);
-            holder.add_change.setVisibility(View.GONE);
-            holder.add_change_divi.setVisibility(View.GONE);
+//            holder.add_change.setVisibility(View.GONE);
+//            holder.add_change_divi.setVisibility(View.GONE);
         }
 
         String[][] arrayData = dataBean.getArrayData();
@@ -188,8 +188,8 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
 
     static class AddAdapter extends RecyclerView.ViewHolder {
         private TextView add_name;
-        private TextView add_change;
-        private View add_change_divi;
+        //        private TextView add_change;
+//        private View add_change_divi;
         private TextView add_delete;
         private TextView add_total_money;
         private LinearLayout add_linear;
@@ -197,11 +197,11 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
         public AddAdapter(@NonNull View itemView) {
             super(itemView);
             add_name = itemView.findViewById(R.id.add_name);
-            add_change = itemView.findViewById(R.id.add_change);
+//            add_change = itemView.findViewById(R.id.add_change);
             add_delete = itemView.findViewById(R.id.add_delete);
             add_total_money = itemView.findViewById(R.id.add_total_money);
             add_linear = itemView.findViewById(R.id.add_linear);
-            add_change_divi = itemView.findViewById(R.id.add_change_divi);
+//            add_change_divi = itemView.findViewById(R.id.add_change_divi);
         }
     }
 }

@@ -97,6 +97,8 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
 
     private int status;
 
+    private int mailUserStatus;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -340,24 +342,24 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void selectImg(int index) {
-        mMsgText.setTextColor(ContextCompat.getColor(this, R.color.text_gray));
-        mMsgImg.setBackgroundResource(R.mipmap.index_msg);
-        mMailText.setTextColor(ContextCompat.getColor(this, R.color.text_gray));
-        mMailImg.setBackgroundResource(R.mipmap.index_mail);
-        mMineText.setTextColor(ContextCompat.getColor(this, R.color.text_gray));
+        mMsgText.setTextColor(ContextCompat.getColor(this, R.color.index_gray));
+        mMsgImg.setImageResource(R.mipmap.index_msg);
+        mMailText.setTextColor(ContextCompat.getColor(this, R.color.index_gray));
+        mMailImg.setImageResource(R.mipmap.index_mail);
+        mMineText.setTextColor(ContextCompat.getColor(this, R.color.index_gray));
         mMineImg.setImageResource(R.mipmap.index_mine);
         switch (index) {
             case 0:
-                mMsgImg.setBackgroundResource(R.mipmap.index_msg_selected);
-                mMsgText.setTextColor(ContextCompat.getColor(this, R.color.text_black));
+                mMsgImg.setImageResource(R.mipmap.index_msg_selected);
+                mMsgText.setTextColor(ContextCompat.getColor(this, R.color.index_black));
                 break;
             case 1:
-                mMailImg.setBackgroundResource(R.mipmap.index_mail_selected);
-                mMailText.setTextColor(ContextCompat.getColor(this, R.color.text_black));
+                mMailImg.setImageResource(R.mipmap.index_mail_selected);
+                mMailText.setTextColor(ContextCompat.getColor(this, R.color.index_black));
                 break;
             case 2:
-                mMineImg.setBackgroundResource(R.mipmap.index_mine_selected);
-                mMineText.setTextColor(ContextCompat.getColor(this, R.color.text_black));
+                mMineImg.setImageResource(R.mipmap.index_mine_selected);
+                mMineText.setTextColor(ContextCompat.getColor(this, R.color.index_black));
                 break;
         }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -404,6 +406,9 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
             menu.add(Menu.NONE, 2, 0, "忙碌").setIcon(R.drawable.ic_busy);
             menu.add(Menu.NONE, 3, 0, "离线").setIcon(R.drawable.ic_ounline);
             return true;
+        } else if (currFragment instanceof MailFragment && (mailUserStatus == 3 || mailUserStatus == 5 || mailUserStatus == 4)) {
+            getMenuInflater().inflate(R.menu.search, menu);
+            return true;
         } else {
             menu.clear();
             return super.onCreateOptionsMenu(menu);
@@ -442,8 +447,20 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
             case 3:
                 updateStatus(3);
                 break;
+            case R.id.search_menu:
+                if (currFragment instanceof MailFragment) {
+                    Intent intent = new Intent(this, QueryCustomizeActivity.class);
+                    intent.putExtra("userStatus", mailUserStatus);
+                    startActivity(intent);
+                }
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setMailUserStatus(int mailUserStatus) {
+        this.mailUserStatus = mailUserStatus;
+        invalidateOptionsMenu();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

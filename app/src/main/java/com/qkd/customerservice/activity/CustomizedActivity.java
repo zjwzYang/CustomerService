@@ -88,6 +88,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
     private String orderNumber;
     private int userStatus;
+    private boolean notShowBtn;
 
     private SchemeCustomizeInfo.DataBean.ApplyPersonListBean selectPerson;
     private int selcetIndex = 0;
@@ -100,6 +101,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         orderNumber = getIntent().getStringExtra("orderNumber");
         int userId = getIntent().getIntExtra("userId", 0);
         userStatus = getIntent().getIntExtra("userStatus", 0);
+        if (userStatus == 4) {
+            notShowBtn = true;
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -541,6 +545,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             deleteV.setVisibility(View.GONE);
             addProductV.setVisibility(View.GONE);
             generatePlanV.setVisibility(View.VISIBLE);
+            mSaveDaiV.setVisibility(View.GONE);
+        }
+        if (notShowBtn) {
             mSaveDaiV.setVisibility(View.GONE);
         }
     }

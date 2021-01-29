@@ -33,8 +33,8 @@
 
                 <ImageView
                     android:id="@+id/index_msg_img"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:src="@mipmap/index_msg" />
 
                 <TextView
@@ -73,8 +73,8 @@
 
             <ImageView
                 android:id="@+id/index_mail_img"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@mipmap/index_mail" />
 
             <TextView
@@ -99,8 +99,8 @@
 
             <ImageView
                 android:id="@+id/index_mine_img"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@mipmap/index_mine" />
 
             <TextView

@@ -27,8 +27,6 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
-import org.greenrobot.eventbus.EventBus;
-
 /**
  * Created on 12/16/20 16:28
  * .
@@ -115,7 +113,8 @@ public class MailIndexFragment extends Fragment {
             } else if (userStatus == 5) {
                 orderStatus = 2;
             }
-            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId, page, orderStatus), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
+            BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_CORE).queryCustomizeList(serviceId
+                    , page, orderStatus, null), new BaseHttp.HttpObserver<QueryCustomizeOutput>() {
                 @Override
                 public void onSuccess(QueryCustomizeOutput output) {
                     mSmartRefreshLayout.finishRefresh();
@@ -176,4 +175,7 @@ public class MailIndexFragment extends Fragment {
         initData();
     }
 
+    public int getUserStatus() {
+        return userStatus;
+    }
 }
