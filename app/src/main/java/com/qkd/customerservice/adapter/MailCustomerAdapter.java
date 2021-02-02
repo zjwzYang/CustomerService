@@ -2,6 +2,7 @@ package com.qkd.customerservice.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +22,8 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.ChatActivity;
 import com.qkd.customerservice.activity.CustomerInfoActivity;
 import com.qkd.customerservice.bean.CustomerBookOutput;
+import com.qkd.customerservice.dialog.OptionDialog;
+import com.qkd.customerservice.dialog.PlannerDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +40,12 @@ public class MailCustomerAdapter extends RecyclerView.Adapter<MailCustomerAdapte
     private Context context;
     private List<CustomerBookOutput.DataBean> dataList;
     private RequestOptions options;
+    private FragmentManager manager;
 
-    public MailCustomerAdapter(Context context) {
+    public MailCustomerAdapter(Context context, FragmentManager manager) {
         this.context = context;
         this.dataList = new ArrayList<>();
+        this.manager = manager;
         RoundedCorners roundedCorners = new RoundedCorners(4);
         options = new RequestOptions()
                 .transform(new CenterCrop(), roundedCorners)
@@ -90,6 +96,38 @@ public class MailCustomerAdapter extends RecyclerView.Adapter<MailCustomerAdapte
                     intent.putExtra("addedWx", true);
                 }
                 context.startActivity(intent);
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("userId", dataBean.getOpenId());
+                OptionDialog optionDialog = new OptionDialog();
+                optionDialog.setArguments(bundle);
+                optionDialog.setOnClickOptionsListener(new OptionDialog.OnClickOptionsListener() {
+                    @Override
+                    public void onClickOptionOne(int clickPosition, String userId) {
+
+                    }
+
+                    @Override
+                    public void onClickOptionTwo(String userId, String conversationID) {
+                        PlannerDialog plannerDialog = new PlannerDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("userId", userId);
+                        bundle.putString("conversationID", conversationID);
+                        plannerDialog.setArguments(bundle);
+                        plannerDialog.show(manager, "plannerDialog");
+                    }
+
+                    @Override
+                    public void onClickOptionThree(int clickPosition, String userId) {
+
+                    }
+                });
+                optionDialog.show(manager, "optionDialog");
+                return false;
             }
         });
         int userStatus = dataBean.getUserStatus();

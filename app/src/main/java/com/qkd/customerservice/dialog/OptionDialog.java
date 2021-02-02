@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,6 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
     private String userId;
     private String conversationID;
     private int clickPosition;
-    private boolean topFlag;
 
     @Nullable
     @Override
@@ -39,7 +39,6 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
         userId = bundle.getString("userId");
         conversationID = bundle.getString("conversationID");
         clickPosition = bundle.getInt("clickPosition", -1);
-        topFlag = bundle.getBoolean("topFlag", false);
         View optionOneV = view.findViewById(R.id.option_one);
         optionOneV.setOnClickListener(this);
 //        if (topFlag) {
@@ -47,8 +46,14 @@ public class OptionDialog extends DialogFragment implements View.OnClickListener
 //        } else {
 //            optionOneV.setVisibility(View.VISIBLE);
 //        }
-        view.findViewById(R.id.option_two).setOnClickListener(this);
-        view.findViewById(R.id.option_three).setOnClickListener(this);
+        View optionTwoV = view.findViewById(R.id.option_two);
+        optionTwoV.setOnClickListener(this);
+        View optionThreeV = view.findViewById(R.id.option_three);
+        optionThreeV.setOnClickListener(this);
+        if (TextUtils.isEmpty(conversationID)) {
+            optionOneV.setVisibility(View.GONE);
+            optionThreeV.setVisibility(View.GONE);
+        }
         return view;
     }
 

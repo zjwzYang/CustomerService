@@ -25,6 +25,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CustomerAdapter;
 import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ConversationBean;
+import com.qkd.customerservice.bean.DeleteConversationBean;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.bean.TotalUnreadBean;
@@ -36,6 +37,7 @@ import com.qkd.customerservice.net.BaseHttp;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.tencent.imsdk.v2.V2TIMCallback;
 import com.tencent.imsdk.v2.V2TIMConversation;
 import com.tencent.imsdk.v2.V2TIMConversationResult;
 import com.tencent.imsdk.v2.V2TIMManager;
@@ -294,11 +296,26 @@ public class MsgFragment extends Fragment implements OptionDialog.OnClickOptions
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefreshMsg(String msg) {
-        if (Constant.REFRESH_CONVERSATION.equals(msg)) {
-            nextSeq = 0;
-            getConversation();
+    public void onRefreshMsg(DeleteConversationBean bean) {
+        String conversationID = bean.getConversationID();
+        if (TextUtils.isEmpty(conversationID)) {
+            conversationID = mAdapter.getConversationID(bean.getUserID());
         }
+        if (TextUtils.isEmpty(conversationID)) {
+            return;
+        }
+        V2TIMManager.getConversationManager().deleteConversation(conversationID, new V2TIMCallback() {
+            @Override
+            public void onError(int code, String desc) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+                nextSeq = 0;
+                getConversation();
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

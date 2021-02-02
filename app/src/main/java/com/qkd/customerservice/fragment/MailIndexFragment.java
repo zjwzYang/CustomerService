@@ -61,7 +61,7 @@ public class MailIndexFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayout.VERTICAL));
         if (userStatus == 1) {
-            mAdapter = new MailCustomerAdapter(getContext());
+            mAdapter = new MailCustomerAdapter(getContext(), getChildFragmentManager());
             mRecyclerView.setAdapter(mAdapter);
             mSmartRefreshLayout.setEnableLoadMore(false);
         } else {

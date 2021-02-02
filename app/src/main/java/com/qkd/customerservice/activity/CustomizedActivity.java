@@ -180,7 +180,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                                     List<ProductListOutput.DataBean> productList = new ArrayList<>();
                                     for (MySchemeDetailOutput.DataBean.ListBean.DataListBean xianzhong : xianzhongList) {
                                         ProductListOutput.DataBean product = new ProductListOutput.DataBean();
-                                        product.setId(xianzhong.getId());
+                                        product.setId(xianzhong.getProductId());
                                         product.setProductName(xianzhong.getProductName());
                                         product.setProductType(xianzhong.getProductType());
                                         product.setCompanyId(xianzhong.getCompanyId());

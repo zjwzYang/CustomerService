@@ -15,6 +15,7 @@ import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.activity.IndexActivity;
 import com.qkd.customerservice.adapter.MailFAdapter;
+import com.qkd.customerservice.bean.DeleteConversationBean;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -58,6 +59,13 @@ public class MailFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetMsg(String msg) {
         if (Constant.REFRESH_CUSTOMIZED_LIST.equals(msg)) {
+            ((MailIndexFragment) fragments.get(currIndex)).refresh();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshMsg(DeleteConversationBean bean) {
+        if (currIndex == 0) {
             ((MailIndexFragment) fragments.get(currIndex)).refresh();
         }
     }

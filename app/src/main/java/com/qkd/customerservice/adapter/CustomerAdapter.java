@@ -221,6 +221,15 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
         }
     }
 
+    public String getConversationID(String userId) {
+        for (int i = 0; i < conversationList.size(); i++) {
+            if (userId.equals(conversationList.get(i).getUserId())) {
+                return conversationList.get(i).getConversationID();
+            }
+        }
+        return null;
+    }
+
     public List<ConversationBean> getConversationList() {
         return conversationList;
     }

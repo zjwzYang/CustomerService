@@ -24,11 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.PlannerAdapter;
+import com.qkd.customerservice.bean.DeleteConversationBean;
 import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.TransferOutput;
 import com.qkd.customerservice.net.BaseHttp;
-import com.tencent.imsdk.v2.V2TIMCallback;
-import com.tencent.imsdk.v2.V2TIMManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -89,19 +88,13 @@ public class PlannerDialog extends DialogFragment implements PlannerAdapter.OnPl
             @Override
             public void onSuccess(final TransferOutput baseOutput) {
                 if (baseOutput.isSuccess()) {
-                    V2TIMManager.getConversationManager().deleteConversation(conversationID, new V2TIMCallback() {
-                        @Override
-                        public void onError(int code, String desc) {
+                    DeleteConversationBean bean = new DeleteConversationBean();
+                    bean.setConversationID(conversationID);
+                    bean.setUserID(userId);
+                    Toast.makeText(getContext(), baseOutput.getData(), Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(bean);
+                    dismiss();
 
-                        }
-
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(getContext(), baseOutput.getData(), Toast.LENGTH_SHORT).show();
-                            EventBus.getDefault().post(Constant.REFRESH_CONVERSATION);
-                            dismiss();
-                        }
-                    });
                 } else {
                     Toast.makeText(getContext(), baseOutput.getErrorMsg(), Toast.LENGTH_SHORT).show();
                     dismiss();
