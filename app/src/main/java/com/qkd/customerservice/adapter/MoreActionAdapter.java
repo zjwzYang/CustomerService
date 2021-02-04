@@ -79,7 +79,7 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
                         selectImg();
                         break;
                     case MoreAction.ACTION_TYPE_DINGZHI:
-                        String text = "http://qkbdev.qukandian573.com/scheme";
+                        String text = "http://qukanbao.qukandian573.com/scheme";
                         TextMsg msgBean = new TextMsg();
                         msgBean.setMsgType(MsgBean.MsgType.TEXT);
                         msgBean.setType(1);

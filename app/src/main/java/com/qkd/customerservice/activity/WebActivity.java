@@ -50,7 +50,7 @@ public class WebActivity extends AppCompatActivity {
 //        orderNumber="10087";
 //        userId = "76";
 
-        mWebView.loadUrl("http://qkbdev.qukandian573.com/programme?orderNumber=" + orderNumber + "&userId=" + userId);
+        mWebView.loadUrl("http://qukanbao.qukandian573.com/programme?orderNumber=" + orderNumber + "&userId=" + userId);
     }
 
     @Override

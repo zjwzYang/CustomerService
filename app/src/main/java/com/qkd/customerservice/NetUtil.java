@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -148,7 +150,7 @@ public class NetUtil {
 
 
     public static void upLoadFile(final Map<String, Object> map, File file, final OnMsgCallBack callback) {
-        String url = "http://47.114.100.72:8081//im/forwardMessage";
+        String url = Constant.BASE_URL_WX_CHETER + "/im/forwardMessage";
         OkHttpClient client = new OkHttpClient();
         // form 表单形式上传
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -213,10 +215,15 @@ public class NetUtil {
             // 参数分别为， 请求key ，文件名称 ， RequestBody
             requestBody.addFormDataPart("file", filename, body);
         }
-        Request request = new Request.Builder().url(url)
-                .addHeader("login-token", token)
-                .addHeader("token", coreToken)
-                .addHeader("identifier", identifier).post(requestBody.build()).build();
+        Request request = null;
+        try {
+            request = new Request.Builder().url(url)
+                    .addHeader("login-token", token)
+                    .addHeader("token", coreToken)
+                    .addHeader("identifier", URLEncoder.encode(identifier, "utf-8")).post(requestBody.build()).build();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         // readTimeout("请求超时时间" , 时间单位);
         client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(callback);
 

@@ -90,7 +90,7 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
             holder.mCopyV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String url = "http://qkbdev.qukandian573.com/programme?orderNumber="
+                    String url = "http://qukanbao.qukandian573.com/programme?orderNumber="
                             + bean.getOrderNumber() + "&userId=" + bean.getUserId();
                     //获取剪贴板管理器：
                     ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);

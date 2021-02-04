@@ -27,7 +27,7 @@ public class MyApp extends Application {
     public static final String APP_KEY = "5231885256952";
     public static final String TAG = "xiaomipush";
 
-    public static final int TEN_SDKAPPID = 1400456243;
+    public static final int TEN_SDKAPPID = 1400481126; // 1400456243
 
     public static int keyboardHeight = 0;
     private static MyApp instance;
