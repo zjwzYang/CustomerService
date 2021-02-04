@@ -99,6 +99,7 @@ public class CustomizeAdapter extends RecyclerView.Adapter<CustomizeAdapter.Cust
                     // 将ClipData内容放到系统剪贴板里。
                     cm.setPrimaryClip(mClipData);
                     Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show();
+                    
                 }
             });
         }
