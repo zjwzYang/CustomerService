@@ -79,6 +79,9 @@
         <activity
             android:name=".activity.QueryCustomizeActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ProductCalcActivity"
+            android:screenOrientation="portrait" />
 
         <!--小米推送-->
         <service

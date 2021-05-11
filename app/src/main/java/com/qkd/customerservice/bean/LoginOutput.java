@@ -1,5 +1,6 @@
 package com.qkd.customerservice.bean;
 
+import com.google.gson.annotations.SerializedName;
 import com.qkd.customerservice.net.BaseOutput;
 
 /**
@@ -12,11 +13,7 @@ import com.qkd.customerservice.net.BaseOutput;
 public class LoginOutput extends BaseOutput {
 
 
-    /**
-     * errorMsg : null
-     * data : {"identifier":"test_yang","serviceId":1,"userSig":"eJyrVgrxCdZLrSjILEpVsjI1tDAxMDDQAQuWpRYpWSkZ6RkoQfjFKdmJBQWZKUpWhkBFJqZmRibGEJnMlNS8ksy0TLCGktTikvjKxLx0mLbMdKBocahpgHlecKq5j2NUirlRQVmkh1NlboRTtkGiSUqysX5Wprmvo3ZOSGCoqy1UY0lmLtBJhmYGFobmJkCX1QIA8A4yQg__","tokenMap":{"expireTime":"2021-02-15 16:08:59","token":"57cbad87-92e5-4ee9-832e-1ac050357b03"},"status":1,"coreToken":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0X3lhbmciLCJpc3MiOiIiLCJpYXQiOjE2MDgxOTI1Mzl9.dawNh5TAbAH7Pfj__VMJIX0xKzumLroWI9pPlzn5kHGTNxYWr1Rc3BunZnR5QUSneD8NN_Qn6NKBPy-dOWlebw"}
-     */
-
+    @SerializedName("data")
     private DataBean data;
 
     public DataBean getData() {
@@ -28,20 +25,17 @@ public class LoginOutput extends BaseOutput {
     }
 
     public static class DataBean {
-        /**
-         * identifier : test_yang
-         * serviceId : 1
-         * userSig : eJyrVgrxCdZLrSjILEpVsjI1tDAxMDDQAQuWpRYpWSkZ6RkoQfjFKdmJBQWZKUpWhkBFJqZmRibGEJnMlNS8ksy0TLCGktTikvjKxLx0mLbMdKBocahpgHlecKq5j2NUirlRQVmkh1NlboRTtkGiSUqysX5Wprmvo3ZOSGCoqy1UY0lmLtBJhmYGFobmJkCX1QIA8A4yQg__
-         * tokenMap : {"expireTime":"2021-02-15 16:08:59","token":"57cbad87-92e5-4ee9-832e-1ac050357b03"}
-         * status : 1
-         * coreToken : eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0X3lhbmciLCJpc3MiOiIiLCJpYXQiOjE2MDgxOTI1Mzl9.dawNh5TAbAH7Pfj__VMJIX0xKzumLroWI9pPlzn5kHGTNxYWr1Rc3BunZnR5QUSneD8NN_Qn6NKBPy-dOWlebw
-         */
-
+        @SerializedName("identifier")
         private String identifier;
-        private int serviceId;
+        @SerializedName("serviceId")
+        private Integer serviceId;
+        @SerializedName("userSig")
         private String userSig;
-        private TokenMapBean tokenMap;
-        private int status;
+        @SerializedName("tokenMap")
+        private TokenMapDTO tokenMap;
+        @SerializedName("status")
+        private Integer status;
+        @SerializedName("coreToken")
         private String coreToken;
 
         public String getIdentifier() {
@@ -52,11 +46,11 @@ public class LoginOutput extends BaseOutput {
             this.identifier = identifier;
         }
 
-        public int getServiceId() {
+        public Integer getServiceId() {
             return serviceId;
         }
 
-        public void setServiceId(int serviceId) {
+        public void setServiceId(Integer serviceId) {
             this.serviceId = serviceId;
         }
 
@@ -68,19 +62,19 @@ public class LoginOutput extends BaseOutput {
             this.userSig = userSig;
         }
 
-        public TokenMapBean getTokenMap() {
+        public TokenMapDTO getTokenMap() {
             return tokenMap;
         }
 
-        public void setTokenMap(TokenMapBean tokenMap) {
+        public void setTokenMap(TokenMapDTO tokenMap) {
             this.tokenMap = tokenMap;
         }
 
-        public int getStatus() {
+        public Integer getStatus() {
             return status;
         }
 
-        public void setStatus(int status) {
+        public void setStatus(Integer status) {
             this.status = status;
         }
 
@@ -92,13 +86,10 @@ public class LoginOutput extends BaseOutput {
             this.coreToken = coreToken;
         }
 
-        public static class TokenMapBean {
-            /**
-             * expireTime : 2021-02-15 16:08:59
-             * token : 57cbad87-92e5-4ee9-832e-1ac050357b03
-             */
-
+        public static class TokenMapDTO {
+            @SerializedName("expireTime")
             private String expireTime;
+            @SerializedName("token")
             private String token;
 
             public String getExpireTime() {

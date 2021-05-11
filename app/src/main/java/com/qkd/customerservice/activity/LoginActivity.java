@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         mUserName = findViewById(R.id.et_phoneNumber);
         mPswV = findViewById(R.id.et_verifyCode);
         if (BuildConfig.DEBUG) {
-            mUserName.setText("yj");
+            mUserName.setText("cmm");
             mPswV.setText("88888888");
         }
 
@@ -139,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(int code, String desc) {
                 Toast.makeText(LoginActivity.this, desc, Toast.LENGTH_SHORT).show();
                 sp.edit().clear().apply();
+                Log.i("Http请求参数", "onError: " + desc);
             }
 
             @Override

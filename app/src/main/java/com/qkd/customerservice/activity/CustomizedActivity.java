@@ -2,6 +2,7 @@ package com.qkd.customerservice.activity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -30,12 +31,14 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.AddProductAdapter;
 import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.AmountOutput;
+import com.qkd.customerservice.bean.CalcSuccessBean;
 import com.qkd.customerservice.bean.MySchemeDetailOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
+import com.qkd.customerservice.bean.TrialFactorBean;
 import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
 import com.qkd.customerservice.dialog.SelectProductDialog;
@@ -44,6 +47,8 @@ import com.qkd.customerservice.net.BaseHttp;
 import com.qkd.customerservice.net.BaseOutput;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -98,6 +103,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customized);
+        EventBus.getDefault().register(this);
         orderNumber = getIntent().getStringExtra("orderNumber");
         int userId = getIntent().getIntExtra("userId", 0);
         userStatus = getIntent().getIntExtra("userStatus", 0);
@@ -890,13 +896,97 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     @Override
     public void selectProduct(ProductListOutput.DataBean bean) {
         this.currProduct = bean;
-        ProductInputDialog productInputDialog = new ProductInputDialog();
-        Bundle bundle = new Bundle();
-        bundle.putInt("productId", bean.getId());
-        bundle.putString("productName", bean.getProductName());
-        productInputDialog.setArguments(bundle);
-        productInputDialog.setOnSureInputListener(this);
-        productInputDialog.show(getSupportFragmentManager(), "productInputDialog");
+//        ProductInputDialog productInputDialog = new ProductInputDialog();
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("productId", bean.getId());
+//        bundle.putString("productName", bean.getProductName());
+//        bundle.putString("platformId",bean.getPlatformId());
+//        bundle.putString("platformProductId",bean.getPlatformProductId());
+//        productInputDialog.setArguments(bundle);
+//        productInputDialog.setOnSureInputListener(this);
+//        productInputDialog.show(getSupportFragmentManager(), "productInputDialog");
+        Intent intent = new Intent(this, ProductCalcActivity.class);
+        intent.putExtra("productName", bean.getProductName());
+        intent.putExtra("platformId", bean.getPlatformId());
+        intent.putExtra("platformProductId", bean.getPlatformProductId());
+        startActivityForResult(intent, 1111);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMsgList(CalcSuccessBean bean) {
+        currProduct.setPremiumNum(bean.getPrice());
+        String[][] arrayData = new String[2][];
+        String[] list1 = {"投保险种", "保额", "保险期", "缴费期", "首年保费"};
+        String valueBao = "--";
+        String valueQi = "--";
+        String valueNian = "--";
+
+        List<TrialFactorBean> factorBeans = bean.getFactorBeans();
+        for (TrialFactorBean factorBean : factorBeans) {
+            String name = factorBean.getName();
+            String value = factorBean.getValue();
+            List<String> selectList = factorBean.getSelectList();
+            if ("PRE".equals(name)) {
+                valueBao = value;
+            } else if ("INSURE".equals(name)) {
+                if (selectList != null && selectList.size() > 1) {
+                    valueQi = selectList.get(1);
+                }
+            } else if ("PAY".equals(name)) {
+                if (selectList != null && selectList.size() > 1) {
+                    valueNian = selectList.get(1);
+                }
+            }
+
+
+//            String fieldName = config.getFieldName();
+//            List<PremiumConfigOutput.DataBean.ConfigBean.DictListBean> dictList = config.getDictList();
+//            String showValue = "";
+//            for (PremiumConfigOutput.DataBean.ConfigBean.DictListBean bean : dictList) {
+//                if (bean.isSelect()) {
+//                    showValue = bean.getShowValue();
+//                    break;
+//                }
+//            }
+//            if ("param2".equals(fieldName)) {
+//                valueBao = showValue;
+//                currProduct.setInsuredAmount(showValue);
+//            } else if ("param5".equals(fieldName)) {
+//                valueQi = showValue;
+//                currProduct.setGuaranteePeriod(showValue);
+//            } else if ("param3".equals(fieldName)) {
+//                valueNian = showValue;
+//                currProduct.setPaymentPeriod(showValue);
+//            }
+        }
+        String[] list2 = {currProduct.getProductName(), valueBao, valueQi, valueNian, bean.getPrice()};
+        arrayData[0] = list1;
+        arrayData[1] = list2;
+        currProduct.setArrayData(arrayData);
+
+
+        mAddProductAdapter.add(currProduct);
+        List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();
+        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
+        applyPersonList.get(selcetIndex).setProductList(allProduct);
+        selectPerson.setProductList(allProduct);
+
+        try {
+            totalMoney = 0f;
+            for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
+                List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
+                if (productList == null) {
+                    continue;
+                }
+                for (ProductListOutput.DataBean selectP : productList) {
+                    String premiumNum = selectP.getPremiumNum();
+                    totalMoney += Float.parseFloat(premiumNum);
+                }
+            }
+            mTotalMoney.setText(String.valueOf(totalMoney));
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -1070,24 +1160,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         });
     }
 
-//    private boolean checkData() {
-//        boolean allHasSelect = true;
-//        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = data.getApplyPersonList();
-//        for (int i = 0; i < applyPersonList.size(); i++) {
-//            SchemeCustomizeInfo.DataBean.ApplyPersonListBean bean = applyPersonList.get(i);
-//            List<ProductListOutput.DataBean> productList = bean.getProductList();
-//            if (productList == null || productList.size() == 0) {
-//                allHasSelect = false;
-//                break;
-//            }
-//        }
-//        if (allHasSelect) {
-//            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
-//            mSaveDaiV.setBackgroundColor(ContextCompat.getColor(this, R.color.app_blue));
-//        } else {
-//            generatePlanV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
-//            mSaveDaiV.setBackgroundColor(ContextCompat.getColor(this, R.color.c_C9C9C9));
-//        }
-//        return allHasSelect;
-//    }
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 }

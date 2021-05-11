@@ -43,6 +43,8 @@ public class ProductListOutput extends BaseOutput {
         private String productType;
         private String companyId;
         private String companyName;
+        private String platformId;
+        private String platformProductId;
         private int isContainAttachInsurance;
         private String premiumNum;
         private String insuredAmount;
@@ -136,6 +138,22 @@ public class ProductListOutput extends BaseOutput {
 
         public void setCompanyName(String companyName) {
             this.companyName = companyName;
+        }
+
+        public String getPlatformId() {
+            return platformId;
+        }
+
+        public void setPlatformId(String platformId) {
+            this.platformId = platformId;
+        }
+
+        public String getPlatformProductId() {
+            return platformProductId;
+        }
+
+        public void setPlatformProductId(String platformProductId) {
+            this.platformProductId = platformProductId;
         }
     }
 }

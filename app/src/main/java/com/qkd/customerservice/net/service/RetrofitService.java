@@ -15,6 +15,8 @@ import com.qkd.customerservice.bean.MySchemeDetailOutput;
 import com.qkd.customerservice.bean.NewMessageInput;
 import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.PlannerOutput;
+import com.qkd.customerservice.bean.PostTrialPremiumInput;
+import com.qkd.customerservice.bean.PostTrialPremiumOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
@@ -24,6 +26,7 @@ import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TransferOutput;
+import com.qkd.customerservice.bean.TrialFactorOutput;
 import com.qkd.customerservice.bean.UpdateRemarkInput;
 import com.qkd.customerservice.bean.UpdateRemarkOutput;
 import com.qkd.customerservice.bean.UpdateUserTagInput;
@@ -186,4 +189,12 @@ public interface RetrofitService {
 
     @GET("scheme/getMySchemeDetail")
     Observable<MySchemeDetailOutput> getMySchemeDetail(@Query("orderNumber") String orderNumber, @Query("userId") String userId);
+
+    // 获取保费测算因子
+    @GET("platform/getTrialFactor")
+    Observable<TrialFactorOutput> getTrialFactor(@Query("productId") String productId, @Query("platformId") String platformId);
+
+    //
+    @POST("platform/getTrialPremium")
+    Observable<PostTrialPremiumOutput> postTrialPremium(@Body PostTrialPremiumInput input);
 }
