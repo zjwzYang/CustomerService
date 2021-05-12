@@ -51,6 +51,24 @@ public class ProductListOutput extends BaseOutput {
         private String paymentPeriod;
         private String guaranteePeriod;
         private String[][] arrayData;
+        private String productIntroduction;
+        private String templateContent;
+
+        public String getTemplateContent() {
+            return templateContent;
+        }
+
+        public void setTemplateContent(String templateContent) {
+            this.templateContent = templateContent;
+        }
+
+        public String getProductIntroduction() {
+            return productIntroduction;
+        }
+
+        public void setProductIntroduction(String productIntroduction) {
+            this.productIntroduction = productIntroduction;
+        }
 
         public String getGuaranteePeriod() {
             return guaranteePeriod;

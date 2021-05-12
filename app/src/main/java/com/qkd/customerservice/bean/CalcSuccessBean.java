@@ -12,6 +12,15 @@ import java.util.List;
 public class CalcSuccessBean {
     private List<TrialFactorBean> factorBeans;
     private String price;
+    private String templateContent;
+
+    public String getTemplateContent() {
+        return templateContent;
+    }
+
+    public void setTemplateContent(String templateContent) {
+        this.templateContent = templateContent;
+    }
 
     public List<TrialFactorBean> getFactorBeans() {
         return factorBeans;

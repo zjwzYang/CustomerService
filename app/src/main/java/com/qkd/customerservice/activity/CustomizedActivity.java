@@ -32,6 +32,7 @@ import com.qkd.customerservice.adapter.AddProductAdapter;
 import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.CalcSuccessBean;
+import com.qkd.customerservice.bean.ChangeIntroductionBean;
 import com.qkd.customerservice.bean.MySchemeDetailOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
@@ -40,6 +41,7 @@ import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TrialFactorBean;
 import com.qkd.customerservice.dialog.InputDialog;
+import com.qkd.customerservice.dialog.IntroductionDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
 import com.qkd.customerservice.dialog.SelectProductDialog;
 import com.qkd.customerservice.key_library.util.DensityUtil;
@@ -195,6 +197,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                                         product.setInsuredAmount(xianzhong.getInsuredAmount());
                                         product.setPaymentPeriod(xianzhong.getPaymentPeriod());
                                         product.setGuaranteePeriod(xianzhong.getGuaranteePeriod());
+                                        product.setProductIntroduction(xianzhong.getProductIntroduction());
                                         String[][] arrayData = new String[2][];
                                         String[] list1 = {"投保险种", "保额", "保险期", "交费期", "首年保费"};
                                         String[] list2 = {xianzhong.getProductName(), xianzhong.getInsuredAmount(),
@@ -499,6 +502,17 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             }
 
             @Override
+            public void onClickIntroduction(int position, String productIntroduction, int userStatus) {
+                IntroductionDialog introductionDialog = new IntroductionDialog();
+                Bundle bundle = new Bundle();
+                bundle.putInt("position", position);
+                bundle.putString("productIntroduction", productIntroduction);
+                bundle.putInt("userStatus", 1);
+                introductionDialog.setArguments(bundle);
+                introductionDialog.show(getSupportFragmentManager(), "introductionDialog");
+            }
+
+            @Override
             public void onProductChange(ProductListOutput.DataBean bean) {
                 ProductInputDialog productInputDialog = new ProductInputDialog();
                 Bundle bundle = new Bundle();
@@ -575,11 +589,43 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                         configBean.setInsuranceInfoId(String.valueOf(bean.getId()));
                         configBean.setProductId(String.valueOf(product.getId()));
                         configBean.setProductName(product.getProductName());
-                        configBean.setProductType(product.getProductType());
+                        String productType = product.getProductType();
+                        String text = "";
+                        switch (productType) {
+                            case "1":
+                                text = "医疗险";
+                                break;
+                            case "2":
+                                text = "意外险";
+                                break;
+                            case "3":
+                                text = "旧定义重疾险";
+                                break;
+                            case "4":
+                                text = "寿险";
+                                break;
+                            case "5":
+                                text = "年金险";
+                                break;
+                            case "6":
+                                text = "教育险";
+                                break;
+                            case "7":
+                                text = "新定义重疾险";
+                                break;
+                            case "8":
+                                text = "防癌险";
+                                break;
+                            case "9":
+                                text = "财产险";
+                                break;
+                        }
+                        configBean.setProductType(text);
                         configBean.setInsuredAmount(product.getInsuredAmount());
                         configBean.setFirstYearPremium(product.getPremiumNum());
                         configBean.setPaymentPeriod(product.getPaymentPeriod());
                         configBean.setGuaranteePeriod(product.getGuaranteePeriod());
+                        configBean.setProductIntroduction(product.getProductIntroduction());
                         dataList.add(configBean);
                     }
                 }
@@ -909,7 +955,13 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         intent.putExtra("productName", bean.getProductName());
         intent.putExtra("platformId", bean.getPlatformId());
         intent.putExtra("platformProductId", bean.getPlatformProductId());
+        intent.putExtra("templateContent", bean.getTemplateContent());
         startActivityForResult(intent, 1111);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangeIntroduction(ChangeIntroductionBean bean) {
+        mAddProductAdapter.changeIntroduction(bean);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -928,13 +980,19 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             List<String> selectList = factorBean.getSelectList();
             if ("PRE".equals(name)) {
                 valueBao = value;
+                currProduct.setInsuredAmount(valueBao);
+            } else if ("AMOUNT".equals(name)) {
+                valueBao = value;
+                currProduct.setInsuredAmount(valueBao);
             } else if ("INSURE".equals(name)) {
                 if (selectList != null && selectList.size() > 1) {
                     valueQi = selectList.get(1);
+                    currProduct.setGuaranteePeriod(valueQi);
                 }
             } else if ("PAY".equals(name)) {
                 if (selectList != null && selectList.size() > 1) {
                     valueNian = selectList.get(1);
+                    currProduct.setPaymentPeriod(valueNian);
                 }
             }
 
@@ -963,7 +1021,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         arrayData[0] = list1;
         arrayData[1] = list2;
         currProduct.setArrayData(arrayData);
-
+        currProduct.setProductIntroduction(bean.getTemplateContent());
 
         mAddProductAdapter.add(currProduct);
         List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();

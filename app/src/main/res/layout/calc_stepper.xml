@@ -38,6 +38,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="请输入"
+            android:maxLines="1"
+            android:singleLine="true"
             android:inputType="number"
             android:padding="10dp"
             android:textColor="@color/c_333333" />

@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,6 +179,30 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.calcLabel.setText(factorBean.getLabel());
             final String value = factorBean.getValue();
             holder.stepper.setText(value);
+            if (!TextUtils.isEmpty(value)) {
+                holder.stepper.setSelection(value.length());
+            }
+            holder.stepper.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    try {
+                        factorBean.setValue(String.valueOf(s));
+                        notifyItemChanged(position);
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
             holder.strp_reduce.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -205,7 +232,32 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == 5) {
             InputViewHolder holder = (InputViewHolder) viewHolder;
             holder.calcLabel.setText(factorBean.getLabel());
-            holder.inputE.setText(factorBean.getValue());
+            String value = factorBean.getValue();
+            holder.inputE.setText(value);
+            if (!TextUtils.isEmpty(value)) {
+                holder.inputE.setSelection(value.length());
+            }
+            holder.inputE.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    try {
+                        factorBean.setValue(String.valueOf(s));
+                        notifyItemChanged(position);
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
         }
     }
 
@@ -258,7 +310,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     static class StepperViewHolder extends RecyclerView.ViewHolder {
         private TextView calcLabel;
-        private TextView stepper;
+        private EditText stepper;
         private TextView strp_reduce;
         private TextView strp_plus;
 

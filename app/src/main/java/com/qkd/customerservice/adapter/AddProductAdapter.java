@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.ChangeIntroductionBean;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.key_library.util.DensityUtil;
 
@@ -108,6 +109,15 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
 //            holder.add_change.setVisibility(View.GONE);
 //            holder.add_change_divi.setVisibility(View.GONE);
         }
+        // 文案
+        holder.add_wenan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onProductDeleteListener != null) {
+                    onProductDeleteListener.onClickIntroduction(position, dataBean.getProductIntroduction(), userStatus);
+                }
+            }
+        });
 
         String[][] arrayData = dataBean.getArrayData();
         if (arrayData == null) {
@@ -180,8 +190,14 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
         this.onProductDeleteListener = onProductDeleteListener;
     }
 
+    public void changeIntroduction(ChangeIntroductionBean bean) {
+        this.dataList.get(bean.getPosition()).setProductIntroduction(bean.getIntroduction());
+    }
+
     public interface OnProductDeleteListener {
         void onProductDelete();
+
+        void onClickIntroduction(int position, String productIntroduction, int userStatus);
 
         void onProductChange(ProductListOutput.DataBean dataBean);
     }
@@ -191,6 +207,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
         //        private TextView add_change;
 //        private View add_change_divi;
         private TextView add_delete;
+        private TextView add_wenan;
         private TextView add_total_money;
         private LinearLayout add_linear;
 
@@ -199,6 +216,7 @@ public class AddProductAdapter extends RecyclerView.Adapter<AddProductAdapter.Ad
             add_name = itemView.findViewById(R.id.add_name);
 //            add_change = itemView.findViewById(R.id.add_change);
             add_delete = itemView.findViewById(R.id.add_delete);
+            add_wenan = itemView.findViewById(R.id.add_wenan);
             add_total_money = itemView.findViewById(R.id.add_total_money);
             add_linear = itemView.findViewById(R.id.add_linear);
 //            add_change_divi = itemView.findViewById(R.id.add_change_divi);

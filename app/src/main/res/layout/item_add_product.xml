@@ -60,6 +60,17 @@
             android:textColor="#ff597ef7"
             android:textSize="15sp" />
 
+        <TextView
+            android:id="@+id/add_wenan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="55dp"
+            android:text="文案"
+            android:textColor="#ff597ef7"
+            android:textSize="15sp" />
+
     </RelativeLayout>
 
     <TextView

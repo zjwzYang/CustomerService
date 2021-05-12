@@ -53,6 +53,7 @@ public class ProductCalcActivity extends AppCompatActivity {
 
     private String platformId;
     private String platformProductId;
+    private String templateContent;
     private RecyclerView mRecyclerView;
     private CalcAdapter mAdapter;
 
@@ -74,6 +75,7 @@ public class ProductCalcActivity extends AppCompatActivity {
         Intent intent = getIntent();
         platformId = intent.getStringExtra("platformId");
         platformProductId = intent.getStringExtra("platformProductId");
+        templateContent = intent.getStringExtra("templateContent");
 
         setTitle(intent.getStringExtra("productName") + " - 保费试算");
 
@@ -137,6 +139,7 @@ public class ProductCalcActivity extends AppCompatActivity {
                     CalcSuccessBean bean = new CalcSuccessBean();
                     bean.setPrice(String.valueOf(postCalcBean.getPrice()));
                     bean.setFactorBeans(factorBeans);
+                    bean.setTemplateContent(templateContent);
                     EventBus.getDefault().post(bean);
                     finish();
                 }

@@ -77,6 +77,15 @@ public class SaveSchemeConfigInput {
         private String firstYearPremium;
         private String paymentPeriod;
         private String guaranteePeriod;
+        private String productIntroduction;
+
+        public String getProductIntroduction() {
+            return productIntroduction;
+        }
+
+        public void setProductIntroduction(String productIntroduction) {
+            this.productIntroduction = productIntroduction;
+        }
 
         public String getInsuranceInfoId() {
             return insuranceInfoId;

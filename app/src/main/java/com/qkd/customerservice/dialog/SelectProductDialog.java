@@ -103,6 +103,9 @@ public class SelectProductDialog extends DialogFragment implements DialogProduct
             if (i != 0) {
                 temType = String.valueOf(i);
             }
+            if ("重疾".equals(zhonglei[i])) {
+                temType = "7";
+            }
 
             View view = inflater.inflate(R.layout.item_zhonglei, null);
             view.setTag(temType);

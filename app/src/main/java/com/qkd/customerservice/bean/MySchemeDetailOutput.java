@@ -544,6 +544,15 @@ public class MySchemeDetailOutput extends BaseOutput {
                 private Object companyDesc;
                 private List<ProductItemDTOListBean> productItemDTOList;
                 private List<?> productDetailDTOList;
+                private String productIntroduction;
+
+                public String getProductIntroduction() {
+                    return productIntroduction;
+                }
+
+                public void setProductIntroduction(String productIntroduction) {
+                    this.productIntroduction = productIntroduction;
+                }
 
                 public int getId() {
                     return id;
