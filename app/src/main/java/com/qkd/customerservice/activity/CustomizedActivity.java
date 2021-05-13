@@ -52,6 +52,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -209,7 +210,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                                         productList.add(product);
                                         totalMoney += Float.parseFloat(xianzhong.getFirstYearPremium());
                                     }
-                                    mTotalMoney.setText(String.valueOf(totalMoney));
+                                    mTotalMoney.setText(formatValue());
                                     applyBean.setProductList(productList);
                                 }
 
@@ -495,7 +496,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                             totalMoney += Float.parseFloat(premiumNum);
                         }
                     }
-                    mTotalMoney.setText(String.valueOf(totalMoney));
+                    mTotalMoney.setText(formatValue());
                 } catch (Exception e) {
 
                 }
@@ -1041,7 +1042,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                     totalMoney += Float.parseFloat(premiumNum);
                 }
             }
-            mTotalMoney.setText(String.valueOf(totalMoney));
+            mTotalMoney.setText(formatValue());
         } catch (Exception e) {
 
         }
@@ -1200,7 +1201,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                                 totalMoney += Float.parseFloat(premiumNum);
                             }
                         }
-                        mTotalMoney.setText(String.valueOf(totalMoney));
+                        mTotalMoney.setText(formatValue());
                     } catch (Exception e) {
 
                     }
@@ -1216,6 +1217,11 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
             }
         });
+    }
+
+    private String formatValue() {
+        DecimalFormat df = new DecimalFormat("#.00");
+        return df.format(totalMoney);
     }
 
     @Override

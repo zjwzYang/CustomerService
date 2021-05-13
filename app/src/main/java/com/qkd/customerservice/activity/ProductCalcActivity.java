@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -133,15 +134,19 @@ public class ProductCalcActivity extends AppCompatActivity {
         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).postTrialPremium(input), new BaseHttp.HttpObserver<PostTrialPremiumOutput>() {
             @Override
             public void onSuccess(PostTrialPremiumOutput output) {
-                if (!TextUtils.isEmpty(output.getData())) {
-                    Gson gson = new Gson();
-                    PostCalcBean postCalcBean = gson.fromJson(output.getData(), PostCalcBean.class);
-                    CalcSuccessBean bean = new CalcSuccessBean();
-                    bean.setPrice(String.valueOf(postCalcBean.getPrice()));
-                    bean.setFactorBeans(factorBeans);
-                    bean.setTemplateContent(templateContent);
-                    EventBus.getDefault().post(bean);
-                    finish();
+                if (output.isSuccess()) {
+                    if (!TextUtils.isEmpty(output.getData())) {
+                        Gson gson = new Gson();
+                        PostCalcBean postCalcBean = gson.fromJson(output.getData(), PostCalcBean.class);
+                        CalcSuccessBean bean = new CalcSuccessBean();
+                        bean.setPrice(String.valueOf(postCalcBean.getPrice()));
+                        bean.setFactorBeans(factorBeans);
+                        bean.setTemplateContent(templateContent);
+                        EventBus.getDefault().post(bean);
+                        finish();
+                    }
+                } else {
+                    Toast.makeText(ProductCalcActivity.this, output.getErrorMsg(), Toast.LENGTH_SHORT).show();
                 }
 
             }
