@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -29,6 +31,7 @@ import com.qkd.customerservice.bean.PostTrialPremiumInput;
 import com.qkd.customerservice.bean.PostTrialPremiumOutput;
 import com.qkd.customerservice.bean.TrialFactorBean;
 import com.qkd.customerservice.bean.TrialFactorCityBean;
+import com.qkd.customerservice.bean.TrialFactorCityStringBean;
 import com.qkd.customerservice.bean.TrialFactorFatherBean;
 import com.qkd.customerservice.bean.TrialFactorOutput;
 import com.qkd.customerservice.net.BaseHttp;
@@ -73,6 +76,7 @@ public class ProductCalcActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CalcAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         Intent intent = getIntent();
@@ -106,8 +110,22 @@ public class ProductCalcActivity extends AppCompatActivity {
                             try {
                                 TrialFactorFatherBean fatherBean = gson.fromJson(bean, TrialFactorFatherBean.class);
                                 if ("citypiker".equals(fatherBean.getWidget())) {
-                                    TrialFactorCityBean cityBean = gson.fromJson(bean, TrialFactorCityBean.class);
-                                    trialFactorBeans.add(cityBean);
+                                    try {
+                                        TrialFactorCityBean cityBean = gson.fromJson(bean, TrialFactorCityBean.class);
+                                        trialFactorBeans.add(cityBean);
+                                    } catch (Exception e) {
+                                        TrialFactorCityStringBean cityStrBean = gson.fromJson(bean, TrialFactorCityStringBean.class);
+                                        String strValue = cityStrBean.getValue();
+                                        TrialFactorCityBean.ValueDTO valueDTO = gson.fromJson(strValue, TrialFactorCityBean.ValueDTO.class);
+                                        TrialFactorCityBean cityBean = new TrialFactorCityBean();
+                                        cityBean.setWidget(cityStrBean.getWidget());
+                                        cityBean.setName(cityStrBean.getName());
+                                        cityBean.setLabel(cityStrBean.getLabel());
+                                        cityBean.setType(cityStrBean.getType());
+                                        cityBean.setValue(valueDTO);
+                                        cityBean.setDetail(cityStrBean.getDetail());
+                                        trialFactorBeans.add(cityBean);
+                                    }
                                 } else {
                                     TrialFactorBean bean1 = gson.fromJson(bean, TrialFactorBean.class);//解析
                                     String widget = bean1.getWidget();
@@ -119,10 +137,35 @@ public class ProductCalcActivity extends AppCompatActivity {
 
                             }
                         }
+                        doWithCityDetail(trialFactorBeans);
                         mAdapter.addAll(trialFactorBeans);
                         //initView(trialFactorBeans);
                     }
                 });
+    }
+
+    private void doWithCityDetail(List<TrialFactorFatherBean> beans) {
+        List<TrialFactorCityBean.DetailDTO> temDetail = new ArrayList<>();
+        for (TrialFactorFatherBean bean : beans) {
+            String widget = bean.getWidget();
+            if ("citypiker".equals(widget)) {
+                TrialFactorCityBean cityBean = (TrialFactorCityBean) bean;
+                List<TrialFactorCityBean.DetailDTO> detail = cityBean.getDetail();
+                if (detail != null && detail.size() > 0) {
+                    temDetail = detail;
+                }
+            }
+        }
+        for (TrialFactorFatherBean bean : beans) {
+            String widget = bean.getWidget();
+            if ("citypiker".equals(widget)) {
+                TrialFactorCityBean cityBean = (TrialFactorCityBean) bean;
+                List<TrialFactorCityBean.DetailDTO> detail = cityBean.getDetail();
+                if (detail == null || detail.size() == 0) {
+                    ((TrialFactorCityBean) bean).setDetail(temDetail);
+                }
+            }
+        }
     }
 
     private void productCalc() {
@@ -147,10 +190,7 @@ public class ProductCalcActivity extends AppCompatActivity {
                 TrialFactorCityBean cityBean = (TrialFactorCityBean) fatherBean;
                 String name = cityBean.getName();
                 TrialFactorCityBean.ValueDTO valueBean = cityBean.getValue();
-                if (valueBean != null && !TextUtils.isEmpty(valueBean.getValue())) {
-                    String value = valueBean.getValue();
-                    map.put(name, value);
-                }
+                map.put(name, valueBean);
             }
         }
         input.setFactorParams(map);

@@ -45,6 +45,8 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater inflater;
 
     private int oldSize = 0;
+    private int oldThreeSize = 0;
+    private int oldTwoThreeSize = 0;
 
     public CalcAdapter(Context context) {
         this.context = context;
@@ -65,6 +67,8 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if ("stepper".equals(widget)) {
             return 4;
         } else if ("input".equals(widget)) {
+            return 5;
+        } else if ("text".equals(widget)) {
             return 5;
         } else if ("citypiker".equals(widget)) {
             return 6;
@@ -290,31 +294,47 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     @Override
                     public void onClick(View v) {
                         oldSize = 0;
+                        oldThreeSize = 0;
+                        oldTwoThreeSize = 0;
                         View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_city_select, null);
                         final NumberPicker onePicker = dialogView.findViewById(R.id.sort_one_picker);
                         final NumberPicker twoPicker = dialogView.findViewById(R.id.sort_two_picker);
+                        final NumberPicker threePicker = dialogView.findViewById(R.id.sort_three_picker);
                         onePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
                         twoPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+                        threePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
                         String[] ones = new String[detail.size()];
                         for (int i = 0; i < detail.size(); i++) {
                             ones[i] = detail.get(i).getLabelX();
                         }
-                        onePicker.setWrapSelectorWheel(false);
                         onePicker.setMinValue(0);
                         onePicker.setMaxValue(detail.size() - 1);
                         onePicker.setDisplayedValues(ones);
+                        onePicker.setWrapSelectorWheel(false);
 
-                        List<TrialFactorCityBean.DetailDTO.ChildrenDTOX> oneList = detail.get(0).getChildren();
+                        final List<TrialFactorCityBean.DetailDTO.ChildrenDTOX> oneList = detail.get(0).getChildren();
                         if (oneList != null && oneList.size() != 0) {
                             String[] twos = new String[oneList.size()];
                             for (int j = 0; j < oneList.size(); j++) {
                                 twos[j] = oneList.get(j).getLabelX();
                             }
-                            twoPicker.setWrapSelectorWheel(false);
                             twoPicker.setMinValue(0);
                             twoPicker.setMaxValue(twos.length - 1);
                             twoPicker.setDisplayedValues(twos);
+                            twoPicker.setWrapSelectorWheel(false);
+
+                            List<TrialFactorCityBean.ChildrenDTO> threeList = oneList.get(0).getChildren();
+                            if (threeList != null && threeList.size() != 0) {
+                                String[] threes = new String[threeList.size()];
+                                for (int i = 0; i < threeList.size(); i++) {
+                                    threes[i] = threeList.get(i).getLabelX();
+                                }
+                                threePicker.setMinValue(0);
+                                threePicker.setMaxValue(threes.length - 1);
+                                threePicker.setDisplayedValues(threes);
+                                threePicker.setWrapSelectorWheel(false);
+                            }
                         }
                         onePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                             @Override
@@ -335,6 +355,47 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 }
                                 twoPicker.setWrapSelectorWheel(false);
                                 oldSize = twos.length;
+
+                                List<TrialFactorCityBean.ChildrenDTO> threeList = list.get(0).getChildren();
+                                if (threeList != null && threeList.size() != 0) {
+                                    String[] threes = new String[threeList.size()];
+                                    for (int r = 0; r < threeList.size(); r++) {
+                                        threes[r] = threeList.get(r).getLabelX();
+                                    }
+                                    if (threes.length > oldThreeSize) {
+                                        threePicker.setDisplayedValues(threes);
+                                        threePicker.setMinValue(0);
+                                        threePicker.setMaxValue(threes.length - 1);
+                                    } else {
+                                        threePicker.setMinValue(0);
+                                        threePicker.setMaxValue(threes.length - 1);
+                                        threePicker.setDisplayedValues(threes);
+                                    }
+                                    threePicker.setWrapSelectorWheel(false);
+                                    oldThreeSize = threes.length;
+                                }
+                            }
+                        });
+                        twoPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                int one = onePicker.getValue();
+                                List<TrialFactorCityBean.ChildrenDTO> list = detail.get(one).getChildren().get(newVal).getChildren();
+                                String[] threes = new String[list.size()];
+                                for (int r = 0; r < list.size(); r++) {
+                                    threes[r] = list.get(r).getLabelX();
+                                }
+                                if (threes.length > oldTwoThreeSize) {
+                                    threePicker.setDisplayedValues(threes);
+                                    threePicker.setMinValue(0);
+                                    threePicker.setMaxValue(threes.length - 1);
+                                } else {
+                                    threePicker.setMinValue(0);
+                                    threePicker.setMaxValue(threes.length - 1);
+                                    threePicker.setDisplayedValues(threes);
+                                }
+                                threePicker.setWrapSelectorWheel(false);
+                                oldTwoThreeSize = threes.length;
                             }
                         });
                         AlertDialog.Builder builder = new AlertDialog.Builder(context).setView(dialogView)
@@ -343,14 +404,31 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         int one = onePicker.getValue();
                                         int two = twoPicker.getValue();
+                                        int three = threePicker.getValue();
                                         TrialFactorCityBean.DetailDTO bean = detail.get(one);
                                         TrialFactorCityBean.DetailDTO.ChildrenDTOX childrenDTOX = bean.getChildren().get(two);
+                                        TrialFactorCityBean.ChildrenDTO childrenDTO = childrenDTOX.getChildren().get(three);
                                         TrialFactorCityBean.ValueDTO valueDTO = new TrialFactorCityBean.ValueDTO();
-                                        valueDTO.setLabelX(childrenDTOX.getLabelX());
-                                        valueDTO.setValue(childrenDTOX.getValue());
-                                        valueDTO.setParents(childrenDTOX.getChildren());
+                                        valueDTO.setLabelX(childrenDTO.getLabelX());
+                                        valueDTO.setValue(childrenDTO.getValue());
+
+                                        List<TrialFactorCityBean.ChildrenDTO> parents = new ArrayList<>();
+                                        String parent1Label = childrenDTOX.getLabelX();
+                                        String parent1Value = childrenDTOX.getValue();
+                                        TrialFactorCityBean.ChildrenDTO parent1 = new TrialFactorCityBean.ChildrenDTO();
+                                        parent1.setLabelX(parent1Label);
+                                        parent1.setValue(parent1Value);
+                                        parents.add(parent1);
+                                        String parent2Label = bean.getLabelX();
+                                        String parent2Value = bean.getValue();
+                                        TrialFactorCityBean.ChildrenDTO parent2 = new TrialFactorCityBean.ChildrenDTO();
+                                        parent2.setLabelX(parent2Label);
+                                        parent2.setValue(parent2Value);
+                                        parents.add(parent2);
+                                        valueDTO.setParents(parents);
+
                                         cityBean.setValue(valueDTO);
-                                        notifyDataSetChanged();
+                                        notifyItemChanged(position);
                                     }
                                 }).setNegativeButton("取消", null);
                         builder.show();

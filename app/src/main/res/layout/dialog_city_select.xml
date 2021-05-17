@@ -25,6 +25,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
+        <NumberPicker
+            android:id="@+id/sort_three_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
     </LinearLayout>
 
 </FrameLayout>
