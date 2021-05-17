@@ -10,7 +10,7 @@ import java.util.List;
  * @org 浙江趣看点科技有限公司
  */
 public class CalcSuccessBean {
-    private List<TrialFactorBean> factorBeans;
+    private List<TrialFactorFatherBean> factorBeans;
     private String price;
     private String templateContent;
 
@@ -22,11 +22,11 @@ public class CalcSuccessBean {
         this.templateContent = templateContent;
     }
 
-    public List<TrialFactorBean> getFactorBeans() {
+    public List<TrialFactorFatherBean> getFactorBeans() {
         return factorBeans;
     }
 
-    public void setFactorBeans(List<TrialFactorBean> factorBeans) {
+    public void setFactorBeans(List<TrialFactorFatherBean> factorBeans) {
         this.factorBeans = factorBeans;
     }
 

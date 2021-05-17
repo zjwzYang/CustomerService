@@ -40,6 +40,7 @@ import com.qkd.customerservice.bean.SaveSchemeConfigInput;
 import com.qkd.customerservice.bean.SchemeConfigOutput;
 import com.qkd.customerservice.bean.SchemeCustomizeInfo;
 import com.qkd.customerservice.bean.TrialFactorBean;
+import com.qkd.customerservice.bean.TrialFactorFatherBean;
 import com.qkd.customerservice.dialog.InputDialog;
 import com.qkd.customerservice.dialog.IntroductionDialog;
 import com.qkd.customerservice.dialog.ProductInputDialog;
@@ -974,77 +975,59 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
         String valueQi = "--";
         String valueNian = "--";
 
-        List<TrialFactorBean> factorBeans = bean.getFactorBeans();
-        for (TrialFactorBean factorBean : factorBeans) {
-            String name = factorBean.getName();
-            String value = factorBean.getValue();
-            List<String> selectList = factorBean.getSelectList();
-            if ("PRE".equals(name)) {
-                valueBao = value;
-                currProduct.setInsuredAmount(valueBao);
-            } else if ("AMOUNT".equals(name)) {
-                valueBao = value;
-                currProduct.setInsuredAmount(valueBao);
-            } else if ("INSURE".equals(name)) {
-                if (selectList != null && selectList.size() > 1) {
-                    valueQi = selectList.get(1);
-                    currProduct.setGuaranteePeriod(valueQi);
-                }
-            } else if ("PAY".equals(name)) {
-                if (selectList != null && selectList.size() > 1) {
-                    valueNian = selectList.get(1);
-                    currProduct.setPaymentPeriod(valueNian);
-                }
-            }
-
-
-//            String fieldName = config.getFieldName();
-//            List<PremiumConfigOutput.DataBean.ConfigBean.DictListBean> dictList = config.getDictList();
-//            String showValue = "";
-//            for (PremiumConfigOutput.DataBean.ConfigBean.DictListBean bean : dictList) {
-//                if (bean.isSelect()) {
-//                    showValue = bean.getShowValue();
-//                    break;
-//                }
-//            }
-//            if ("param2".equals(fieldName)) {
-//                valueBao = showValue;
-//                currProduct.setInsuredAmount(showValue);
-//            } else if ("param5".equals(fieldName)) {
-//                valueQi = showValue;
-//                currProduct.setGuaranteePeriod(showValue);
-//            } else if ("param3".equals(fieldName)) {
-//                valueNian = showValue;
-//                currProduct.setPaymentPeriod(showValue);
-//            }
-        }
-        String[] list2 = {currProduct.getProductName(), valueBao, valueQi, valueNian, bean.getPrice()};
-        arrayData[0] = list1;
-        arrayData[1] = list2;
-        currProduct.setArrayData(arrayData);
-        currProduct.setProductIntroduction(bean.getTemplateContent());
-
-        mAddProductAdapter.add(currProduct);
-        List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();
-        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
-        applyPersonList.get(selcetIndex).setProductList(allProduct);
-        selectPerson.setProductList(allProduct);
-
-        try {
-            totalMoney = 0f;
-            for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
-                List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
-                if (productList == null) {
-                    continue;
-                }
-                for (ProductListOutput.DataBean selectP : productList) {
-                    String premiumNum = selectP.getPremiumNum();
-                    totalMoney += Float.parseFloat(premiumNum);
+        List<TrialFactorFatherBean> fatherBeans = bean.getFactorBeans();
+        for (TrialFactorFatherBean fatherBean : fatherBeans) {
+            if (fatherBean instanceof TrialFactorBean) {
+                TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
+                String name = factorBean.getName();
+                String value = factorBean.getValue();
+                List<String> selectList = factorBean.getSelectList();
+                if ("PRE".equals(name)) {
+                    valueBao = value;
+                    currProduct.setInsuredAmount(valueBao);
+                } else if ("AMOUNT".equals(name)) {
+                    valueBao = value;
+                    currProduct.setInsuredAmount(valueBao);
+                } else if ("INSURE".equals(name)) {
+                    if (selectList != null && selectList.size() > 1) {
+                        valueQi = selectList.get(1);
+                        currProduct.setGuaranteePeriod(valueQi);
+                    }
+                } else if ("PAY".equals(name)) {
+                    if (selectList != null && selectList.size() > 1) {
+                        valueNian = selectList.get(1);
+                        currProduct.setPaymentPeriod(valueNian);
+                    }
                 }
             }
-            mTotalMoney.setText(formatValue());
-        } catch (Exception e) {
+            String[] list2 = {currProduct.getProductName(), valueBao, valueQi, valueNian, bean.getPrice()};
+            arrayData[0] = list1;
+            arrayData[1] = list2;
+            currProduct.setArrayData(arrayData);
+            currProduct.setProductIntroduction(bean.getTemplateContent());
 
+            mAddProductAdapter.add(currProduct);
+            List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();
+            List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
+            applyPersonList.get(selcetIndex).setProductList(allProduct);
+            selectPerson.setProductList(allProduct);
+
+            try {
+                totalMoney = 0f;
+                for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
+                    List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
+                    if (productList == null) {
+                        continue;
+                    }
+                    for (ProductListOutput.DataBean selectP : productList) {
+                        String premiumNum = selectP.getPremiumNum();
+                        totalMoney += Float.parseFloat(premiumNum);
+                    }
+                }
+                mTotalMoney.setText(formatValue());
+            } catch (Exception e) {
+
+            }
         }
     }
 

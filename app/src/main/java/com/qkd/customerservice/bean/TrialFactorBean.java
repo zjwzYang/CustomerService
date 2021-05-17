@@ -11,15 +11,7 @@ import java.util.List;
  * @author yj
  * @org 浙江趣看点科技有限公司
  */
-public class TrialFactorBean {
-    @SerializedName("widget")
-    private String widget;
-    @SerializedName("name")
-    private String name;
-    @SerializedName("label")
-    private String label;
-    @SerializedName("type")
-    private String type;
+public class TrialFactorBean extends TrialFactorFatherBean {
     @SerializedName("value")
     private String value;
     @SerializedName("detail")
@@ -32,38 +24,6 @@ public class TrialFactorBean {
 
     public void setSelectList(List<String> selectList) {
         this.selectList = selectList;
-    }
-
-    public String getWidget() {
-        return widget;
-    }
-
-    public void setWidget(String widget) {
-        this.widget = widget;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getValue() {

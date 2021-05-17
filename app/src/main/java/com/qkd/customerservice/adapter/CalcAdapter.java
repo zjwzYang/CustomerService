@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.TrialFactorBean;
+import com.qkd.customerservice.bean.TrialFactorCityBean;
+import com.qkd.customerservice.bean.TrialFactorFatherBean;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,8 +41,10 @@ import java.util.List;
 public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private List<TrialFactorBean> trialFactorBeans;
+    private List<TrialFactorFatherBean> trialFactorBeans;
     private LayoutInflater inflater;
+
+    private int oldSize = 0;
 
     public CalcAdapter(Context context) {
         this.context = context;
@@ -47,7 +54,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        TrialFactorBean bean = trialFactorBeans.get(position);
+        TrialFactorFatherBean bean = trialFactorBeans.get(position);
         String widget = bean.getWidget();
         if ("radio".equals(widget)) {
             return 1;
@@ -59,6 +66,8 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return 4;
         } else if ("input".equals(widget)) {
             return 5;
+        } else if ("citypiker".equals(widget)) {
+            return 6;
         } else {
             return 0;
         }
@@ -82,6 +91,9 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == 5) {
             View view = inflater.inflate(R.layout.calc_input, parent, false);
             return new InputViewHolder(view);
+        } else if (viewType == 6) {
+            View view = inflater.inflate(R.layout.calc_citypiker, parent, false);
+            return new CityViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.calc_stepper, parent, false);
             return new StepperViewHolder(view);
@@ -90,9 +102,10 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
-        final TrialFactorBean factorBean = trialFactorBeans.get(position);
+        final TrialFactorFatherBean fatherBean = trialFactorBeans.get(position);
         int viewType = getItemViewType(position);
         if (viewType == 1) {
+            final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
             RadioViewHolder holder = (RadioViewHolder) viewHolder;
             holder.rLabel.setText(factorBean.getLabel());
             List<List<String>> detail = factorBean.getDetail();
@@ -121,6 +134,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.radioLinear.addView(view);
             }
         } else if (viewType == 2) {
+            final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
             SelectViewHolder holder = (SelectViewHolder) viewHolder;
             holder.sLabel.setText(factorBean.getLabel());
             final List<List<String>> selectDetails = factorBean.getDetail();
@@ -154,6 +168,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             }
         } else if (viewType == 3) {
+            final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
             DatepickerViewHolder holder = (DatepickerViewHolder) viewHolder;
             holder.calcLabel.setText(factorBean.getLabel());
             holder.calcPicker.setText(factorBean.getValue());
@@ -175,6 +190,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         } else if (viewType == 4) {
+            final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
             final StepperViewHolder holder = (StepperViewHolder) viewHolder;
             holder.calcLabel.setText(factorBean.getLabel());
             final String value = factorBean.getValue();
@@ -230,6 +246,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         } else if (viewType == 5) {
+            final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
             InputViewHolder holder = (InputViewHolder) viewHolder;
             holder.calcLabel.setText(factorBean.getLabel());
             String value = factorBean.getValue();
@@ -258,6 +275,88 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
+        } else if (viewType == 6) {
+            final TrialFactorCityBean cityBean = (TrialFactorCityBean) fatherBean;
+            CityViewHolder holder = (CityViewHolder) viewHolder;
+
+            holder.calcLabel.setText(cityBean.getLabel());
+            final TrialFactorCityBean.ValueDTO value = cityBean.getValue();
+            if (value != null) {
+                holder.selectDate.setText(value.getLabelX());
+            }
+            final List<TrialFactorCityBean.DetailDTO> detail = cityBean.getDetail();
+            if (detail != null && detail.size() > 0) {
+                holder.selectDate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        oldSize = 0;
+                        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_city_select, null);
+                        final NumberPicker onePicker = dialogView.findViewById(R.id.sort_one_picker);
+                        final NumberPicker twoPicker = dialogView.findViewById(R.id.sort_two_picker);
+                        onePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+                        twoPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+                        String[] ones = new String[detail.size()];
+                        for (int i = 0; i < detail.size(); i++) {
+                            ones[i] = detail.get(i).getLabelX();
+                        }
+                        onePicker.setWrapSelectorWheel(false);
+                        onePicker.setMinValue(0);
+                        onePicker.setMaxValue(detail.size() - 1);
+                        onePicker.setDisplayedValues(ones);
+
+                        List<TrialFactorCityBean.DetailDTO.ChildrenDTOX> oneList = detail.get(0).getChildren();
+                        if (oneList != null && oneList.size() != 0) {
+                            String[] twos = new String[oneList.size()];
+                            for (int j = 0; j < oneList.size(); j++) {
+                                twos[j] = oneList.get(j).getLabelX();
+                            }
+                            twoPicker.setWrapSelectorWheel(false);
+                            twoPicker.setMinValue(0);
+                            twoPicker.setMaxValue(twos.length - 1);
+                            twoPicker.setDisplayedValues(twos);
+                        }
+                        onePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker numberPicker, int i, int newVal) {
+                                List<TrialFactorCityBean.DetailDTO.ChildrenDTOX> list = detail.get(newVal).getChildren();
+                                String[] twos = new String[list.size()];
+                                for (int j = 0; j < list.size(); j++) {
+                                    twos[j] = list.get(j).getLabelX();
+                                }
+                                if (twos.length > oldSize) {
+                                    twoPicker.setDisplayedValues(twos);
+                                    twoPicker.setMinValue(0);
+                                    twoPicker.setMaxValue(twos.length - 1);
+                                } else {
+                                    twoPicker.setMinValue(0);
+                                    twoPicker.setMaxValue(twos.length - 1);
+                                    twoPicker.setDisplayedValues(twos);
+                                }
+                                twoPicker.setWrapSelectorWheel(false);
+                                oldSize = twos.length;
+                            }
+                        });
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context).setView(dialogView)
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        int one = onePicker.getValue();
+                                        int two = twoPicker.getValue();
+                                        TrialFactorCityBean.DetailDTO bean = detail.get(one);
+                                        TrialFactorCityBean.DetailDTO.ChildrenDTOX childrenDTOX = bean.getChildren().get(two);
+                                        TrialFactorCityBean.ValueDTO valueDTO = new TrialFactorCityBean.ValueDTO();
+                                        valueDTO.setLabelX(childrenDTOX.getLabelX());
+                                        valueDTO.setValue(childrenDTOX.getValue());
+                                        valueDTO.setParents(childrenDTOX.getChildren());
+                                        cityBean.setValue(valueDTO);
+                                        notifyDataSetChanged();
+                                    }
+                                }).setNegativeButton("取消", null);
+                        builder.show();
+                    }
+                });
+            }
         }
     }
 
@@ -266,12 +365,12 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return trialFactorBeans.size();
     }
 
-    public void addAll(List<TrialFactorBean> trialFactorBeans) {
+    public void addAll(List<TrialFactorFatherBean> trialFactorBeans) {
         this.trialFactorBeans.addAll(trialFactorBeans);
         notifyDataSetChanged();
     }
 
-    public List<TrialFactorBean> getAll() {
+    public List<TrialFactorFatherBean> getAll() {
         return this.trialFactorBeans;
     }
 
@@ -331,6 +430,17 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             calcLabel = itemView.findViewById(R.id.calc_label);
             inputE = itemView.findViewById(R.id.date_input);
+        }
+    }
+
+    static class CityViewHolder extends RecyclerView.ViewHolder {
+        private TextView calcLabel;
+        private TextView selectDate;
+
+        public CityViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
+            calcLabel = itemView.findViewById(R.id.calc_label);
+            selectDate = itemView.findViewById(R.id.date_select);
         }
     }
 }

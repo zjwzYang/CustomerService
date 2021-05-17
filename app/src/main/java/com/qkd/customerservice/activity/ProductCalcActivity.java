@@ -28,6 +28,8 @@ import com.qkd.customerservice.bean.PostCalcBean;
 import com.qkd.customerservice.bean.PostTrialPremiumInput;
 import com.qkd.customerservice.bean.PostTrialPremiumOutput;
 import com.qkd.customerservice.bean.TrialFactorBean;
+import com.qkd.customerservice.bean.TrialFactorCityBean;
+import com.qkd.customerservice.bean.TrialFactorFatherBean;
 import com.qkd.customerservice.bean.TrialFactorOutput;
 import com.qkd.customerservice.net.BaseHttp;
 
@@ -99,12 +101,22 @@ public class ProductCalcActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
                         JsonArray jsonElements = jsonParser.parse(output.getData()).getAsJsonArray();//获取JsonArray对象
-                        List<TrialFactorBean> trialFactorBeans = new ArrayList<>();
+                        List<TrialFactorFatherBean> trialFactorBeans = new ArrayList<>();
                         for (JsonElement bean : jsonElements) {
-                            TrialFactorBean bean1 = gson.fromJson(bean, TrialFactorBean.class);//解析
-                            String widget = bean1.getWidget();
-                            if (!"hidden".equals(widget) && !"cash".equals(widget)) {
-                                trialFactorBeans.add(bean1);
+                            try {
+                                TrialFactorFatherBean fatherBean = gson.fromJson(bean, TrialFactorFatherBean.class);
+                                if ("citypiker".equals(fatherBean.getWidget())) {
+                                    TrialFactorCityBean cityBean = gson.fromJson(bean, TrialFactorCityBean.class);
+                                    trialFactorBeans.add(cityBean);
+                                } else {
+                                    TrialFactorBean bean1 = gson.fromJson(bean, TrialFactorBean.class);//解析
+                                    String widget = bean1.getWidget();
+                                    if (!"hidden".equals(widget) && !"cash".equals(widget)) {
+                                        trialFactorBeans.add(bean1);
+                                    }
+                                }
+                            } catch (Exception e) {
+
                             }
                         }
                         mAdapter.addAll(trialFactorBeans);
@@ -118,16 +130,27 @@ public class ProductCalcActivity extends AppCompatActivity {
         input.setPlatformId(platformId);
         input.setProductId(platformProductId);
         Map<String, Object> map = new HashMap<>();
-        final List<TrialFactorBean> factorBeans = mAdapter.getAll();
-        for (TrialFactorBean factorBean : factorBeans) {
-            String value = factorBean.getValue();
-            String name = factorBean.getName();
-            String label = factorBean.getLabel();
-            if (TextUtils.isEmpty(value)) {
+        final List<TrialFactorFatherBean> fatherBeans = mAdapter.getAll();
+        for (TrialFactorFatherBean fatherBean : fatherBeans) {
+            if (fatherBean instanceof TrialFactorBean) {
+                TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
+                String value = factorBean.getValue();
+                String name = factorBean.getName();
+                String label = factorBean.getLabel();
+                if (TextUtils.isEmpty(value)) {
 //                Toast.makeText(this, "请选择" + label, Toast.LENGTH_SHORT).show();
 //                return;
-            } else {
-                map.put(name, value);
+                } else {
+                    map.put(name, value);
+                }
+            } else if (fatherBean instanceof TrialFactorCityBean) {
+                TrialFactorCityBean cityBean = (TrialFactorCityBean) fatherBean;
+                String name = cityBean.getName();
+                TrialFactorCityBean.ValueDTO valueBean = cityBean.getValue();
+                if (valueBean != null && !TextUtils.isEmpty(valueBean.getValue())) {
+                    String value = valueBean.getValue();
+                    map.put(name, value);
+                }
             }
         }
         input.setFactorParams(map);
@@ -140,7 +163,7 @@ public class ProductCalcActivity extends AppCompatActivity {
                         PostCalcBean postCalcBean = gson.fromJson(output.getData(), PostCalcBean.class);
                         CalcSuccessBean bean = new CalcSuccessBean();
                         bean.setPrice(String.valueOf(postCalcBean.getPrice()));
-                        bean.setFactorBeans(factorBeans);
+                        bean.setFactorBeans(fatherBeans);
                         bean.setTemplateContent(templateContent);
                         EventBus.getDefault().post(bean);
                         finish();
