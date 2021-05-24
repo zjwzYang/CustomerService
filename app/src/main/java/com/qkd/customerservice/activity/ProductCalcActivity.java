@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -76,7 +74,7 @@ public class ProductCalcActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CalcAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        // mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         Intent intent = getIntent();
@@ -132,6 +130,9 @@ public class ProductCalcActivity extends AppCompatActivity {
                                     if (!"hidden".equals(widget) && !"cash".equals(widget)) {
                                         trialFactorBeans.add(bean1);
                                     }
+                                    if ("A_EXEMPT".equals(bean1.getName())) {
+                                        mAdapter.setA_EXEMPT_VALUE(bean1.getValue());
+                                    }
                                 }
                             } catch (Exception e) {
 
@@ -174,17 +175,26 @@ public class ProductCalcActivity extends AppCompatActivity {
         input.setProductId(platformProductId);
         Map<String, Object> map = new HashMap<>();
         final List<TrialFactorFatherBean> fatherBeans = mAdapter.getAll();
+        String a_exempt_value = mAdapter.getA_EXEMPT_VALUE();
         for (TrialFactorFatherBean fatherBean : fatherBeans) {
             if (fatherBean instanceof TrialFactorBean) {
                 TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
                 String value = factorBean.getValue();
                 String name = factorBean.getName();
-                String label = factorBean.getLabel();
+
                 if (TextUtils.isEmpty(value)) {
-//                Toast.makeText(this, "请选择" + label, Toast.LENGTH_SHORT).show();
-//                return;
                 } else {
-                    map.put(name, value);
+                    if ("N".equals(a_exempt_value)) {
+                        if ("A_EXEMPT".equals(name)) {
+                            map.put(name, value);
+                        } else if (name.startsWith("A_")) {
+
+                        } else {
+                            map.put(name, value);
+                        }
+                    } else {
+                        map.put(name, value);
+                    }
                 }
             } else if (fatherBean instanceof TrialFactorCityBean) {
                 TrialFactorCityBean cityBean = (TrialFactorCityBean) fatherBean;

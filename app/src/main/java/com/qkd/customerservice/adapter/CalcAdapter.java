@@ -43,6 +43,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<TrialFactorFatherBean> trialFactorBeans;
     private LayoutInflater inflater;
+    private String A_EXEMPT_VALUE;
 
     private int oldSize = 0;
     private int oldThreeSize = 0;
@@ -52,6 +53,10 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.context = context;
         this.trialFactorBeans = new ArrayList<>();
         inflater = LayoutInflater.from(context);
+    }
+
+    public void setA_EXEMPT_VALUE(String a_EXEMPT_VALUE) {
+        A_EXEMPT_VALUE = a_EXEMPT_VALUE;
     }
 
     @Override
@@ -107,6 +112,21 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
         final TrialFactorFatherBean fatherBean = trialFactorBeans.get(position);
+
+        String name = fatherBean.getName();
+        if ("N".equals(A_EXEMPT_VALUE)) {
+            if (TextUtils.isEmpty(name)) {
+                viewHolder.itemView.setVisibility(View.VISIBLE);
+            } else if ("A_EXEMPT".equals(name)) {
+                viewHolder.itemView.setVisibility(View.VISIBLE);
+            } else if (name.startsWith("A_")) {
+                viewHolder.itemView.setVisibility(View.GONE);
+            } else {
+                viewHolder.itemView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            viewHolder.itemView.setVisibility(View.VISIBLE);
+        }
         int viewType = getItemViewType(position);
         if (viewType == 1) {
             final TrialFactorBean factorBean = (TrialFactorBean) fatherBean;
@@ -132,7 +152,12 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     public void onClick(View v) {
                         factorBean.setValue(dItem.get(0));
                         factorBean.setSelectList(dItem);
-                        notifyItemChanged(position);
+                        if ("A_EXEMPT".equals(factorBean.getName())) {
+                            A_EXEMPT_VALUE = dItem.get(0);
+                            notifyDataSetChanged();
+                        } else {
+                            notifyItemChanged(position);
+                        }
                     }
                 });
                 holder.radioLinear.addView(view);
@@ -450,6 +475,10 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public List<TrialFactorFatherBean> getAll() {
         return this.trialFactorBeans;
+    }
+
+    public String getA_EXEMPT_VALUE() {
+        return A_EXEMPT_VALUE;
     }
 
     static class RadioViewHolder extends RecyclerView.ViewHolder {

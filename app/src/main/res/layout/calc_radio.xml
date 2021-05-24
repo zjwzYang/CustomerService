@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/calc_label"
-        android:layout_width="0dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textColor="@color/c_333333" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/calc_radio"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_weight="2"
-        app:flexDirection="row"
-        app:flexWrap="wrap"
-        app:justifyContent="flex_end" />
+        <TextView
+            android:id="@+id/calc_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/c_333333" />
 
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/calc_radio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_weight="2"
+            app:flexDirection="row"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_end" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/divi_color" />
 </LinearLayout>
