@@ -113,6 +113,7 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
         final TrialFactorFatherBean fatherBean = trialFactorBeans.get(position);
 
+        String widget = fatherBean.getWidget();
         String name = fatherBean.getName();
         if ("N".equals(A_EXEMPT_VALUE)) {
             if (TextUtils.isEmpty(name)) {
@@ -121,11 +122,17 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder.itemView.setVisibility(View.VISIBLE);
             } else if (name.startsWith("A_")) {
                 viewHolder.itemView.setVisibility(View.GONE);
+            } else if ("hidden".equals(widget)) {
+                viewHolder.itemView.setVisibility(View.GONE);
             } else {
                 viewHolder.itemView.setVisibility(View.VISIBLE);
             }
         } else {
-            viewHolder.itemView.setVisibility(View.VISIBLE);
+            if ("hidden".equals(widget)) {
+                viewHolder.itemView.setVisibility(View.GONE);
+            } else {
+                viewHolder.itemView.setVisibility(View.VISIBLE);
+            }
         }
         int viewType = getItemViewType(position);
         if (viewType == 1) {

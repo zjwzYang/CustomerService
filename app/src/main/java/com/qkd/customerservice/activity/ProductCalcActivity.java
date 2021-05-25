@@ -127,7 +127,7 @@ public class ProductCalcActivity extends AppCompatActivity {
                                 } else {
                                     TrialFactorBean bean1 = gson.fromJson(bean, TrialFactorBean.class);//解析
                                     String widget = bean1.getWidget();
-                                    if (!"hidden".equals(widget) && !"cash".equals(widget)) {
+                                    if (!"cash".equals(widget)) {
                                         trialFactorBeans.add(bean1);
                                     }
                                     if ("A_EXEMPT".equals(bean1.getName())) {
