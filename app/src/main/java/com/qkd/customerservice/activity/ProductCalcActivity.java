@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ import com.qkd.customerservice.bean.TrialFactorCityBean;
 import com.qkd.customerservice.bean.TrialFactorCityStringBean;
 import com.qkd.customerservice.bean.TrialFactorFatherBean;
 import com.qkd.customerservice.bean.TrialFactorOutput;
+import com.qkd.customerservice.bean.TrialOccupationBean;
+import com.qkd.customerservice.bean.TrialOccupationStringBean;
 import com.qkd.customerservice.net.BaseHttp;
 
 import org.greenrobot.eventbus.EventBus;
@@ -72,7 +75,7 @@ public class ProductCalcActivity extends AppCompatActivity {
         }
         mRecyclerView = findViewById(R.id.calc_recy);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new CalcAdapter(this);
+        mAdapter = new CalcAdapter(this, getSupportFragmentManager());
         mRecyclerView.setAdapter(mAdapter);
         // mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -124,6 +127,23 @@ public class ProductCalcActivity extends AppCompatActivity {
                                         cityBean.setDetail(cityStrBean.getDetail());
                                         trialFactorBeans.add(cityBean);
                                     }
+                                } else if ("occupationpicker".equals(fatherBean.getWidget())) {
+                                    try {
+                                        TrialOccupationBean trialOccupationBean = gson.fromJson(bean, TrialOccupationBean.class);
+                                        trialFactorBeans.add(trialOccupationBean);
+                                    } catch (Exception e) {
+                                        TrialOccupationStringBean trialOccupationStringBean = gson.fromJson(bean, TrialOccupationStringBean.class);
+                                        String value = trialOccupationStringBean.getValue();
+                                        TrialOccupationBean.ValueBean valueBean = gson.fromJson(value, TrialOccupationBean.ValueBean.class);
+                                        TrialOccupationBean occupationBean = new TrialOccupationBean();
+                                        occupationBean.setWidget(trialOccupationStringBean.getWidget());
+                                        occupationBean.setName(trialOccupationStringBean.getName());
+                                        occupationBean.setLabel(trialOccupationStringBean.getLabel());
+                                        occupationBean.setType(trialOccupationStringBean.getType());
+                                        occupationBean.setValue(valueBean);
+                                        occupationBean.setDetail(trialOccupationStringBean.getDetail());
+                                        trialFactorBeans.add(occupationBean);
+                                    }
                                 } else {
                                     TrialFactorBean bean1 = gson.fromJson(bean, TrialFactorBean.class);//解析
                                     String widget = bean1.getWidget();
@@ -135,7 +155,7 @@ public class ProductCalcActivity extends AppCompatActivity {
                                     }
                                 }
                             } catch (Exception e) {
-
+                                Log.i("12345678", "getItemViewType: " + e.getMessage());
                             }
                         }
                         doWithCityDetail(trialFactorBeans);
@@ -200,6 +220,11 @@ public class ProductCalcActivity extends AppCompatActivity {
                 TrialFactorCityBean cityBean = (TrialFactorCityBean) fatherBean;
                 String name = cityBean.getName();
                 TrialFactorCityBean.ValueDTO valueBean = cityBean.getValue();
+                map.put(name, valueBean);
+            } else if (fatherBean instanceof TrialOccupationBean) {
+                TrialOccupationBean occBean = (TrialOccupationBean) fatherBean;
+                String name = occBean.getName();
+                TrialOccupationBean.ValueBean valueBean = occBean.getValue();
                 map.put(name, valueBean);
             }
         }

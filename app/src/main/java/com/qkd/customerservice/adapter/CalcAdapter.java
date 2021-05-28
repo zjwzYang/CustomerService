@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.flexbox.FlexboxLayout;
@@ -24,6 +27,8 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.TrialFactorBean;
 import com.qkd.customerservice.bean.TrialFactorCityBean;
 import com.qkd.customerservice.bean.TrialFactorFatherBean;
+import com.qkd.customerservice.bean.TrialOccupationBean;
+import com.qkd.customerservice.dialog.OccupationpickerDialog;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +46,7 @@ import java.util.List;
 public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
+    private FragmentManager mFragmentManager;
     private List<TrialFactorFatherBean> trialFactorBeans;
     private LayoutInflater inflater;
     private String A_EXEMPT_VALUE;
@@ -49,8 +55,9 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int oldThreeSize = 0;
     private int oldTwoThreeSize = 0;
 
-    public CalcAdapter(Context context) {
+    public CalcAdapter(Context context, FragmentManager fragmentManager) {
         this.context = context;
+        this.mFragmentManager = fragmentManager;
         this.trialFactorBeans = new ArrayList<>();
         inflater = LayoutInflater.from(context);
     }
@@ -77,6 +84,8 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return 5;
         } else if ("citypiker".equals(widget)) {
             return 6;
+        } else if ("occupationpicker".equals(widget)) {
+            return 7;
         } else {
             return 0;
         }
@@ -103,9 +112,12 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == 6) {
             View view = inflater.inflate(R.layout.calc_citypiker, parent, false);
             return new CityViewHolder(view);
+        } else if (viewType == 7) {
+            View view = inflater.inflate(R.layout.calc_occupationpicker, parent, false);
+            return new OccupationViewHolder(view);
         } else {
-            View view = inflater.inflate(R.layout.calc_stepper, parent, false);
-            return new StepperViewHolder(view);
+            View view = inflater.inflate(R.layout.calc_hidden, parent, false);
+            return new HiddenViewHolder(view);
         }
     }
 
@@ -119,7 +131,11 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (TextUtils.isEmpty(name)) {
                 viewHolder.itemView.setVisibility(View.VISIBLE);
             } else if ("A_EXEMPT".equals(name)) {
-                viewHolder.itemView.setVisibility(View.VISIBLE);
+                if ("hidden".equals(widget)) {
+                    viewHolder.itemView.setVisibility(View.GONE);
+                } else {
+                    viewHolder.itemView.setVisibility(View.VISIBLE);
+                }
             } else if (name.startsWith("A_")) {
                 viewHolder.itemView.setVisibility(View.GONE);
             } else if ("hidden".equals(widget)) {
@@ -467,6 +483,31 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 });
             }
+        } else if (viewType == 7) {
+            OccupationViewHolder holder = (OccupationViewHolder) viewHolder;
+            final TrialOccupationBean occupationBean = (TrialOccupationBean) fatherBean;
+            holder.calcLabel.setText(occupationBean.getLabel());
+            holder.selectOccupation.setText(occupationBean.getValue().getLabel());
+            holder.selectOccupation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<TrialOccupationBean.DetailDTO> detail = occupationBean.getDetail();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("detailList", (ArrayList<? extends Parcelable>) detail);
+                    OccupationpickerDialog dialog = new OccupationpickerDialog();
+                    dialog.setArguments(bundle);
+                    dialog.setOnSelectOccpationListener(new OccupationpickerDialog.OnSelectOccpationListener() {
+                        @Override
+                        public void selectOccpation(TrialOccupationBean.ValueBean valueBean) {
+                            occupationBean.setValue(valueBean);
+                            notifyItemChanged(position);
+                        }
+                    });
+                    dialog.show(mFragmentManager, "OccupationpickerDialog");
+                }
+            });
+        } else {
+
         }
     }
 
@@ -555,6 +596,23 @@ public class CalcAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             calcLabel = itemView.findViewById(R.id.calc_label);
             selectDate = itemView.findViewById(R.id.date_select);
+        }
+    }
+
+    static class OccupationViewHolder extends RecyclerView.ViewHolder {
+        private TextView calcLabel;
+        private TextView selectOccupation;
+
+        public OccupationViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
+            calcLabel = itemView.findViewById(R.id.calc_label);
+            selectOccupation = itemView.findViewById(R.id.occupation_select);
+        }
+    }
+
+    static class HiddenViewHolder extends RecyclerView.ViewHolder {
+        public HiddenViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
         }
     }
 }

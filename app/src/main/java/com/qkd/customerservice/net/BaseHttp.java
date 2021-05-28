@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -120,6 +121,8 @@ public class BaseHttp {
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
         // OkHttp进行添加拦截器loggingInterceptor
         httpClientBuilder.addInterceptor(loggingInterceptor);
+        httpClientBuilder.readTimeout(3, TimeUnit.MINUTES)
+                .connectTimeout(3, TimeUnit.MINUTES).writeTimeout(3, TimeUnit.MINUTES);
 
         SharedPreferences userSp = MyApp.getInstance().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE);
         final String token = userSp.getString(Constant.USER_TOKEN, "");
