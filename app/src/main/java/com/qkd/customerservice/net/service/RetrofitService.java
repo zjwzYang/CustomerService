@@ -17,7 +17,9 @@ import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.PostTrialPremiumInput;
 import com.qkd.customerservice.bean.PostTrialPremiumOutput;
+import com.qkd.customerservice.bean.PostTrialPremiumTwoInput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
+import com.qkd.customerservice.bean.PrialPremiumTwoOutput;
 import com.qkd.customerservice.bean.ProductListOutput;
 import com.qkd.customerservice.bean.ProductOutput;
 import com.qkd.customerservice.bean.QrCodeOutput;
@@ -197,4 +199,7 @@ public interface RetrofitService {
     //
     @POST("platform/getTrialPremium")
     Observable<PostTrialPremiumOutput> postTrialPremium(@Body PostTrialPremiumInput input);
+
+    @POST("platform/getTrialPremium")
+    Observable<PrialPremiumTwoOutput> postTrialPremiumTwo(@Body PostTrialPremiumTwoInput input);
 }
