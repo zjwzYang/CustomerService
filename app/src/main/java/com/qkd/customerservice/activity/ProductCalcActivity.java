@@ -47,6 +47,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -295,7 +296,7 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
         bean.setValueQi("--");
         bean.setValueNian("--");
         for (PlatformTwoDataBean.PriceArgsDTO.GenesDTO gene : genes) {
-            if ("8710".equals(gene.getProtectItemId())) {
+            if (!TextUtils.isEmpty(gene.getProtectItemId())) {
                 bean.setValueBao(gene.getValue());
             } else if ("insurantDateLimit".equals(gene.getKey())) {
                 bean.setValueQi(gene.getValue());
@@ -303,9 +304,18 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                 bean.setValueNian(gene.getValue());
             }
         }
-        bean.setPrice(String.valueOf(twoDataBean.getPrice()));
+        bean.setPrice(changeF2Y(twoDataBean.getPrice()));
         EventBus.getDefault().post(bean);
         finish();
+    }
+
+    /**
+     * 分转元，转换为bigDecimal在toString
+     *
+     * @return
+     */
+    public String changeF2Y(int price) {
+        return BigDecimal.valueOf(Long.valueOf(price)).divide(new BigDecimal(100)).toString();
     }
 
     @Override
