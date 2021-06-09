@@ -151,7 +151,7 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
                                             keyV = bean.getProtectItemId();
                                         }
-                                        onClickCalcTwoListener.onClickCity(keyV, position);
+                                        onClickCalcTwoListener.onSelect(keyV, position);
                                     }
                                 }
                             }).setNegativeButton("取消", null);
@@ -183,7 +183,7 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
                                             keyV = bean.getProtectItemId();
                                         }
-                                        onClickCalcTwoListener.onClickCity(keyV, position);
+                                        onClickCalcTwoListener.onSelect(keyV, position);
                                     }
                                 }
                             }).setNegativeButton("取消", null);
@@ -211,7 +211,7 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
                                     keyV = bean.getProtectItemId();
                                 }
-                                onClickCalcTwoListener.onClickCity(keyV, position);
+                                onClickCalcTwoListener.onSelect(keyV, position);
                             }
                         }
                     },
@@ -228,60 +228,50 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ThreeViewHolder holder = (ThreeViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
             holder.two_date_input.setText(bean.getDefaultValue());
-            // TODO: 2021/6/8 未完 
+            // TODO: 2021/6/8 未完
 
         } else if (4 == viewType) {
             FourViewHolder holder = (FourViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
             String defaultValue = bean.getDefaultValue();
-            String key = bean.getKey();
             List<PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO> values = bean.getValues();
             List<PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean> subRestrictGenes = bean.getSubRestrictGenes();
-            if ("city".equals(key)) {
-                final PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean subRestrictGeneBean = subRestrictGenes.get(0);
-                String subDefaultValue = subRestrictGeneBean.getDefaultValue();
-                final List<PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean.SubValuesDTO> subValues = subRestrictGeneBean.getValues();
-                String cityName = "";
-                for (PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean.SubValuesDTO subValue : subValues) {
-                    if (subValue.getValue().equals(subDefaultValue)) {
-                        cityName += subValue.getName();
-                        break;
-                    }
-                }
-                for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
-                    if (value.getValue().equals(defaultValue)) {
-                        cityName += "-" + value.getName();
-                    }
-                }
-                holder.two_date_city.setText(cityName);
-                holder.two_date_city.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String[] items = new String[subValues.size()];
-                        for (int i = 0; i < subValues.size(); i++) {
-                            items[i] = subValues.get(i).getName();
-                        }
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean.SubValuesDTO dto = subValues.get(which);
-                                subRestrictGeneBean.setDefaultValue(dto.getValue());
-                                String subKey = subRestrictGeneBean.getKey();
-                                if (TextUtils.isEmpty(subKey)) {
-                                    subKey = bean.getProtectItemId();
-                                }
-                                dialog.dismiss();
-                                if (onClickCalcTwoListener != null) {
-                                    onClickCalcTwoListener.onClickCity(subKey, position);
-                                }
+            String showText = "";
+            if (subRestrictGenes != null && subRestrictGenes.size() > 0) {
+                for (PlatformTwoDataBean.RestrictGenesDTO.SubRestrictGeneBean subGene : subRestrictGenes) {
+                    List<PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO> subValues = subGene.getValues();
+                    String subDefaultValue = subGene.getDefaultValue();
+                    for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO subValue : subValues) {
+                        if (subValue.getValue().equals(subDefaultValue)) {
+                            if (TextUtils.isEmpty(showText)) {
+                                showText += subValue.getName();
+                            } else {
+                                showText += "-" + subValue.getName();
                             }
-                        }).setNegativeButton("取消", null);
-                        builder.show();
+                            break;
+                        }
                     }
-                });
+                }
             }
-
+            for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
+                if (value.getValue().equals(defaultValue)) {
+                    if (TextUtils.isEmpty(showText)) {
+                        showText += value.getName();
+                    } else {
+                        showText += "-" + value.getName();
+                    }
+                    break;
+                }
+            }
+            holder.two_date_city.setText(showText);
+            holder.two_date_city.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onClickCalcTwoListener != null) {
+                        onClickCalcTwoListener.onSelectCity(bean, position);
+                    }
+                }
+            });
 
         } else if (5 == viewType) {
             FiveViewHolder holder = (FiveViewHolder) viewHolder;
@@ -324,7 +314,7 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (TextUtils.isEmpty(key)) {
                         key = restrictGenesDTO.getProtectItemId();
                     }
-                    onClickCalcTwoListener.onClickCity(key, position);
+                    onClickCalcTwoListener.onSelect(key, position);
                 }
             }
         }).setNegativeButton("取消", null);
@@ -427,6 +417,8 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public interface OnClickCalcTwoListener {
-        void onClickCity(String key, int position);
+        void onSelect(String key, int position);
+
+        void onSelectCity(PlatformTwoDataBean.RestrictGenesDTO bean, int position);
     }
 }

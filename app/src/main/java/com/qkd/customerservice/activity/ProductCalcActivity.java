@@ -39,9 +39,12 @@ import com.qkd.customerservice.bean.TrialFactorFatherBean;
 import com.qkd.customerservice.bean.TrialFactorOutput;
 import com.qkd.customerservice.bean.TrialOccupationBean;
 import com.qkd.customerservice.bean.TrialOccupationStringBean;
+import com.qkd.customerservice.dialog.CityPickerDialog;
 import com.qkd.customerservice.net.BaseHttp;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +79,7 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_calc);
+        EventBus.getDefault().register(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
@@ -183,6 +187,12 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     private void doWithCityDetail(List<TrialFactorFatherBean> beans) {
@@ -305,7 +315,7 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
     }
 
     @Override
-    public void onClickCity(final String key, final int position) {
+    public void onSelect(final String key, final int position) {
         PostTrialPremiumTwoInput input = new PostTrialPremiumTwoInput();
         final PlatformTwoDataBean twoDataBean = mTwoAdapter.getTwoDataBean();
         List<PlatformTwoDataBean.PriceArgsDTO.GenesDTO> genes = twoDataBean.getPriceArgs().getGenes();
@@ -372,10 +382,18 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                             String protectItemId2 = oldGene.getProtectItemId();
                             if (!TextUtils.isEmpty(key1)) {
                                 if (key1.equals(key2)) {
+                                    newGene.setPosition(i);
+                                    if ("area".equals(key1) || "city".equals(key1)) {
+                                        EventBus.getDefault().post(newGene);
+                                    }
                                     restrictGenes.set(i, newGene);
                                 }
                             } else if (!TextUtils.isEmpty(protectItemId1)) {
                                 if (protectItemId1.equals(protectItemId2)) {
+                                    newGene.setPosition(i);
+                                    if ("area".equals(key1) || "city".equals(key1)) {
+                                        EventBus.getDefault().post(newGene);
+                                    }
                                     restrictGenes.set(i, newGene);
                                 }
                             }
@@ -383,9 +401,10 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                     }
                 }
                 mTwoAdapter.notifyDataSetChanged();
-                if ("province".equals(key) && position >= 0) {
-                    mTwoAdapter.selectCity(position);
-                }
+//                if ("province".equals(key) && position >= 0) {
+//                    mTwoAdapter.selectCity(position);
+//                }
+
             }
 
             @Override
@@ -393,5 +412,26 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
 
             }
         });
+    }
+
+    @Override
+    public void onSelectCity(PlatformTwoDataBean.RestrictGenesDTO bean, int position) {
+        CityPickerDialog dialog = new CityPickerDialog();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("bean", bean);
+        bundle.putInt("position", position);
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "CityPickerDialog");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetAreaMsg(PlatformTwoDataBean.RestrictGenesDTO bean) {
+        if (TextUtils.isEmpty(bean.getCityChangeKey())) {
+            return;
+        }
+        PlatformTwoDataBean twoDataBean = mTwoAdapter.getTwoDataBean();
+        List<PlatformTwoDataBean.RestrictGenesDTO> restrictGenes = twoDataBean.getRestrictGenes();
+        restrictGenes.set(bean.getPosition(), bean);
+        onSelect(bean.getCityChangeKey(), bean.getPosition());
     }
 }
