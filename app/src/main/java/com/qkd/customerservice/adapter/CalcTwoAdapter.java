@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -228,8 +230,31 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ThreeViewHolder holder = (ThreeViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
             holder.two_date_input.setText(bean.getDefaultValue());
-            // TODO: 2021/6/8 未完
+            holder.two_date_input.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    bean.setDefaultValue(s.toString());
+                    if (onClickCalcTwoListener != null) {
+                        String keyV = "";
+                        if (!TextUtils.isEmpty(bean.getKey())) {
+                            keyV = bean.getKey();
+                        } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
+                            keyV = bean.getProtectItemId();
+                        }
+                        onClickCalcTwoListener.onSelect(keyV, position);
+                    }
+                }
+            });
         } else if (4 == viewType) {
             FourViewHolder holder = (FourViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());

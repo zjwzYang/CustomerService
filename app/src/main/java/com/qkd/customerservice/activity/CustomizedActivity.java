@@ -32,6 +32,7 @@ import com.qkd.customerservice.adapter.AddProductAdapter;
 import com.qkd.customerservice.bean.AmountInput;
 import com.qkd.customerservice.bean.AmountOutput;
 import com.qkd.customerservice.bean.CalcSuccessBean;
+import com.qkd.customerservice.bean.CalcTwoSuccessBean;
 import com.qkd.customerservice.bean.ChangeIntroductionBean;
 import com.qkd.customerservice.bean.MySchemeDetailOutput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
@@ -1028,6 +1029,39 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
             } catch (Exception e) {
 
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetMsgList(CalcTwoSuccessBean bean) {
+        currProduct.setPremiumNum(bean.getPrice());
+        String[][] arrayData = new String[2][];
+        String[] list1 = {"投保险种", "保额", "保险期", "缴费期", "首年保费"};
+        String[] list2 = {currProduct.getProductName(), bean.getValueBao(), bean.getValueQi(), bean.getValueNian(), bean.getPrice()};
+        arrayData[0] = list1;
+        arrayData[1] = list2;
+        currProduct.setArrayData(arrayData);
+        mAddProductAdapter.add(currProduct);
+        List<ProductListOutput.DataBean> allProduct = mAddProductAdapter.getAll();
+        List<SchemeCustomizeInfo.DataBean.ApplyPersonListBean> applyPersonList = CustomizedActivity.this.data.getApplyPersonList();
+        applyPersonList.get(selcetIndex).setProductList(allProduct);
+        selectPerson.setProductList(allProduct);
+
+        try {
+            totalMoney = 0f;
+            for (SchemeCustomizeInfo.DataBean.ApplyPersonListBean applyPersonListBean : applyPersonList) {
+                List<ProductListOutput.DataBean> productList = applyPersonListBean.getProductList();
+                if (productList == null) {
+                    continue;
+                }
+                for (ProductListOutput.DataBean selectP : productList) {
+                    String premiumNum = selectP.getPremiumNum();
+                    totalMoney += Float.parseFloat(premiumNum);
+                }
+            }
+            mTotalMoney.setText(formatValue());
+        } catch (Exception e) {
+
         }
     }
 

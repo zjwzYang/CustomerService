@@ -26,6 +26,7 @@ import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CalcAdapter;
 import com.qkd.customerservice.adapter.CalcTwoAdapter;
 import com.qkd.customerservice.bean.CalcSuccessBean;
+import com.qkd.customerservice.bean.CalcTwoSuccessBean;
 import com.qkd.customerservice.bean.PlatformTwoDataBean;
 import com.qkd.customerservice.bean.PostCalcBean;
 import com.qkd.customerservice.bean.PostTrialPremiumInput;
@@ -286,6 +287,27 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
         });
     }
 
+    private void productCalcTwo() {
+        CalcTwoSuccessBean bean = new CalcTwoSuccessBean();
+        PlatformTwoDataBean twoDataBean = mTwoAdapter.getTwoDataBean();
+        List<PlatformTwoDataBean.PriceArgsDTO.GenesDTO> genes = twoDataBean.getPriceArgs().getGenes();
+        bean.setValueBao("--");
+        bean.setValueQi("--");
+        bean.setValueNian("--");
+        for (PlatformTwoDataBean.PriceArgsDTO.GenesDTO gene : genes) {
+            if ("8710".equals(gene.getProtectItemId())) {
+                bean.setValueBao(gene.getValue());
+            } else if ("insurantDateLimit".equals(gene.getKey())) {
+                bean.setValueQi(gene.getValue());
+            } else if ("insureAgeLimit".equals(gene.getKey())) {
+                bean.setValueNian(gene.getValue());
+            }
+        }
+        bean.setPrice(String.valueOf(twoDataBean.getPrice()));
+        EventBus.getDefault().post(bean);
+        finish();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -300,7 +322,11 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                         .setPositiveButton("提交", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                productCalc();
+                                if ("1".equals(platformId)) {
+                                    productCalc();
+                                } else if ("2".equals(platformId)) {
+                                    productCalcTwo();
+                                }
                             }
                         }).show();
                 break;
