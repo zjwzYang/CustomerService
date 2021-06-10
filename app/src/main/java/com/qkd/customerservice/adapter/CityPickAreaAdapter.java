@@ -82,7 +82,11 @@ public class CityPickAreaAdapter extends RecyclerView.Adapter<CityPickAreaAdapte
 
     @Override
     public int getItemCount() {
-        return dataList.size();
+        if (dataList != null) {
+            return dataList.size();
+        } else {
+            return 0;
+        }
     }
 
     static class OccuptionViewHolder extends RecyclerView.ViewHolder {

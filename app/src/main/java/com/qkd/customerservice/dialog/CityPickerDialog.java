@@ -105,6 +105,9 @@ public class CityPickerDialog extends DialogFragment implements CityPickAreaAdap
             city_recy_area.setVisibility(View.VISIBLE);
             areaAdapter.setBean(bean);
         }
+        if (bean.getValues() == null) {
+            city_recy_area.setVisibility(View.GONE);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -149,6 +152,9 @@ public class CityPickerDialog extends DialogFragment implements CityPickAreaAdap
         bean.setPosition(position);
         bean.setCityChangeKey(key);
         EventBus.getDefault().post(bean);
+        if (city_recy_city.getVisibility() == View.GONE && city_recy_area.getVisibility() == View.GONE) {
+            dismiss();
+        }
     }
 
     @Override
@@ -156,5 +162,8 @@ public class CityPickerDialog extends DialogFragment implements CityPickAreaAdap
         bean.setPosition(position);
         bean.setCityChangeKey(key);
         EventBus.getDefault().post(bean);
+        if (city_recy_area.getVisibility() == View.GONE) {
+            dismiss();
+        }
     }
 }

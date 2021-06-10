@@ -4,15 +4,13 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -126,13 +124,17 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         List<String> itemList = new ArrayList<>();
                         for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
                             String valueType = value.getType();
+                            String valueUnit = value.getUnit();
+                            if (TextUtils.isEmpty(valueUnit)) {
+                                valueUnit = "";
+                            }
                             if ("1".equals(valueType)) {
-                                itemList.add(value.getValue() + value.getUnit());
+                                itemList.add(value.getValue() + valueUnit);
                             } else if ("2".equals(valueType)) {
                                 Integer min = value.getMin();
                                 Integer max = value.getMax();
                                 Integer step = value.getStep();
-                                String unit = value.getUnit();
+                                String unit = valueUnit;
                                 for (int i = min; i <= max; i = i + step) {
                                     itemList.add(i + unit);
                                 }
@@ -200,30 +202,93 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ThreeViewHolder holder = (ThreeViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
             holder.two_date_input.setText(bean.getDefaultValue());
-            holder.two_date_input.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    bean.setDefaultValue(s.toString());
-                    String key = bean.getKey();
-                    if (!TextUtils.isEmpty(key)) {
-                        for (PlatformTwoDataBean.PriceArgsDTO.GenesDTO gene : twoDataBean.getPriceArgs().getGenes()) {
-                            if (key.equals(gene.getKey())) {
-                                gene.setValue(s.toString());
+            List<PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO> values = bean.getValues();
+            if (values != null && values.size() > 0) {
+                PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO valuesDTO = values.get(0);
+                final Integer min = valuesDTO.getMin();
+                final Integer max = valuesDTO.getMax();
+                final Integer step = valuesDTO.getStep();
+                holder.step_min_max.setText("范围：" + min + " ~ " + max);
+                holder.strp_reduce.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            int valueNum = Integer.parseInt(bean.getDefaultValue());
+                            if (valueNum <= min) {
+                                Toast.makeText(context, "已经是最小值啦", Toast.LENGTH_SHORT).show();
+                            } else {
+                                valueNum -= step;
+                                bean.setDefaultValue(String.valueOf(valueNum));
+                                if (onClickCalcTwoListener != null) {
+                                    String keyV = "";
+                                    if (!TextUtils.isEmpty(bean.getKey())) {
+                                        keyV = bean.getKey();
+                                    } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
+                                        keyV = bean.getProtectItemId();
+                                    }
+                                    onClickCalcTwoListener.onSelect(keyV, position);
+                                }
                             }
+                        } catch (Exception e) {
+                            Toast.makeText(context, "出错", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
-            });
+                });
+                holder.strp_plus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            int valueNum = Integer.parseInt(bean.getDefaultValue());
+                            if (valueNum >= max) {
+                                Toast.makeText(context, "已经是最大值啦", Toast.LENGTH_SHORT).show();
+                            } else {
+                                valueNum += step;
+                                bean.setDefaultValue(String.valueOf(valueNum));
+                                if (onClickCalcTwoListener != null) {
+                                    String keyV = "";
+                                    if (!TextUtils.isEmpty(bean.getKey())) {
+                                        keyV = bean.getKey();
+                                    } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
+                                        keyV = bean.getProtectItemId();
+                                    }
+                                    onClickCalcTwoListener.onSelect(keyV, position);
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(context, "出错", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+//                holder.two_date_input.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable s) {
+//                        if (!s.toString().equals(bean.getDefaultValue())) {
+//                            hasChanged = true;
+//                            changedKey = bean.getKey();
+//                            changedPosition = position;
+//                            bean.setDefaultValue(s.toString());
+////                            String key = bean.getKey();
+////                            if (!TextUtils.isEmpty(key)) {
+////                                for (PlatformTwoDataBean.PriceArgsDTO.GenesDTO gene : twoDataBean.getPriceArgs().getGenes()) {
+////                                    if (key.equals(gene.getKey())) {
+////                                        gene.setValue(s.toString());
+////                                    }
+////                                }
+////                            }
+//                        }
+//                    }
+//                });
+            }
         } else if (4 == viewType) {
             FourViewHolder holder = (FourViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
@@ -247,14 +312,16 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             }
-            for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
-                if (value.getValue().equals(defaultValue)) {
-                    if (TextUtils.isEmpty(showText)) {
-                        showText += value.getName();
-                    } else {
-                        showText += "-" + value.getName();
+            if (values != null && values.size() > 0) {
+                for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
+                    if (value.getValue().equals(defaultValue)) {
+                        if (TextUtils.isEmpty(showText)) {
+                            showText += value.getName();
+                        } else {
+                            showText += "-" + value.getName();
+                        }
+                        break;
                     }
-                    break;
                 }
             }
             holder.two_date_city.setText(showText);
@@ -354,12 +421,18 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class ThreeViewHolder extends RecyclerView.ViewHolder {
         private TextView two_label;
-        private EditText two_date_input;
+        private TextView two_date_input;
+        private TextView strp_reduce;
+        private TextView strp_plus;
+        private TextView step_min_max;
 
         public ThreeViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             two_label = itemView.findViewById(R.id.two_label);
             two_date_input = itemView.findViewById(R.id.two_date_input);
+            strp_reduce = itemView.findViewById(R.id.strp_reduce);
+            strp_plus = itemView.findViewById(R.id.strp_plus);
+            step_min_max = itemView.findViewById(R.id.step_min_max);
         }
     }
 
