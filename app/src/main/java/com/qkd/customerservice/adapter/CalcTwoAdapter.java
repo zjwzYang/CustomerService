@@ -123,74 +123,44 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 public void onClick(View v) {
                     final List<PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO> values = bean.getValues();
                     if (values != null && values.size() > 0) {
-                        PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO valuesDTO = values.get(0);
-                        String valueType = valuesDTO.getType();
-                        if ("1".equals(valueType)) {
-                            final String[] items = new String[values.size()];
-                            for (int i = 0; i < values.size(); i++) {
-                                String value = values.get(i).getValue();
-                                String unit = values.get(i).getUnit();
-                                if (!TextUtils.isEmpty(unit)) {
-                                    items[i] = value + unit;
-                                } else {
-                                    items[i] = value;
+                        List<String> itemList = new ArrayList<>();
+                        for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO value : values) {
+                            String valueType = value.getType();
+                            if ("1".equals(valueType)) {
+                                itemList.add(value.getValue() + value.getUnit());
+                            } else if ("2".equals(valueType)) {
+                                Integer min = value.getMin();
+                                Integer max = value.getMax();
+                                Integer step = value.getStep();
+                                String unit = value.getUnit();
+                                for (int i = min; i <= max; i = i + step) {
+                                    itemList.add(i + unit);
                                 }
                             }
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (items[which].equals(bean.getDefaultValue())) {
-                                        dialog.dismiss();
-                                        return;
-                                    }
-                                    bean.setDefaultValue(items[which]);
-                                    dialog.dismiss();
-                                    if (onClickCalcTwoListener != null) {
-                                        String keyV = "";
-                                        if (!TextUtils.isEmpty(bean.getKey())) {
-                                            keyV = bean.getKey();
-                                        } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
-                                            keyV = bean.getProtectItemId();
-                                        }
-                                        onClickCalcTwoListener.onSelect(keyV, position);
-                                    }
-                                }
-                            }).setNegativeButton("取消", null);
-                            builder.show();
-                        } else if ("2".equals(valueType)) {
-                            Integer min = valuesDTO.getMin();
-                            Integer max = valuesDTO.getMax();
-                            Integer step = valuesDTO.getStep();
-                            String unit = valuesDTO.getUnit();
-                            List<String> itemList = new ArrayList<>();
-                            for (int i = min; i <= max; i = i + step) {
-                                itemList.add(i + unit);
-                            }
-                            final String[] items = itemList.toArray(new String[]{});
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (items[which].equals(bean.getDefaultValue())) {
-                                        dialog.dismiss();
-                                        return;
-                                    }
-                                    bean.setDefaultValue(items[which]);
-                                    dialog.dismiss();
-                                    if (onClickCalcTwoListener != null) {
-                                        String keyV = "";
-                                        if (!TextUtils.isEmpty(bean.getKey())) {
-                                            keyV = bean.getKey();
-                                        } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
-                                            keyV = bean.getProtectItemId();
-                                        }
-                                        onClickCalcTwoListener.onSelect(keyV, position);
-                                    }
-                                }
-                            }).setNegativeButton("取消", null);
-                            builder.show();
                         }
+                        final String[] items = itemList.toArray(new String[]{});
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (items[which].equals(bean.getDefaultValue())) {
+                                    dialog.dismiss();
+                                    return;
+                                }
+                                bean.setDefaultValue(items[which]);
+                                dialog.dismiss();
+                                if (onClickCalcTwoListener != null) {
+                                    String keyV = "";
+                                    if (!TextUtils.isEmpty(bean.getKey())) {
+                                        keyV = bean.getKey();
+                                    } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
+                                        keyV = bean.getProtectItemId();
+                                    }
+                                    onClickCalcTwoListener.onSelect(keyV, position);
+                                }
+                            }
+                        }).setNegativeButton("取消", null);
+                        builder.show();
                     }
                 }
             });
@@ -244,14 +214,13 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void afterTextChanged(Editable s) {
                     bean.setDefaultValue(s.toString());
-                    if (onClickCalcTwoListener != null) {
-                        String keyV = "";
-                        if (!TextUtils.isEmpty(bean.getKey())) {
-                            keyV = bean.getKey();
-                        } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
-                            keyV = bean.getProtectItemId();
+                    String key = bean.getKey();
+                    if (!TextUtils.isEmpty(key)) {
+                        for (PlatformTwoDataBean.PriceArgsDTO.GenesDTO gene : twoDataBean.getPriceArgs().getGenes()) {
+                            if (key.equals(gene.getKey())) {
+                                gene.setValue(s.toString());
+                            }
                         }
-                        onClickCalcTwoListener.onSelect(keyV, position);
                     }
                 }
             });

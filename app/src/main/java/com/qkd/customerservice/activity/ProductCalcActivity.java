@@ -407,6 +407,7 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                 Gson gson = new Gson();
                 PlatformTwoDataBean bean = gson.fromJson(output.getData(), PlatformTwoDataBean.class);
                 twoDataBean.setPrice(bean.getPrice());
+                twoDataBean.setPriceArgs(bean.getPriceArgs());
                 List<PlatformTwoDataBean.RestrictGenesDTO> returnList = bean.getRestrictGenes();
                 if (returnList != null && returnList.size() > 0) {
                     for (PlatformTwoDataBean.RestrictGenesDTO newGene : returnList) {
