@@ -101,7 +101,7 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
             mAdapter = new CalcAdapter(this, getSupportFragmentManager());
             mRecyclerView.setAdapter(mAdapter);
         } else if ("2".equals(platformId)) {
-            mTwoAdapter = new CalcTwoAdapter(this);
+            mTwoAdapter = new CalcTwoAdapter(this, getSupportFragmentManager());
             mTwoAdapter.setOnClickCalcTwoListener(this);
             mRecyclerView.setAdapter(mTwoAdapter);
         }

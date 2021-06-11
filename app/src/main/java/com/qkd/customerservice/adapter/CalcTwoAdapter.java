@@ -8,13 +8,19 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.bean.PlatformTwoDataBean;
 
@@ -34,13 +40,15 @@ import java.util.List;
 public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
+    private FragmentManager mFragmentManager;
     private PlatformTwoDataBean twoDataBean;
     private List<PlatformTwoDataBean.RestrictGenesDTO> dataList;
     private LayoutInflater inflater;
     private OnClickCalcTwoListener onClickCalcTwoListener;
 
-    public CalcTwoAdapter(Context context) {
+    public CalcTwoAdapter(Context context, FragmentManager mFragmentManager) {
         this.context = context;
+        this.mFragmentManager = mFragmentManager;
         this.dataList = new ArrayList<>();
         this.inflater = LayoutInflater.from(context);
     }
@@ -198,6 +206,133 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (2 == viewType) {
             TwoViewHolder holder = (TwoViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
+            holder.two_date_select.setText(bean.getDefaultValue());
+            holder.two_date_select.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    SelectSpinnerDialog dialog = new SelectSpinnerDialog();
+//                    dialog.show(mFragmentManager, "SelectSpinnerDialog");
+                    List<PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO> values = bean.getValues();
+                    if (values != null && values.size() > 0) {
+                        final List<String> typeOne = new ArrayList<>();
+                        final List<String> typeTwo = new ArrayList<>();
+                        typeTwo.add("请选择");
+                        for (PlatformTwoDataBean.RestrictGenesDTO.ValuesDTO valueBean : values) {
+                            String type = valueBean.getType();
+                            String value = valueBean.getValue();
+                            String unit = valueBean.getUnit();
+                            if ("1".equals(type)) {
+                                if (TextUtils.isEmpty(unit)) {
+                                    typeOne.add(value);
+                                } else {
+                                    typeOne.add(value + unit);
+                                }
+                            } else if ("2".equals(type)) {
+                                Integer min = valueBean.getMin();
+                                Integer max = valueBean.getMax();
+                                Integer step = valueBean.getStep();
+                                for (int i = min; i <= max; i = i + step) {
+                                    if (TextUtils.isEmpty(unit)) {
+                                        typeTwo.add(String.valueOf(i));
+                                    } else {
+                                        typeTwo.add(i + unit);
+                                    }
+                                }
+                            }
+                        }
+
+                        View view = inflater.inflate(R.layout.dialog_select_spinner, null);
+                        final FlexboxLayout flex_box = view.findViewById(R.id.flex_box);
+                        flex_box.removeAllViews();
+
+                        for (String dItem : typeOne) {
+                            View viewItem = inflater.inflate(R.layout.dialog_input_item_btn, null);
+                            TextView viewBtn = viewItem.findViewById(R.id.input_btn);
+                            if (dItem.equals(bean.getDefaultValue())) {
+                                viewBtn.setTextColor(ContextCompat.getColor(context, R.color.white));
+                                viewBtn.setBackgroundResource(R.drawable.blue2_text_bg);
+                            } else {
+                                viewBtn.setTextColor(ContextCompat.getColor(context, R.color.divi_color));
+                                viewBtn.setBackgroundResource(R.drawable.grey_text_bg);
+                            }
+                            viewBtn.setText(dItem);
+                            viewBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    for (int i = 0; i < flex_box.getChildCount(); i++) {
+                                        View child = flex_box.getChildAt(i);
+                                        if (child instanceof Spinner) {
+                                        } else {
+                                            TextView childText = child.findViewById(R.id.input_btn);
+                                            childText.setTextColor(ContextCompat.getColor(context, R.color.divi_color));
+                                            childText.setBackgroundResource(R.drawable.grey_text_bg);
+                                        }
+                                    }
+                                    TextView clickText = v.findViewById(R.id.input_btn);
+                                    clickText.setTextColor(ContextCompat.getColor(context, R.color.white));
+                                    clickText.setBackgroundResource(R.drawable.blue2_text_bg);
+                                    flex_box.setTag(clickText.getText().toString());
+                                }
+                            });
+                            flex_box.addView(viewItem);
+                        }
+                        Spinner mSpinner = new Spinner(context);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, typeTwo);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        mSpinner.setAdapter(adapter);
+                        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                if (position == 0) {
+
+                                } else {
+                                    for (int i = 0; i < flex_box.getChildCount(); i++) {
+                                        View child = flex_box.getChildAt(i);
+                                        if (child instanceof Spinner) {
+                                        } else {
+                                            TextView childText = child.findViewById(R.id.input_btn);
+                                            childText.setTextColor(ContextCompat.getColor(context, R.color.divi_color));
+                                            childText.setBackgroundResource(R.drawable.grey_text_bg);
+                                        }
+                                        flex_box.setTag(typeTwo.get(position));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+//                        mSpinner.setBackgroundResource(R.drawable.grey_text_bg);
+
+                        flex_box.addView(mSpinner);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setView(view)
+                                .setTitle(bean.getName())
+                                .setNegativeButton("取消", null)
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+//                                        bean.setDefaultValue();
+                                        String valueStr = (String) flex_box.getTag();
+                                        bean.setDefaultValue(valueStr);
+                                        if (onClickCalcTwoListener != null) {
+                                            String keyV = "";
+                                            if (!TextUtils.isEmpty(bean.getKey())) {
+                                                keyV = bean.getKey();
+                                            } else if (!TextUtils.isEmpty(bean.getProtectItemId())) {
+                                                keyV = bean.getProtectItemId();
+                                            }
+                                            onClickCalcTwoListener.onSelect(keyV, position);
+                                        }
+                                    }
+                                });
+                        builder.show();
+                    }
+                }
+            });
         } else if (3 == viewType) {
             ThreeViewHolder holder = (ThreeViewHolder) viewHolder;
             holder.two_label.setText(bean.getName());
