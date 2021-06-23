@@ -2,6 +2,7 @@ package com.qkd.customerservice.adapter;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -273,12 +274,17 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else if (itemViewType == 6) {
             TextViewHolder holder = (TextViewHolder) viewHolder;
             holder.calc_label.setText(bean.getElementName());
-//            String value = "-";
-//            Object elementValue = bean.getElementValue();
-//            if (elementValue instanceof String) {
-//                value = (String) elementValue;
-//            }
-            holder.date_text_show.setText(bean.getElementDescribe());
+            String elementDescribe = bean.getElementDescribe();
+            if (!TextUtils.isEmpty(elementDescribe)) {
+                holder.date_text_show.setText(elementDescribe);
+            } else {
+                String value = "-";
+                Object elementValue = bean.getElementValue();
+                if (elementValue instanceof String) {
+                    value = (String) elementValue;
+                }
+                holder.date_text_show.setText(value);
+            }
         } else if (itemViewType == 7) {
             OccupationViewHolder holder = (OccupationViewHolder) viewHolder;
             holder.calc_label.setText(bean.getElementName());

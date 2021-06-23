@@ -404,12 +404,32 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                             if (moduleCode.equals(dataDTO.getModuleCode()) && i == dataDTO.getIndex()) {
                                 String dateCode = dataDTO.getElementCode();
                                 Object dateValue = dataDTO.getElementValue();
+                                String showValue = dataDTO.getShowValue();
+                                String elementDescribe = dataDTO.getElementDescribe();
                                 if ("coverage".equals(dateCode)) {
-                                    coverage = dataDTO.getShowValue();
+                                    if (!TextUtils.isEmpty(showValue)) {
+                                        coverage = showValue;
+                                    } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                        coverage = elementDescribe;
+                                    } else if (dateValue instanceof String) {
+                                        coverage = (String) dateValue;
+                                    }
                                 } else if ("insurancePeriod".equals(dateCode)) {
-                                    insurancePeriod = dataDTO.getShowValue();
+                                    if (!TextUtils.isEmpty(showValue)) {
+                                        insurancePeriod = showValue;
+                                    } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                        insurancePeriod = elementDescribe;
+                                    } else if (dateValue instanceof String) {
+                                        insurancePeriod = (String) dateValue;
+                                    }
                                 } else if ("paymentPeriod".equals(dateCode)) {
-                                    paymentPeriod = dataDTO.getShowValue();
+                                    if (!TextUtils.isEmpty(showValue)) {
+                                        paymentPeriod = showValue;
+                                    } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                        paymentPeriod = elementDescribe;
+                                    } else if (dateValue instanceof String) {
+                                        paymentPeriod = (String) dateValue;
+                                    }
                                 }
                                 childMap.put(dateCode, dateValue);
                             }
@@ -424,12 +444,32 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                     if (moduleCode.equals(dataDTO.getModuleCode())) {
                         String dateCode = dataDTO.getElementCode();
                         Object dateValue = dataDTO.getElementValue();
+                        String showValue = dataDTO.getShowValue();
+                        String elementDescribe = dataDTO.getElementDescribe();
                         if ("coverage".equals(dateCode)) {
-                            coverage = dataDTO.getShowValue();
+                            if (!TextUtils.isEmpty(showValue)) {
+                                coverage = showValue;
+                            } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                coverage = elementDescribe;
+                            } else if (dateValue instanceof String) {
+                                coverage = (String) dateValue;
+                            }
                         } else if ("insurancePeriod".equals(dateCode)) {
-                            insurancePeriod = dataDTO.getShowValue();
+                            if (!TextUtils.isEmpty(showValue)) {
+                                insurancePeriod = showValue;
+                            } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                insurancePeriod = elementDescribe;
+                            } else if (dateValue instanceof String) {
+                                insurancePeriod = (String) dateValue;
+                            }
                         } else if ("paymentPeriod".equals(dateCode)) {
-                            paymentPeriod = dataDTO.getShowValue();
+                            if (!TextUtils.isEmpty(showValue)) {
+                                paymentPeriod = showValue;
+                            } else if (!TextUtils.isEmpty(elementDescribe)) {
+                                paymentPeriod = elementDescribe;
+                            } else if (dateValue instanceof String) {
+                                paymentPeriod = (String) dateValue;
+                            }
                         }
                         dateMap.put(dateCode, dateValue);
                     }
