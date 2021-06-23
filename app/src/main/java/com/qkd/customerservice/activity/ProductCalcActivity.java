@@ -4,10 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -24,13 +28,19 @@ import com.google.gson.JsonParser;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
 import com.qkd.customerservice.adapter.CalcAdapter;
+import com.qkd.customerservice.adapter.CalcThreeAdapter;
 import com.qkd.customerservice.adapter.CalcTwoAdapter;
 import com.qkd.customerservice.bean.CalcSuccessBean;
 import com.qkd.customerservice.bean.CalcTwoSuccessBean;
+import com.qkd.customerservice.bean.CovereAreaBean;
+import com.qkd.customerservice.bean.OccupationBean;
+import com.qkd.customerservice.bean.PlatformThreeDataBean;
+import com.qkd.customerservice.bean.PlatformThreeOutput;
 import com.qkd.customerservice.bean.PlatformTwoDataBean;
 import com.qkd.customerservice.bean.PostCalcBean;
 import com.qkd.customerservice.bean.PostTrialPremiumInput;
 import com.qkd.customerservice.bean.PostTrialPremiumOutput;
+import com.qkd.customerservice.bean.PostTrialPremiumThreeInput;
 import com.qkd.customerservice.bean.PostTrialPremiumTwoInput;
 import com.qkd.customerservice.bean.PrialPremiumTwoOutput;
 import com.qkd.customerservice.bean.TrialFactorBean;
@@ -41,7 +51,9 @@ import com.qkd.customerservice.bean.TrialFactorOutput;
 import com.qkd.customerservice.bean.TrialOccupationBean;
 import com.qkd.customerservice.bean.TrialOccupationStringBean;
 import com.qkd.customerservice.dialog.CityPickerDialog;
+import com.qkd.customerservice.dialog.OccupationThreepickerDialog;
 import com.qkd.customerservice.net.BaseHttp;
+import com.qkd.customerservice.widget.CalcItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -67,7 +79,8 @@ import rx.schedulers.Schedulers;
  * @author yj
  * @org 浙江趣看点科技有限公司
  */
-public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAdapter.OnClickCalcTwoListener {
+public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAdapter.OnClickCalcTwoListener
+        , CalcThreeAdapter.OnPlaceListener {
 
     private String platformId;
     private String platformProductId;
@@ -76,6 +89,8 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
     private CalcAdapter mAdapter;
 
     private CalcTwoAdapter mTwoAdapter;
+
+    private CalcThreeAdapter mThreeAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,6 +119,11 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
             mTwoAdapter = new CalcTwoAdapter(this, getSupportFragmentManager());
             mTwoAdapter.setOnClickCalcTwoListener(this);
             mRecyclerView.setAdapter(mTwoAdapter);
+        } else if ("3".equals(platformId)) {
+            mThreeAdapter = new CalcThreeAdapter(this);
+            mThreeAdapter.setOnPlaceListener(this);
+            mRecyclerView.setAdapter(mThreeAdapter);
+            mRecyclerView.addItemDecoration(new CalcItemDecoration(mThreeAdapter, this));
         }
 
         setTitle(intent.getStringExtra("productName") + " - 保费试算");
@@ -186,6 +206,43 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                         } else if ("2".equals(platformId)) {
                             PlatformTwoDataBean twoDataBean = gson.fromJson(output.getData(), PlatformTwoDataBean.class);
                             mTwoAdapter.addAll(twoDataBean);
+                        } else if ("3".equals(platformId)) {
+                            JsonParser jsonParser = new JsonParser();
+                            JsonArray jsonElements = jsonParser.parse(output.getData()).getAsJsonArray();//获取JsonArray对象
+                            List<PlatformThreeDataBean.ChildrenDTO.DataDTO> datas = new ArrayList<>();
+                            List<PlatformThreeDataBean> threeDataBeans = new ArrayList<>();
+                            for (JsonElement bean : jsonElements) {
+                                PlatformThreeDataBean platThreeBean = gson.fromJson(bean, PlatformThreeDataBean.class);
+                                String moduleCode = platThreeBean.getModuleCode();
+                                String moduleName = platThreeBean.getModuleName();
+                                if ("addInsureder".equals(moduleCode)) {
+                                    continue;
+                                }
+                                List<PlatformThreeDataBean.ChildrenDTO> children = platThreeBean.getChildren();
+                                threeDataBeans.add(platThreeBean);
+                                if (children != null) {
+                                    for (int i = 0; i < children.size(); i++) {
+                                        PlatformThreeDataBean.ChildrenDTO child = children.get(i);
+                                        List<PlatformThreeDataBean.ChildrenDTO.DataDTO> childDatas = child.getData();
+                                        for (PlatformThreeDataBean.ChildrenDTO.DataDTO childData : childDatas) {
+                                            childData.setModuleCode(moduleCode);
+                                            childData.setModuleName(moduleName);
+                                            childData.setIndex(i);
+                                            datas.add(childData);
+                                        }
+                                    }
+                                }
+                                List<PlatformThreeDataBean.ChildrenDTO.DataDTO> dataValues = platThreeBean.getData();
+                                if (dataValues != null) {
+                                    for (PlatformThreeDataBean.ChildrenDTO.DataDTO dataValue : dataValues) {
+                                        dataValue.setModuleCode(moduleCode);
+                                        dataValue.setModuleName(moduleName);
+                                        datas.add(dataValue);
+                                    }
+                                }
+                            }
+                            mThreeAdapter.setThreeDataBeans(threeDataBeans);
+                            mThreeAdapter.addAll(datas);
                         }
                     }
                 });
@@ -318,6 +375,102 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
         return BigDecimal.valueOf(Long.valueOf(price)).divide(new BigDecimal(100)).toString();
     }
 
+    private void productCalcThree() {
+        // 保额
+        String coverage = "-";
+        // 保险期
+        String insurancePeriod = "-";
+        // 交费期
+        String paymentPeriod = "-";
+
+        PostTrialPremiumThreeInput input = new PostTrialPremiumThreeInput();
+        Map<String, Object> factorParams = new HashMap<>();
+        List<PlatformThreeDataBean> threeDataBeans = mThreeAdapter.getThreeDataBeans();
+        List<PlatformThreeDataBean.ChildrenDTO.DataDTO> dataDTOS = mThreeAdapter.getAll();
+        for (PlatformThreeDataBean threeDataBean : threeDataBeans) {
+
+            String moduleCode = threeDataBean.getModuleCode();
+
+            List<PlatformThreeDataBean.ChildrenDTO> children = threeDataBean.getChildren();
+            List<PlatformThreeDataBean.ChildrenDTO.DataDTO> datas = threeDataBean.getData();
+            if (children != null && children.size() > 0) {
+                List<Map<String, Object>> maps = new ArrayList<>();
+                for (int i = 0; i < children.size(); i++) {
+                    Map<String, Object> childMap = new HashMap<>();
+                    PlatformThreeDataBean.ChildrenDTO child = children.get(i);
+                    List<PlatformThreeDataBean.ChildrenDTO.DataDTO> childDatas = child.getData();
+                    for (PlatformThreeDataBean.ChildrenDTO.DataDTO childData : childDatas) {
+                        for (PlatformThreeDataBean.ChildrenDTO.DataDTO dataDTO : dataDTOS) {
+                            if (moduleCode.equals(dataDTO.getModuleCode()) && i == dataDTO.getIndex()) {
+                                String dateCode = dataDTO.getElementCode();
+                                Object dateValue = dataDTO.getElementValue();
+                                if ("coverage".equals(dateCode)) {
+                                    coverage = dataDTO.getShowValue();
+                                } else if ("insurancePeriod".equals(dateCode)) {
+                                    insurancePeriod = dataDTO.getShowValue();
+                                } else if ("paymentPeriod".equals(dateCode)) {
+                                    paymentPeriod = dataDTO.getShowValue();
+                                }
+                                childMap.put(dateCode, dateValue);
+                            }
+                        }
+                    }
+                    maps.add(childMap);
+                }
+                factorParams.put(moduleCode, maps);
+            } else if (datas != null) {
+                Map<String, Object> dateMap = new HashMap<>();
+                for (PlatformThreeDataBean.ChildrenDTO.DataDTO dataDTO : dataDTOS) {
+                    if (moduleCode.equals(dataDTO.getModuleCode())) {
+                        String dateCode = dataDTO.getElementCode();
+                        Object dateValue = dataDTO.getElementValue();
+                        if ("coverage".equals(dateCode)) {
+                            coverage = dataDTO.getShowValue();
+                        } else if ("insurancePeriod".equals(dateCode)) {
+                            insurancePeriod = dataDTO.getShowValue();
+                        } else if ("paymentPeriod".equals(dateCode)) {
+                            paymentPeriod = dataDTO.getShowValue();
+                        }
+                        dateMap.put(dateCode, dateValue);
+                    }
+                }
+                factorParams.put(moduleCode, dateMap);
+            }
+        }
+        input.setFactorParams(factorParams);
+        input.setPlatformId(platformId);
+        input.setProductId(platformProductId);
+
+        final String finalCoverage = coverage;
+        final String finalInsurancePeriod = insurancePeriod;
+        final String finalPaymentPeriod = paymentPeriod;
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).postTrialPremiumTwo(input), new BaseHttp.HttpObserver<PrialPremiumTwoOutput>() {
+            @Override
+            public void onSuccess(PrialPremiumTwoOutput output) {
+                if (output.isSuccess()) {
+                    if (!TextUtils.isEmpty(output.getData())) {
+                        Gson gson = new Gson();
+                        PlatformThreeOutput platformThreeOutput = gson.fromJson(output.getData(), PlatformThreeOutput.class);
+                        CalcTwoSuccessBean calcTwoSuccessBean = new CalcTwoSuccessBean();
+                        calcTwoSuccessBean.setPrice(platformThreeOutput.getData().getFee());
+                        calcTwoSuccessBean.setValueBao(finalCoverage);
+                        calcTwoSuccessBean.setValueQi(finalInsurancePeriod);
+                        calcTwoSuccessBean.setValueNian(finalPaymentPeriod);
+                        EventBus.getDefault().post(calcTwoSuccessBean);
+                        finish();
+                    }
+                } else {
+                    Toast.makeText(ProductCalcActivity.this, output.getErrorMsg(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -336,6 +489,8 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                                     productCalc();
                                 } else if ("2".equals(platformId)) {
                                     productCalcTwo();
+                                } else if ("3".equals(platformId)) {
+                                    productCalcThree();
                                 }
                             }
                         }).show();
@@ -471,4 +626,212 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
         restrictGenes.set(bean.getPosition(), bean);
         onSelect(bean.getCityChangeKey(), bean.getPosition());
     }
+
+    @Override
+    public void onPlaceClick(final int position, final PlatformThreeDataBean.ChildrenDTO.DataDTO bean) {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getCoveredArea(platformProductId), new BaseHttp.HttpObserver<PrialPremiumTwoOutput>() {
+            @Override
+            public void onSuccess(PrialPremiumTwoOutput output) {
+                Gson gson = new Gson();
+                JsonParser jsonParser = new JsonParser();
+                JsonArray jsonElements = jsonParser.parse(output.getData()).getAsJsonArray();
+                List<CovereAreaBean> covereAreaBeans = new ArrayList<>();
+                for (JsonElement json : jsonElements) {
+                    CovereAreaBean covereAreaBean = gson.fromJson(json, CovereAreaBean.class);
+                    covereAreaBeans.add(covereAreaBean);
+                }
+                showCityDialog(covereAreaBeans, position, bean);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    @Override
+    public void onOccupationClick(final int position, final PlatformThreeDataBean.ChildrenDTO.DataDTO bean) {
+        BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).getProfession(platformProductId), new BaseHttp.HttpObserver<PrialPremiumTwoOutput>() {
+            @Override
+            public void onSuccess(PrialPremiumTwoOutput output) {
+                Gson gson = new Gson();
+                JsonParser jsonParser = new JsonParser();
+                JsonArray jsonElements = jsonParser.parse(output.getData()).getAsJsonArray();
+                List<OccupationBean> occupationBeans = new ArrayList<>();
+                for (JsonElement json : jsonElements) {
+                    OccupationBean occupationBean = gson.fromJson(json, OccupationBean.class);
+                    occupationBeans.add(occupationBean);
+                }
+                //showOccupationDialog(occupationBeans, position, bean);
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("detailList", (ArrayList<? extends Parcelable>) occupationBeans);
+                OccupationThreepickerDialog dialog = new OccupationThreepickerDialog();
+                dialog.setOnSelectOccpationListener(new OccupationThreepickerDialog.OnSelectOccpationListener() {
+                    @Override
+                    public void selectOccpation(List<Map<String, Object>> maps) {
+                        bean.setElementValue(maps);
+                        mThreeAdapter.notifyItemChanged(position);
+                    }
+                });
+                dialog.setArguments(bundle);
+                dialog.show(getSupportFragmentManager(), "OccupationThreepickerDialog");
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    private int oldSize = 0;
+    private int oldThreeSize = 0;
+    private int oldTwoThreeSize = 0;
+
+    private void showCityDialog(final List<CovereAreaBean> covereAreaBeans, final int position
+            , final PlatformThreeDataBean.ChildrenDTO.DataDTO dateBean) {
+        oldSize = 0;
+        oldThreeSize = 0;
+        oldTwoThreeSize = 0;
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_city_select, null);
+        final NumberPicker onePicker = dialogView.findViewById(R.id.sort_one_picker);
+        final NumberPicker twoPicker = dialogView.findViewById(R.id.sort_two_picker);
+        final NumberPicker threePicker = dialogView.findViewById(R.id.sort_three_picker);
+        onePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        twoPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        threePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+        String[] ones = new String[covereAreaBeans.size()];
+        for (int i = 0; i < covereAreaBeans.size(); i++) {
+            ones[i] = covereAreaBeans.get(i).getName();
+        }
+        onePicker.setMinValue(0);
+        onePicker.setMaxValue(covereAreaBeans.size() - 1);
+        onePicker.setDisplayedValues(ones);
+        onePicker.setWrapSelectorWheel(false);
+
+        List<CovereAreaBean.ChildrenDTOX> oneList = covereAreaBeans.get(0).getChildren();
+        if (oneList != null && oneList.size() != 0) {
+            String[] twos = new String[oneList.size()];
+            for (int j = 0; j < oneList.size(); j++) {
+                twos[j] = oneList.get(j).getName();
+            }
+            twoPicker.setMinValue(0);
+            twoPicker.setMaxValue(twos.length - 1);
+            twoPicker.setDisplayedValues(twos);
+            twoPicker.setWrapSelectorWheel(false);
+
+            List<CovereAreaBean.ChildrenDTOX.ChildrenDTO> threeList = oneList.get(0).getChildren();
+            if (threeList != null && threeList.size() != 0) {
+                String[] threes = new String[threeList.size()];
+                for (int i = 0; i < threeList.size(); i++) {
+                    threes[i] = threeList.get(i).getName();
+                }
+                threePicker.setMinValue(0);
+                threePicker.setMaxValue(threes.length - 1);
+                threePicker.setDisplayedValues(threes);
+                threePicker.setWrapSelectorWheel(false);
+            }
+        }
+        onePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int newVal) {
+                List<CovereAreaBean.ChildrenDTOX> list = covereAreaBeans.get(newVal).getChildren();
+                String[] twos = new String[list.size()];
+                for (int j = 0; j < list.size(); j++) {
+                    twos[j] = list.get(j).getName();
+                }
+                if (twos.length > oldSize) {
+                    twoPicker.setDisplayedValues(twos);
+                    twoPicker.setMinValue(0);
+                    twoPicker.setMaxValue(twos.length - 1);
+                } else {
+                    twoPicker.setMinValue(0);
+                    twoPicker.setMaxValue(twos.length - 1);
+                    twoPicker.setDisplayedValues(twos);
+                }
+                twoPicker.setWrapSelectorWheel(false);
+                oldSize = twos.length;
+
+                List<CovereAreaBean.ChildrenDTOX.ChildrenDTO> threeList = list.get(0).getChildren();
+                if (threeList != null && threeList.size() != 0) {
+                    String[] threes = new String[threeList.size()];
+                    for (int r = 0; r < threeList.size(); r++) {
+                        threes[r] = threeList.get(r).getName();
+                    }
+                    if (threes.length > oldThreeSize) {
+                        threePicker.setDisplayedValues(threes);
+                        threePicker.setMinValue(0);
+                        threePicker.setMaxValue(threes.length - 1);
+                    } else {
+                        threePicker.setMinValue(0);
+                        threePicker.setMaxValue(threes.length - 1);
+                        threePicker.setDisplayedValues(threes);
+                    }
+                    threePicker.setWrapSelectorWheel(false);
+                    oldThreeSize = threes.length;
+                }
+            }
+        });
+        twoPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                int one = onePicker.getValue();
+                List<CovereAreaBean.ChildrenDTOX.ChildrenDTO> list = covereAreaBeans.get(one).getChildren().get(newVal).getChildren();
+                String[] threes = new String[list.size()];
+                for (int r = 0; r < list.size(); r++) {
+                    threes[r] = list.get(r).getName();
+                }
+                if (threes.length > oldTwoThreeSize) {
+                    threePicker.setDisplayedValues(threes);
+                    threePicker.setMinValue(0);
+                    threePicker.setMaxValue(threes.length - 1);
+                } else {
+                    threePicker.setMinValue(0);
+                    threePicker.setMaxValue(threes.length - 1);
+                    threePicker.setDisplayedValues(threes);
+                }
+                threePicker.setWrapSelectorWheel(false);
+                oldTwoThreeSize = threes.length;
+            }
+        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(this).setView(dialogView)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int one = onePicker.getValue();
+                        int two = twoPicker.getValue();
+                        int three = threePicker.getValue();
+                        CovereAreaBean bean = covereAreaBeans.get(one);
+                        CovereAreaBean.ChildrenDTOX childrenDTOX = bean.getChildren().get(two);
+                        CovereAreaBean.ChildrenDTOX.ChildrenDTO childrenDTO = childrenDTOX.getChildren().get(three);
+
+                        Map<String, Object> oneMap = new HashMap<>();
+                        oneMap.put("code", bean.getCode());
+                        oneMap.put("level", bean.getLevel());
+                        oneMap.put("name", bean.getName());
+
+                        Map<String, Object> twoMap = new HashMap<>();
+                        twoMap.put("code", childrenDTOX.getCode());
+                        twoMap.put("level", childrenDTOX.getLevel());
+                        twoMap.put("name", childrenDTOX.getName());
+
+                        Map<String, Object> threeMap = new HashMap<>();
+                        threeMap.put("code", childrenDTO.getCode());
+                        threeMap.put("level", childrenDTO.getLevel());
+                        threeMap.put("name", childrenDTO.getName());
+
+                        List<Map<String, Object>> maps = new ArrayList<>();
+                        maps.add(oneMap);
+                        maps.add(twoMap);
+                        maps.add(threeMap);
+                        dateBean.setElementValue(maps);
+                        mThreeAdapter.notifyItemChanged(position);
+
+                    }
+                }).setNegativeButton("取消", null);
+        builder.show();
+    }
+
 }

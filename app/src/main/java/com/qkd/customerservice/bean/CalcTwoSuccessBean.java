@@ -9,9 +9,9 @@ package com.qkd.customerservice.bean;
  */
 public class CalcTwoSuccessBean {
     private String price;
-    private String valueBao;
-    private String valueQi;
-    private String valueNian;
+    private String valueBao; // 保额
+    private String valueQi; // 保险期
+    private String valueNian; // 缴费期
 
     public String getPrice() {
         return price;

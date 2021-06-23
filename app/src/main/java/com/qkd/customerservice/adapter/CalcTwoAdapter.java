@@ -280,6 +280,7 @@ public class CalcTwoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, typeTwo);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         mSpinner.setAdapter(adapter);
+                        mSpinner.setBackgroundResource(R.drawable.shape_spinner);
                         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

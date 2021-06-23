@@ -17,6 +17,7 @@ import com.qkd.customerservice.bean.NewMessageOutput;
 import com.qkd.customerservice.bean.PlannerOutput;
 import com.qkd.customerservice.bean.PostTrialPremiumInput;
 import com.qkd.customerservice.bean.PostTrialPremiumOutput;
+import com.qkd.customerservice.bean.PostTrialPremiumThreeInput;
 import com.qkd.customerservice.bean.PostTrialPremiumTwoInput;
 import com.qkd.customerservice.bean.PremiumConfigOutput;
 import com.qkd.customerservice.bean.PrialPremiumTwoOutput;
@@ -196,10 +197,23 @@ public interface RetrofitService {
     @GET("platform/getTrialFactor")
     Observable<TrialFactorOutput> getTrialFactor(@Query("productId") String productId, @Query("platformId") String platformId);
 
-    //
+    // 获取保费测算金额接口
     @POST("platform/getTrialPremium")
     Observable<PostTrialPremiumOutput> postTrialPremium(@Body PostTrialPremiumInput input);
 
+    // 获取保费测算金额接口
     @POST("platform/getTrialPremium")
     Observable<PrialPremiumTwoOutput> postTrialPremiumTwo(@Body PostTrialPremiumTwoInput input);
+
+    // 获取保费测算金额接口
+    @POST("platform/getTrialPremium")
+    Observable<PrialPremiumTwoOutput> postTrialPremiumTwo(@Body PostTrialPremiumThreeInput input);
+
+    // 获取梧桐树产品可投保地区
+    @GET("platform/getCoveredArea")
+    Observable<PrialPremiumTwoOutput> getCoveredArea(@Query("productId") String productId);
+
+    // 获取梧桐树产品可投保职业
+    @GET("platform/getProfession")
+    Observable<PrialPremiumTwoOutput> getProfession(@Query("productId") String productId);
 }

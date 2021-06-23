@@ -971,7 +971,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     public void onGetMsgList(CalcSuccessBean bean) {
         currProduct.setPremiumNum(bean.getPrice());
         String[][] arrayData = new String[2][];
-        String[] list1 = {"投保险种", "保额", "保险期", "缴费期", "首年保费"};
+        String[] list1 = {"投保险种", "保额", "保险期", "交费期", "首年保费"};
         String valueBao = "--";
         String valueQi = "--";
         String valueNian = "--";
@@ -1036,7 +1036,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     public void onGetMsgList(CalcTwoSuccessBean bean) {
         currProduct.setPremiumNum(bean.getPrice());
         String[][] arrayData = new String[2][];
-        String[] list1 = {"投保险种", "保额", "保险期", "缴费期", "首年保费"};
+        String[] list1 = {"投保险种", "保额", "保险期", "交费期", "首年保费"};
         String[] list2 = {currProduct.getProductName(), bean.getValueBao(), bean.getValueQi(), bean.getValueNian(), bean.getPrice()};
         arrayData[0] = list1;
         arrayData[1] = list2;

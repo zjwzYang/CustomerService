@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         mPswV = findViewById(R.id.et_verifyCode);
         if (BuildConfig.DEBUG) {
             mUserName.setText("cmm");
-            mPswV.setText("12345678");
+            mPswV.setText("88888888");
         }
 
         mSoftKeyboardStateHelper = new SoftKeyboardStateHelper(mConstraintLayout);
