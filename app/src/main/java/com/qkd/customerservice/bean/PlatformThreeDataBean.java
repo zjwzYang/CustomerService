@@ -123,6 +123,14 @@ public class PlatformThreeDataBean {
             private String beginDate;
             @SerializedName("endDate")
             private String endDate;
+            @SerializedName("min")
+            private String min;
+            @SerializedName("max")
+            private String max;
+            @SerializedName("step")
+            private String step;
+            @SerializedName("suffix")
+            private String suffix;
             @SerializedName("elementItems")
             private List<ElementItemsDTO> elementItems;
 
@@ -205,6 +213,38 @@ public class PlatformThreeDataBean {
 
             public String getElementName() {
                 return elementName;
+            }
+
+            public String getMin() {
+                return min;
+            }
+
+            public void setMin(String min) {
+                this.min = min;
+            }
+
+            public String getMax() {
+                return max;
+            }
+
+            public void setMax(String max) {
+                this.max = max;
+            }
+
+            public String getStep() {
+                return step;
+            }
+
+            public void setStep(String step) {
+                this.step = step;
+            }
+
+            public String getSuffix() {
+                return suffix;
+            }
+
+            public void setSuffix(String suffix) {
+                this.suffix = suffix;
             }
 
             public void setElementName(String elementName) {

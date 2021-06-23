@@ -81,8 +81,9 @@ public class CalcItemDecoration extends RecyclerView.ItemDecoration {
                 c.drawRect(targetRect, paint);
                 drawLetter(text, 0, baseline, c, parent);
             } else {
-                String preText = list.get(position - 1).getModuleName();
-                if (!text.equals(preText)) {
+                PlatformThreeDataBean.ChildrenDTO.DataDTO lastItem = list.get(position - 1);
+                PlatformThreeDataBean.ChildrenDTO.DataDTO item = list.get(position);
+                if (!lastItem.getModuleCode().equals(item.getModuleCode())) {
                     c.drawRect(targetRect, paint);
                     drawLetter(text, 0, baseline, c, parent);
                 }

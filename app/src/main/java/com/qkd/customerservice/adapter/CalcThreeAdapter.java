@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -75,6 +76,8 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return 6;
             case "8":
                 return 7;
+            case "29":
+                return 8;
             default:
                 return 0;
         }
@@ -106,6 +109,9 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case 7:
                 View viewSeven = inflater.inflate(R.layout.calc_three_eight, parent, false);
                 return new OccupationViewHolder(viewSeven);
+            case 8:
+                View viewEight = inflater.inflate(R.layout.calc_three_twonine, parent, false);
+                return new StepViewHolder(viewEight);
             default:
                 View viewD = inflater.inflate(R.layout.item_two_default, parent, false);
                 return new DefaultViewHolder(viewD);
@@ -307,6 +313,66 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     }
                 }
             });
+        } else if (itemViewType == 8) {
+            StepViewHolder holder = (StepViewHolder) viewHolder;
+            holder.calc_label.setText(bean.getElementName());
+            final String min = bean.getMin();
+            final String max = bean.getMax();
+            final String step = bean.getStep();
+            String suffix = bean.getSuffix();
+            holder.step_min_max.setText("范围：" + min + " ~ " + max + suffix);
+            String value = "";
+            Object elementValue = bean.getElementValue();
+            if (elementValue instanceof String) {
+                value = (String) elementValue;
+            }
+            holder.calc_date_input.setText(value + suffix);
+            holder.strp_reduce.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Integer minI = Integer.parseInt(min);
+                        Integer stepI = Integer.parseInt(step);
+                        Integer valueI = 0;
+                        Object elementValue = bean.getElementValue();
+                        if (elementValue instanceof String) {
+                            valueI = Integer.parseInt((String) elementValue);
+                        }
+                        if (valueI <= minI) {
+                            Toast.makeText(context, "已经是最小值啦", Toast.LENGTH_SHORT).show();
+                        } else {
+                            valueI -= stepI;
+                            bean.setElementValue(String.valueOf(valueI));
+                            notifyItemChanged(position);
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
+            holder.strp_plus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Integer maxI = Integer.parseInt(max);
+                        Integer stepI = Integer.parseInt(step);
+                        Integer valueI = 0;
+                        Object elementValue = bean.getElementValue();
+                        if (elementValue instanceof String) {
+                            valueI = Integer.parseInt((String) elementValue);
+                        }
+                        if (valueI >= maxI) {
+                            Toast.makeText(context, "已经是最大值啦", Toast.LENGTH_SHORT).show();
+                        } else {
+                            valueI += stepI;
+                            bean.setElementValue(String.valueOf(valueI));
+                            notifyItemChanged(position);
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
         }
     }
 
@@ -406,6 +472,23 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(itemView);
             calc_label = itemView.findViewById(R.id.calc_label);
             three_date_occupation = itemView.findViewById(R.id.three_date_occupation);
+        }
+    }
+
+    static class StepViewHolder extends RecyclerView.ViewHolder {
+        private TextView calc_label;
+        private TextView step_min_max;
+        private TextView strp_reduce;
+        private TextView calc_date_input;
+        private TextView strp_plus;
+
+        public StepViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
+            calc_label = itemView.findViewById(R.id.calc_label);
+            step_min_max = itemView.findViewById(R.id.step_min_max);
+            strp_reduce = itemView.findViewById(R.id.strp_reduce);
+            calc_date_input = itemView.findViewById(R.id.calc_date_input);
+            strp_plus = itemView.findViewById(R.id.strp_plus);
         }
     }
 
