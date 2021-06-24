@@ -135,6 +135,7 @@ public class PlatformThreeDataBean {
             private List<ElementItemsDTO> elementItems;
 
             private String moduleCode;
+            private String childModuleCode;
             private String moduleName;
             private int index;
             private String showValue;
@@ -145,6 +146,14 @@ public class PlatformThreeDataBean {
 
             public void setShowValue(String showValue) {
                 this.showValue = showValue;
+            }
+
+            public String getChildModuleCode() {
+                return childModuleCode;
+            }
+
+            public void setChildModuleCode(String childModuleCode) {
+                this.childModuleCode = childModuleCode;
             }
 
             public String getModuleCode() {

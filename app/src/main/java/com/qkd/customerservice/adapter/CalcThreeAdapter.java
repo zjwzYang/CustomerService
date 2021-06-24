@@ -183,16 +183,28 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 @Override
                 public void onClick(View v) {
                     Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                    Object elementValue = bean.getElementValue();
+                    if (elementValue instanceof String) {
+                        String[] strings = ((String) elementValue).split("-");
+                        try {
+                            year = Integer.parseInt(strings[0]);
+                            month = Integer.parseInt(strings[1]) - 1;
+                            dayOfMonth = Integer.parseInt(strings[2]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                             bean.setElementValue(year + "-" + (month + 1) + "-" + dayOfMonth);
                             notifyItemChanged(position);
                         }
-                    },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH));
+                    }, year, month, dayOfMonth);
                     dialog.show();
                 }
             });

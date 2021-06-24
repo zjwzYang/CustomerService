@@ -50,6 +50,8 @@ public class CalcItemDecoration extends RecyclerView.ItemDecoration {
             PlatformThreeDataBean.ChildrenDTO.DataDTO item = list.get(position);
             if (!lastItem.getModuleCode().equals(item.getModuleCode())) {
                 Offsets = 100;
+            } else if ("12".equals(item.getElementType())) {
+                Offsets = 0;
             }
         }
 

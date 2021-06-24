@@ -218,14 +218,16 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                                 if ("addInsureder".equals(moduleCode)) {
                                     continue;
                                 }
-                                List<PlatformThreeDataBean.ChildrenDTO> children = platThreeBean.getChildren();
                                 threeDataBeans.add(platThreeBean);
+                                List<PlatformThreeDataBean.ChildrenDTO> children = platThreeBean.getChildren();
                                 if (children != null) {
                                     for (int i = 0; i < children.size(); i++) {
                                         PlatformThreeDataBean.ChildrenDTO child = children.get(i);
+                                        String childModuleCode = child.getModuleCode();
                                         List<PlatformThreeDataBean.ChildrenDTO.DataDTO> childDatas = child.getData();
                                         for (PlatformThreeDataBean.ChildrenDTO.DataDTO childData : childDatas) {
                                             childData.setModuleCode(moduleCode);
+                                            childData.setChildModuleCode(childModuleCode);
                                             childData.setModuleName(moduleName);
                                             childData.setIndex(i);
                                             datas.add(childData);
@@ -404,6 +406,22 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                             if (moduleCode.equals(dataDTO.getModuleCode()) && i == dataDTO.getIndex()) {
                                 String dateCode = dataDTO.getElementCode();
                                 Object dateValue = dataDTO.getElementValue();
+                                String elementType = dataDTO.getElementType();
+                                if (!"12".equals(elementType)) {
+                                    if (dateValue instanceof String && TextUtils.isEmpty((String) dateValue)) {
+                                        Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else if (dateValue instanceof Integer && (Integer) dateValue == 0) {
+                                        Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else if (dateValue instanceof Double && (Double) dateValue == 0) {
+                                        Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else if (dateValue instanceof ArrayList && ((ArrayList) dateValue).size() == 0) {
+                                        Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
                                 String showValue = dataDTO.getShowValue();
                                 String elementDescribe = dataDTO.getElementDescribe();
                                 if ("coverage".equals(dateCode)) {
@@ -431,6 +449,10 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                                         paymentPeriod = (String) dateValue;
                                     }
                                 }
+                                String childModuleCode = dataDTO.getChildModuleCode();
+                                if (!TextUtils.isEmpty(childModuleCode)) {
+                                    childMap.put("moduleCode", childModuleCode);
+                                }
                                 childMap.put(dateCode, dateValue);
                             }
                         }
@@ -444,6 +466,22 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                     if (moduleCode.equals(dataDTO.getModuleCode())) {
                         String dateCode = dataDTO.getElementCode();
                         Object dateValue = dataDTO.getElementValue();
+                        String elementType = dataDTO.getElementType();
+                        if (!"12".equals(elementType)) {
+                            if (dateValue instanceof String && TextUtils.isEmpty((String) dateValue)) {
+                                Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                return;
+                            } else if (dateValue instanceof Integer && (Integer) dateValue == 0) {
+                                Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                return;
+                            } else if (dateValue instanceof Double && (Double) dateValue == 0) {
+                                Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                return;
+                            } else if (dateValue instanceof ArrayList && ((ArrayList) dateValue).size() == 0) {
+                                Toast.makeText(this, "请选择" + dataDTO.getElementName(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
                         String showValue = dataDTO.getShowValue();
                         String elementDescribe = dataDTO.getElementDescribe();
                         if ("coverage".equals(dateCode)) {
@@ -471,7 +509,9 @@ public class ProductCalcActivity extends AppCompatActivity implements CalcTwoAda
                                 paymentPeriod = (String) dateValue;
                             }
                         }
-                        dateMap.put(dateCode, dateValue);
+                        if (dateValue != null) {
+                            dateMap.put(dateCode, dateValue);
+                        }
                     }
                 }
                 factorParams.put(moduleCode, dateMap);

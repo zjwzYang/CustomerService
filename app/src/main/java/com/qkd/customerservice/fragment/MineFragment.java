@@ -41,8 +41,6 @@ public class MineFragment extends Fragment implements View.OnClickListener {
             case R.id.mine_login_out:
                 SharedPreferences.Editor edit = getContext().getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE).edit();
                 edit.clear().apply();
-//                SharedPreferences.Editor sortEd = getContext().getSharedPreferences(Constant.SORT_FLAG, Context.MODE_PRIVATE).edit();
-//                sortEd.clear().apply();
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
                 getActivity().finish();
