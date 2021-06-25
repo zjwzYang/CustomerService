@@ -536,4 +536,15 @@ public class IndexActivity extends AppCompatActivity implements View.OnClickList
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        SharedPreferences.Editor edit = getSharedPreferences(Constant.USER_INFO, Context.MODE_PRIVATE).edit();
+        edit.clear().apply();
+        Intent intent2 = new Intent(this, LoginActivity.class);
+        startActivity(intent2);
+        finish();
+    }
 }

@@ -1,6 +1,7 @@
 package com.qkd.customerservice.net;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -8,8 +9,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.qkd.customerservice.BuildConfig;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.MyApp;
+import com.qkd.customerservice.activity.IndexActivity;
+import com.qkd.customerservice.bean.ErrorBody;
 import com.qkd.customerservice.net.service.RetrofitService;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +27,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -65,9 +72,24 @@ public class BaseHttp {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i("Http请求参数", "onError: " + e.getMessage());
+                        //Log.i("Http请求参数", "onError: " + e.getMessage());
                         httpObserver.onError();
-                        Toast.makeText(MyApp.getInstance(), "请求出错", Toast.LENGTH_SHORT).show();
+                        if (e instanceof HttpException) {
+                            try {
+                                ResponseBody body = ((HttpException) e).response().errorBody();
+                                String bodyStr = body.string();
+                                Log.i("Http请求参数", "onError111: " + bodyStr);
+                                Gson gson = new Gson();
+                                ErrorBody errorBody = gson.fromJson(bodyStr, ErrorBody.class);
+                                if ("401".equals(errorBody.getCode())) {
+                                    Intent intent = new Intent(MyApp.getInstance(), IndexActivity.class);
+                                    MyApp.getInstance().startActivity(intent);
+                                }
+                                Toast.makeText(MyApp.getInstance(), errorBody.getMessage(), Toast.LENGTH_SHORT).show();
+                            } catch (IOException IOe) {
+                                IOe.printStackTrace();
+                            }
+                        }
                     }
 
                     @Override
@@ -113,7 +135,9 @@ public class BaseHttp {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                Log.i("Http请求参数：", message);
+                if (BuildConfig.DEBUG) {
+                    Log.i("Http请求参数：", message);
+                }
             }
         });
         loggingInterceptor.setLevel(level);
