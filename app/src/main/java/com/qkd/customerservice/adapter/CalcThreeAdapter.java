@@ -2,7 +2,9 @@ package com.qkd.customerservice.adapter;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -78,6 +81,8 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return 7;
             case "29":
                 return 8;
+            case "3":
+                return 9;
             default:
                 return 0;
         }
@@ -112,6 +117,9 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case 8:
                 View viewEight = inflater.inflate(R.layout.calc_three_twonine, parent, false);
                 return new StepViewHolder(viewEight);
+            case 9:
+                View viewNine = inflater.inflate(R.layout.calc_three_input, parent, false);
+                return new InputViewHolder(viewNine);
             default:
                 View viewD = inflater.inflate(R.layout.item_two_default, parent, false);
                 return new DefaultViewHolder(viewD);
@@ -385,6 +393,31 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     }
                 }
             });
+        } else if (itemViewType == 9) {
+            InputViewHolder holder = (InputViewHolder) viewHolder;
+            holder.calc_label.setText(bean.getElementName());
+            String value = "";
+            Object elementValue = bean.getElementValue();
+            if (elementValue instanceof String) {
+                value = (String) elementValue;
+                holder.three_date_input.setText(value);
+            }
+            holder.three_date_input.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    bean.setElementValue(s.toString());
+                }
+            });
         }
     }
 
@@ -501,6 +534,17 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             strp_reduce = itemView.findViewById(R.id.strp_reduce);
             calc_date_input = itemView.findViewById(R.id.calc_date_input);
             strp_plus = itemView.findViewById(R.id.strp_plus);
+        }
+    }
+
+    static class InputViewHolder extends RecyclerView.ViewHolder {
+        private TextView calc_label;
+        private EditText three_date_input;
+
+        public InputViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
+            calc_label = itemView.findViewById(R.id.calc_label);
+            three_date_input = itemView.findViewById(R.id.three_date_input);
         }
     }
 
