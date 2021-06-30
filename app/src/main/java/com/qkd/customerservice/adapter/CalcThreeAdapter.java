@@ -83,6 +83,8 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return 8;
             case "3":
                 return 9;
+            case "9":
+                return 10;
             default:
                 return 0;
         }
@@ -120,6 +122,9 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case 9:
                 View viewNine = inflater.inflate(R.layout.calc_three_input, parent, false);
                 return new InputViewHolder(viewNine);
+            case 10:
+                View viewTen = inflater.inflate(R.layout.calc_three_input_number, parent, false);
+                return new InputNumViewHolder(viewTen);
             default:
                 View viewD = inflater.inflate(R.layout.item_two_default, parent, false);
                 return new DefaultViewHolder(viewD);
@@ -418,6 +423,31 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     bean.setElementValue(s.toString());
                 }
             });
+        } else if (itemViewType == 10) {
+            InputNumViewHolder holder = (InputNumViewHolder) viewHolder;
+            holder.calc_label.setText(bean.getElementName());
+            String value = "";
+            Object elementValue = bean.getElementValue();
+            if (elementValue instanceof String) {
+                value = (String) elementValue;
+                holder.three_date_input.setText(value);
+            }
+            holder.three_date_input.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    bean.setElementValue(s.toString());
+                }
+            });
         }
     }
 
@@ -542,6 +572,17 @@ public class CalcThreeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private EditText three_date_input;
 
         public InputViewHolder(@NonNull @NotNull View itemView) {
+            super(itemView);
+            calc_label = itemView.findViewById(R.id.calc_label);
+            three_date_input = itemView.findViewById(R.id.three_date_input);
+        }
+    }
+
+    static class InputNumViewHolder extends RecyclerView.ViewHolder {
+        private TextView calc_label;
+        private EditText three_date_input;
+
+        public InputNumViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             calc_label = itemView.findViewById(R.id.calc_label);
             three_date_input = itemView.findViewById(R.id.three_date_input);
