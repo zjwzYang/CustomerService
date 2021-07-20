@@ -389,6 +389,9 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(articleMsg.getPicUrl())
                     .apply(options)
                     .into(holder.mImageView);
+            Glide.with(context)
+                    .load(faceUrl)
+                    .into(holder.mHeadV);
             holder.artTitle.setText(articleMsg.getTitle());
             holder.artDesc.setText(articleMsg.getDescription());
             holder.rightTime.setText(articleMsg.getSendTime());
@@ -588,6 +591,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView artTitle;
         private TextView artDesc;
         private ImageView mImageView;
+        private ImageView mHeadV;
         private LinearLayout mLinearLayout;
 
         public LeftArticleViewHolder(@NonNull View itemView) {
@@ -597,6 +601,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             artDesc = itemView.findViewById(R.id.article_right_desc);
             mImageView = itemView.findViewById(R.id.article_right_pic);
             mLinearLayout = itemView.findViewById(R.id.article_right_linear);
+            mHeadV = itemView.findViewById(R.id.iv_head_right);
         }
     }
 }

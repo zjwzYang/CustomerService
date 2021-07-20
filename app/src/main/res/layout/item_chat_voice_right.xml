@@ -33,7 +33,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginRight="8dp"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/ic_system_head" />
 
         <FrameLayout
             android:layout_width="wrap_content"

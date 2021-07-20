@@ -266,7 +266,7 @@ public class ChatActivity extends AppCompatActivity {
                             adapter.addMsg(articleMsg);
                         } else {
                             CustomMessageBean.SchemeInfoBean schemeInfo = bean.getSchemeInfo();
-                            articleMsg.setTitle(schemeInfo.getNickName() + "的专属方案完成");
+                            articleMsg.setTitle(schemeInfo.getNickName() + "的方案定制申请");
                             articleMsg.setDescription("趣看保，守护您的一生平安");
                             articleMsg.setOrderNumber(bean.getOrderNumber());
                             articleMsg.setUserId(schemeInfo.getUserId());
