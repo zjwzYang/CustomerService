@@ -23,7 +23,7 @@ public class Constant {
 
     // 测试 http://qkbdev.qukandian573.com
     // 正式 http://qukanbao.qukandian573.com
-    private static final String BASE_BASE_URL = "http://qkbdev.qukandian573.com";
+    private static final String BASE_BASE_URL = "http://qukanbao.qukandian573.com";
     public static final String BASE_URL_CORE = BASE_BASE_URL + ":8082/";
     public static final String BASE_URL_WX_CHETER = BASE_BASE_URL + ":8081/";
     public static final String BASE_URL_WEB = BASE_BASE_URL + ":8083/";

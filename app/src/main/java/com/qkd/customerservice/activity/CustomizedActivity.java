@@ -104,6 +104,8 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     private int selcetIndex = 0;
     private SchemeCustomizeInfo.DataBean data;
 
+    private boolean isLoading = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -537,7 +539,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 //                if (userStatus != 3) {
 //                    return;
 //                }
-                nextAction(1);
+                if (!isLoading) {
+                    nextAction(1);
+                }
             }
         });
         mSaveDaiV.setOnClickListener(new View.OnClickListener() {
@@ -546,7 +550,9 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 //                if (userStatus != 3) {
 //                    return;
 //                }
-                nextAction(2);
+                if (!isLoading) {
+                    nextAction(2);
+                }
             }
         });
         mTotalMoney = findViewById(R.id.customized_total);
@@ -576,6 +582,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
     }
 
     private void nextAction(final int type) {
+        isLoading = true;
 //        if (checkData() && data != null) {
         if (data != null) {
 
@@ -642,6 +649,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
                         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsHasSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
                             @Override
                             public void onSuccess(BaseOutput baseOutput) {
+                                isLoading = false;
                                 if (baseOutput.isSuccess()) {
 //                                        Intent intent = new Intent(CustomizedActivity.this, WebActivity.class);
 //                                        intent.putExtra("orderNumber", data.getOrderNumber());
@@ -655,13 +663,14 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                             @Override
                             public void onError() {
-
+                                isLoading = false;
                             }
                         });
                     } else {
                         BaseHttp.subscribe(BaseHttp.getRetrofitService(Constant.BASE_URL_WEB).saveAsToBeSend(data.getOrderNumber(), data.getUserId()), new BaseHttp.HttpObserver<BaseOutput>() {
                             @Override
                             public void onSuccess(BaseOutput baseOutput) {
+                                isLoading = false;
                                 if (baseOutput.isSuccess()) {
                                     Toast.makeText(CustomizedActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
                                     EventBus.getDefault().post(Constant.REFRESH_CUSTOMIZED_LIST);
@@ -672,7 +681,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                             @Override
                             public void onError() {
-
+                                isLoading = false;
                             }
                         });
                     }
@@ -680,7 +689,7 @@ public class CustomizedActivity extends AppCompatActivity implements SelectProdu
 
                 @Override
                 public void onError() {
-
+                    isLoading = false;
                 }
             });
         }
