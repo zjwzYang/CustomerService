@@ -14,6 +14,9 @@ public class ArticleMsg extends MsgBean {
     private String url;
     private String picUrl;
 
+    private String orderNumber;
+    private int userId;
+
     public String getTitle() {
         return title;
     }
@@ -44,5 +47,21 @@ public class ArticleMsg extends MsgBean {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

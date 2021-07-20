@@ -3,6 +3,7 @@ package com.qkd.customerservice.adapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.qkd.customerservice.Constant;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.activity.CustomizedActivity;
 import com.qkd.customerservice.audio.AudioPlayManager;
 import com.qkd.customerservice.audio.AudioRecordManager;
 import com.qkd.customerservice.audio.IAudioPlayListener;
@@ -54,6 +56,7 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int IMAGE_RIGHT = 5;
     private static final int TEXT_CENTER = 6;
     private static final int ARTICLE_RIGHT = 7;
+    private static final int ARTICLE_LEFT = 8;
 
     private Context context;
     private List<MsgBean> msgList;
@@ -98,7 +101,11 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return IMAGE_RIGHT;
             }
         } else if (msgType == MsgBean.MsgType.ARTICLE) {
-            return ARTICLE_RIGHT;
+            if (type == 0) {
+                return ARTICLE_LEFT;
+            } else {
+                return ARTICLE_RIGHT;
+            }
         } else {
             return TEXT_LEFT;
         }
@@ -133,6 +140,9 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == ARTICLE_RIGHT) {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_article_right, parent, false);
             return new RightArticleViewHolder(view);
+        } else if (viewType == ARTICLE_LEFT) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_chat_article_left, parent, false);
+            return new LeftArticleViewHolder(view);
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.item_chat_text_left, parent, false);
             return new LeftMsgViewHolder(view);
@@ -372,6 +382,26 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return false;
                 }
             });
+        } else if (viewType == ARTICLE_LEFT) {
+            LeftArticleViewHolder holder = (LeftArticleViewHolder) viewHolder;
+            final ArticleMsg articleMsg = (ArticleMsg) msgBean;
+            Glide.with(context)
+                    .load(articleMsg.getPicUrl())
+                    .apply(options)
+                    .into(holder.mImageView);
+            holder.artTitle.setText(articleMsg.getTitle());
+            holder.artDesc.setText(articleMsg.getDescription());
+            holder.rightTime.setText(articleMsg.getSendTime());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, CustomizedActivity.class);
+                    intent.putExtra("orderNumber", articleMsg.getOrderNumber());
+                    intent.putExtra("userId", articleMsg.getUserId());
+                    intent.putExtra("userStatus", 3);
+                    context.startActivity(intent);
+                }
+            });
         }
 
     }
@@ -544,6 +574,23 @@ public class MsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private LinearLayout mLinearLayout;
 
         public RightArticleViewHolder(@NonNull View itemView) {
+            super(itemView);
+            rightTime = itemView.findViewById(R.id.article_right_time);
+            artTitle = itemView.findViewById(R.id.article_right_title);
+            artDesc = itemView.findViewById(R.id.article_right_desc);
+            mImageView = itemView.findViewById(R.id.article_right_pic);
+            mLinearLayout = itemView.findViewById(R.id.article_right_linear);
+        }
+    }
+
+    static class LeftArticleViewHolder extends RecyclerView.ViewHolder {
+        private TextView rightTime;
+        private TextView artTitle;
+        private TextView artDesc;
+        private ImageView mImageView;
+        private LinearLayout mLinearLayout;
+
+        public LeftArticleViewHolder(@NonNull View itemView) {
             super(itemView);
             rightTime = itemView.findViewById(R.id.article_right_time);
             artTitle = itemView.findViewById(R.id.article_right_title);

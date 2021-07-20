@@ -16,6 +16,8 @@ public class CustomMessageBean {
 
     private String nickname;
     private String url;
+    private String orderNumber;
+    private SchemeInfoBean schemeInfo;
 
     public String getNickname() {
         return nickname;
@@ -31,5 +33,42 @@ public class CustomMessageBean {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public SchemeInfoBean getSchemeInfo() {
+        return schemeInfo;
+    }
+
+    public void setSchemeInfo(SchemeInfoBean schemeInfo) {
+        this.schemeInfo = schemeInfo;
+    }
+
+    static public class SchemeInfoBean {
+        private String nickName;
+        private int userId;
+
+        public String getNickName() {
+            return nickName;
+        }
+
+        public void setNickName(String nickName) {
+            this.nickName = nickName;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public void setUserId(int userId) {
+            this.userId = userId;
+        }
     }
 }

@@ -254,15 +254,29 @@ public class ChatActivity extends AppCompatActivity {
                         }
 
                         ArticleMsg articleMsg = new ArticleMsg();
-                        articleMsg.setTitle(bean.getNickname() + "的专属方案");
-                        articleMsg.setDescription("趣看保，守护您的一生平安");
-                        articleMsg.setUrl(bean.getUrl());
-                        articleMsg.setPicUrl("http://47.114.100.72/files/pic/1611294989682a2e3219f-5a76-4bd2-a9c4-d286ebc62052.jpg");
-                        articleMsg.setSendTime(timeString);
-                        articleMsg.setType(1);
-                        articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
-                        articleMsg.setSenderId(message.getSender());
-                        adapter.addMsg(articleMsg);
+                        if (TextUtils.isEmpty(bean.getOrderNumber())) {
+                            articleMsg.setTitle(bean.getNickname() + "的专属方案");
+                            articleMsg.setDescription("趣看保，守护您的一生平安");
+                            articleMsg.setUrl(bean.getUrl());
+                            articleMsg.setPicUrl("http://47.114.100.72/files/pic/1611294989682a2e3219f-5a76-4bd2-a9c4-d286ebc62052.jpg");
+                            articleMsg.setSendTime(timeString);
+                            articleMsg.setType(1);
+                            articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                            articleMsg.setSenderId(message.getSender());
+                            adapter.addMsg(articleMsg);
+                        } else {
+                            CustomMessageBean.SchemeInfoBean schemeInfo = bean.getSchemeInfo();
+                            articleMsg.setTitle(schemeInfo.getNickName() + "的专属方案完成");
+                            articleMsg.setDescription("趣看保，守护您的一生平安");
+                            articleMsg.setOrderNumber(bean.getOrderNumber());
+                            articleMsg.setUserId(schemeInfo.getUserId());
+                            articleMsg.setPicUrl("http://47.114.100.72/files/pic/1611294989682a2e3219f-5a76-4bd2-a9c4-d286ebc62052.jpg");
+                            articleMsg.setSendTime(timeString);
+                            articleMsg.setType(0);
+                            articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                            articleMsg.setSenderId(message.getSender());
+                            adapter.addMsg(articleMsg);
+                        }
                     }
                 }
             }

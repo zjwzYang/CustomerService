@@ -17,10 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.qkd.customerservice.AppUtil;
 import com.qkd.customerservice.R;
+import com.qkd.customerservice.bean.ArticleMsg;
 import com.qkd.customerservice.bean.ImageMsg;
 import com.qkd.customerservice.bean.MoreAction;
 import com.qkd.customerservice.bean.MsgBean;
-import com.qkd.customerservice.bean.TextMsg;
 import com.qkd.customerservice.widget.LocalGlideEngine;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
@@ -80,13 +80,23 @@ public class MoreActionAdapter extends RecyclerView.Adapter<MoreActionAdapter.Mo
                         break;
                     case MoreAction.ACTION_TYPE_DINGZHI:
                         String text = "http://qukanbao.qukandian573.com/scheme";
-                        TextMsg msgBean = new TextMsg();
-                        msgBean.setMsgType(MsgBean.MsgType.TEXT);
-                        msgBean.setType(1);
-                        msgBean.setContent(text);
-                        msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
-                        msgBean.setNickName("我");
-                        EventBus.getDefault().post(msgBean);
+//                        TextMsg msgBean = new TextMsg();
+//                        msgBean.setMsgType(MsgBean.MsgType.TEXT);
+//                        msgBean.setType(1);
+//                        msgBean.setContent(text);
+//                        msgBean.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+//                        msgBean.setNickName("我");
+//                        EventBus.getDefault().post(msgBean);
+
+                        ArticleMsg articleMsg = new ArticleMsg();
+                        articleMsg.setTitle("趣看保方案定制");
+                        articleMsg.setDescription("私人定制，为你提供中立专业的保险");
+                        articleMsg.setUrl(text);
+                        articleMsg.setPicUrl("http://qukanbao.qukandian573.com/files/pic/16266746447103cc264db-6ac7-462d-a145-af4b833f1e06.png");
+                        articleMsg.setSendTime(AppUtil.getTimeString(new Date().getTime()));
+                        articleMsg.setType(1);
+                        articleMsg.setMsgType(MsgBean.MsgType.ARTICLE);
+                        EventBus.getDefault().post(articleMsg);
                         break;
                     case MoreAction.ACTION_TYPE_CODE:
                         if (!TextUtils.isEmpty(qrCode)) {
