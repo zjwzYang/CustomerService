@@ -8,6 +8,7 @@ package com.qkd.customerservice;
  * @org 趣看点
  */
 public class Constant {
+    
     public static final String APP_DATA = "app_data";
     public static final String KEYBOARDHEIGHT = "keyboardHeight";
     public static final String MI_PUSH_REGID = "mi_push_regid";
